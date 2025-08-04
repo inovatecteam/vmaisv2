@@ -1,0 +1,524 @@
+'use client'
+
+import { useState, useEffect, useRef } from 'react'
+import { Navbar } from '@/components/layout/navbar'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
+import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Search, MapPin, Phone, Filter, Heart, Loader2 } from 'lucide-react'
+import { supabase } from '@/lib/supabase'
+import { ONG } from '@/types'
+import { toast } from 'sonner'
+import { useAuth } from '@/components/providers/auth-provider'
+import Footer from '@/components/layout/footer'
+import { loadGoogleMaps } from '@/lib/google-maps-loader'
+
+// Tipagem do Google Maps
+declare global {
+  interface Window {
+    google: any;
+    initMap: () => void;
+  }
+}
+
+export default function MapaPage() {
+  const [ongs, setOngs] = useState<ONG[]>([])
+  const [filteredOngs, setFilteredOngs] = useState<ONG[]>([])
+  const [selectedOng, setSelectedOng] = useState<ONG | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [mapLoading, setMapLoading] = useState(true)
+  const [searchTerm, setSearchTerm] = useState('')
+  const [selectedEstado, setSelectedEstado] = useState<string>('all')
+  const [selectedTipo, setSelectedTipo] = useState<string>('all')
+  const [selectedLocalizacaoTipo, setSelectedLocalizacaoTipo] = useState<string>('all')
+  const { user } = useAuth()
+
+  const mapRef = useRef<HTMLDivElement>(null)
+  const mapInstanceRef = useRef<any>(null)
+  const markersRef = useRef<any[]>([])
+
+  useEffect(() => {
+    loadOngs()
+    initializeGoogleMaps()
+  }, [])
+
+  useEffect(() => {
+    filterOngs()
+  }, [ongs, searchTerm, selectedEstado, selectedTipo, selectedLocalizacaoTipo])
+
+  useEffect(() => {
+    if (mapInstanceRef.current && filteredOngs.length > 0) {
+      updateMapMarkers()
+    }
+  }, [filteredOngs])
+
+  const loadOngs = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('ongs')
+        .select('*')
+        .not('lat', 'is', null)
+        .not('lng', 'is', null)
+        .order('created_at', { ascending: false })
+
+      if (error) throw error
+      setOngs(data || [])
+    } catch (error) {
+      console.error('Erro ao carregar ONGs:', error)
+      toast.error('Erro ao carregar ONGs')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const initializeGoogleMaps = async () => {
+    try {
+      const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
+      
+      if (!apiKey) {
+        console.warn('Google Maps API key não encontrada')
+        showMapPlaceholder()
+        return
+      }
+
+      // Carregar a API do Google Maps
+      await loadGoogleMaps(apiKey)
+      
+      if (!mapRef.current) return
+
+      // Inicializar o mapa
+      const map = new window.google.maps.Map(mapRef.current, {
+        center: { lat: -15.7942, lng: -47.8822 }, // Centro do Brasil (Brasília)
+        zoom: 5,
+        styles: [
+          {
+            featureType: 'poi',
+            elementType: 'labels',
+            stylers: [{ visibility: 'off' }]
+          }
+        ]
+      })
+
+      mapInstanceRef.current = map
+      setMapLoading(false)
+      
+      // Atualizar marcadores se já temos ONGs carregadas
+      if (filteredOngs.length > 0) {
+        updateMapMarkers()
+      }
+    } catch (error) {
+      console.error('Erro ao carregar Google Maps:', error)
+      showMapPlaceholder()
+    }
+  }
+
+  const showMapPlaceholder = () => {
+    if (!mapRef.current) return
+    
+    mapRef.current.innerHTML = `
+      <div class="w-full h-full bg-gray-100 rounded-xl flex items-center justify-center">
+        <div class="text-center">
+          <div class="h-16 w-16 mx-auto mb-4 flex items-center justify-center">
+            <svg class="h-16 w-16 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+            </svg>
+          </div>
+          <p class="text-gray-600 mb-2">Mapa Interativo</p>
+          <p class="text-sm text-gray-500">Configure a Google Maps API para visualizar o mapa</p>
+        </div>
+      </div>
+    `
+    setMapLoading(false)
+  }
+
+  const updateMapMarkers = () => {
+    if (!mapInstanceRef.current) return
+
+    // Limpar marcadores existentes
+    markersRef.current.forEach(marker => {
+      marker.setMap(null)
+    })
+    markersRef.current = []
+
+    // Criar novos marcadores para ONGs com coordenadas
+    const ongsWithCoords = filteredOngs.filter(ong => ong.lat && ong.lng)
+    
+    if (ongsWithCoords.length === 0) return
+
+    const bounds = new window.google.maps.LatLngBounds()
+
+    ongsWithCoords.forEach(ong => {
+      const position = { lat: Number(ong.lat), lng: Number(ong.lng) }
+      
+      const marker = new window.google.maps.Marker({
+        position,
+        map: mapInstanceRef.current,
+        title: ong.nome,
+        icon: {
+          path: window.google.maps.SymbolPath.CIRCLE,
+          scale: 8,
+          fillColor: '#FBBF24', // Cor primária (amarelo)
+          fillOpacity: 1,
+          strokeColor: '#F59E0B',
+          strokeWeight: 2
+        }
+      })
+
+      // Adicionar listener de clique
+      marker.addListener('click', () => {
+        setSelectedOng(ong)
+      })
+
+      markersRef.current.push(marker)
+      bounds.extend(position)
+    })
+
+    // Ajustar o zoom e centro do mapa para mostrar todos os marcadores
+    if (ongsWithCoords.length > 1) {
+      mapInstanceRef.current.fitBounds(bounds)
+    } else if (ongsWithCoords.length === 1) {
+      mapInstanceRef.current.setCenter({ lat: Number(ongsWithCoords[0].lat), lng: Number(ongsWithCoords[0].lng) })
+      mapInstanceRef.current.setZoom(12)
+    }
+  }
+
+  const filterOngs = () => {
+    let filtered = ongs
+
+    if (searchTerm) {
+      filtered = filtered.filter(ong =>
+        ong.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        ong.descricao.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        ong.cidade.toLowerCase().includes(searchTerm.toLowerCase())
+      )
+    }
+
+    if (selectedEstado && selectedEstado !== 'all') {
+      filtered = filtered.filter(ong => ong.estado === selectedEstado)
+    }
+
+    if (selectedTipo && selectedTipo !== 'all') {
+      filtered = filtered.filter(ong => ong.tipo === selectedTipo)
+    }
+
+    if (selectedLocalizacaoTipo && selectedLocalizacaoTipo !== 'all') {
+      if (selectedLocalizacaoTipo === 'presencial') {
+        filtered = filtered.filter(ong => ong.localizacao_tipo === 'presencial' || ong.localizacao_tipo === 'ambos')
+      } else if (selectedLocalizacaoTipo === 'online') {
+        filtered = filtered.filter(ong => ong.localizacao_tipo === 'online' || ong.localizacao_tipo === 'ambos')
+      } else if (selectedLocalizacaoTipo === 'ambos') {
+        filtered = filtered.filter(ong => ong.localizacao_tipo === 'ambos')
+      }
+    }
+
+    setFilteredOngs(filtered)
+  }
+
+  const handleInteraction = async (ongId: string) => {
+    if (!user) return
+
+    try {
+      await supabase
+        .from('interacoes')
+        .insert({
+          user_id: user.id,
+          ong_id: ongId,
+        })
+    } catch (error) {
+      console.error('Erro ao registrar interação:', error)
+    }
+  }
+
+  const handleWhatsAppClick = (ong: ONG) => {
+    if (ong.whatsapp) {
+      handleInteraction(ong.id)
+      const whatsappUrl = `https://wa.me/${ong.whatsapp.replace(/\D/g, '')}?text=Olá! Encontrei vocês na plataforma Voluntaria%2B e gostaria de saber como posso ajudar como voluntário.`
+      window.open(whatsappUrl, '_blank')
+    }
+  }
+
+  const estados = [...new Set(ongs.map(ong => ong.estado))].sort()
+  const tipos = [...new Set(ongs.map(ong => ong.tipo))].sort()
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-white via-yellow-50/30 to-orange-50/30">
+        <Navbar />
+        <div className="pt-32 flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+            <p className="text-gray-600">Carregando mapa...</p>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-white via-yellow-50/30 to-orange-50/30">
+      <Navbar />
+      
+      <div className="pt-32 pb-8 px-4">
+        <div className="max-w-7xl mx-auto">
+          {/* Header */}
+          <div className="text-center mb-8">
+            <h1 className="text-4xl md:text-5xl font-bold mb-4">
+              Mapa de <span className="text-primary">ONGs</span>
+            </h1>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              Explore visualmente as ONGs próximas de você e descubra oportunidades de voluntariado na sua região.
+            </p>
+          </div>
+
+          <div className="grid lg:grid-cols-3 gap-6 h-[calc(100vh-300px)]">
+            {/* Sidebar com filtros e lista */}
+            <div className="lg:col-span-1 space-y-4 overflow-hidden flex flex-col">
+              {/* Filtros */}
+              <Card className="rounded-2xl shadow-lg flex-shrink-0">
+                <CardContent className="p-4">
+                  <div className="space-y-3">
+                    <div className="relative">
+                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                      <Input
+                        placeholder="Buscar ONGs..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="pl-10 rounded-xl text-sm"
+                      />
+                    </div>
+                    
+                    <Select value={selectedEstado} onValueChange={setSelectedEstado}>
+                      <SelectTrigger className="rounded-xl text-sm">
+                        <SelectValue placeholder="Estado" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">Todos os estados</SelectItem>
+                        {estados.map(estado => (
+                          <SelectItem key={estado} value={estado}>{estado}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+
+                    <Select value={selectedTipo} onValueChange={setSelectedTipo}>
+                      <SelectTrigger className="rounded-xl text-sm">
+                        <SelectValue placeholder="Tipo" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">Todos os tipos</SelectItem>
+                        {tipos.map(tipo => (
+                          <SelectItem key={tipo} value={tipo}>{tipo}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+
+                    <Select value={selectedLocalizacaoTipo} onValueChange={setSelectedLocalizacaoTipo}>
+                      <SelectTrigger className="rounded-xl text-sm">
+                        <SelectValue placeholder="Localização" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">Presencial e Online</SelectItem>
+                        <SelectItem value="presencial">Presencial</SelectItem>
+                        <SelectItem value="online">Online</SelectItem>
+                  </SelectContent>
+                    </Select>
+
+                    <Button
+                      variant="outline"
+                      onClick={() => {
+                        setSearchTerm('')
+                        setSelectedEstado('all')
+                        setSelectedTipo('all')
+                        setSelectedLocalizacaoTipo('all')
+                      }}
+                      className="w-full rounded-xl text-sm"
+                      size="sm"
+                    >
+                      <Filter className="h-3 w-3 mr-2" />
+                      Limpar filtros
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Lista de ONGs */}
+              <Card className="rounded-2xl shadow-lg flex-1 overflow-hidden">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-lg">
+                    ONGs Encontradas ({filteredOngs.length})
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="p-0">
+                  <div className="max-h-96 overflow-y-auto px-4 pb-4">
+                    {filteredOngs.length > 0 ? (
+                      <div className="space-y-3">
+                        {filteredOngs.map((ong) => (
+                          <Card 
+                            key={ong.id}
+                            className="cursor-pointer hover:shadow-md transition-all duration-200 rounded-xl p-3"
+                            onClick={() => setSelectedOng(ong)}
+                          >
+                            <div className="flex items-start space-x-3">
+                              <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                                <Heart className="h-5 w-5 text-primary fill-current" />
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <h3 className="font-medium text-sm truncate">{ong.nome}</h3>
+                                <div className="flex items-center text-xs text-gray-500 mt-1">
+                                  <MapPin className="h-3 w-3 mr-1" />
+                                  <span className="truncate">
+                                    {ong.localizacao_tipo === 'online' ? (
+                                      'Online'
+                                    ) : ong.localizacao_tipo === 'ambos' ? (
+                                      ong.endereco_online ? 'Online e Presencial' : `${ong.cidade}, ${ong.estado}`
+                                    ) : (
+                                      `${ong.cidade}, ${ong.estado}`
+                                    )}
+                                  </span>
+                                </div>
+                                <Badge variant="secondary" className="text-xs mt-2 bg-primary/10 text-primary">
+                                  {ong.tipo}
+                                </Badge>
+                              </div>
+                            </div>
+                          </Card>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="text-center py-8">
+                        <Search className="h-12 w-12 text-gray-300 mx-auto mb-3" />
+                        <p className="text-sm text-gray-500">Nenhuma ONG encontrada</p>
+                      </div>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Mapa */}
+            <div className="lg:col-span-2">
+              <Card className="h-full rounded-2xl shadow-lg overflow-hidden">
+                <CardContent className="p-0 h-full">
+                  {mapLoading ? (
+                    <div className="h-full flex items-center justify-center">
+                      <div className="text-center">
+                        <Loader2 className="h-8 w-8 animate-spin text-primary mx-auto mb-3" />
+                        <p className="text-gray-600">Carregando mapa...</p>
+                      </div>
+                    </div>
+                  ) : (
+                    <div ref={mapRef} className="w-full h-full" />
+                  )}
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Modal de Detalhes */}
+      <Dialog open={!!selectedOng} onOpenChange={() => setSelectedOng(null)}>
+        <DialogContent className="max-w-2xl rounded-2xl max-h-[90vh] overflow-y-auto">
+          {selectedOng && (
+            <>
+              <DialogHeader>
+                <div className="h-48 bg-gradient-to-br from-primary/10 to-primary/5 rounded-xl mb-6 overflow-hidden">
+                  {selectedOng.thumbnail_url ? (
+                    <img 
+                      src={selectedOng.thumbnail_url} 
+                      alt={selectedOng.nome}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center">
+                      <Heart className="h-16 w-16 text-primary/30 fill-current" />
+                    </div>
+                  )}
+                </div>
+                
+                <div className="flex items-start justify-between">
+                  <div>
+                    <DialogTitle className="text-2xl">{selectedOng.nome}</DialogTitle>
+                    <div className="flex items-center text-gray-500 mt-2">
+                      <MapPin className="h-4 w-4 mr-1" />
+                      <span>
+                        {selectedOng.localizacao_tipo === 'online' ? (
+                          selectedOng.endereco_online || 'Online'
+                        ) : selectedOng.localizacao_tipo === 'ambos' ? (
+                          <>
+                            {selectedOng.endereco_online && (
+                              <span className="mr-2">{selectedOng.endereco_online}</span>
+                            )}
+                            {selectedOng.cidade && selectedOng.estado && (
+                              <span>{selectedOng.cidade}, {selectedOng.estado}</span>
+                            )}
+                          </>
+                        ) : (
+                          `${selectedOng.cidade}, ${selectedOng.estado}`
+                        )}
+                      </span>
+                    </div>
+                  </div>
+                  <Badge className="bg-primary/10 text-primary">
+                    {selectedOng.tipo}
+                  </Badge>
+                </div>
+              </DialogHeader>
+
+              <div className="space-y-6">
+                <div>
+                  <h3 className="font-semibold text-lg mb-2">Sobre a organização</h3>
+                  <p className="text-gray-600 leading-relaxed">{selectedOng.descricao}</p>
+                </div>
+
+                {selectedOng.endereco_online && (
+                  <div>
+                    <h3 className="font-semibold text-lg mb-2">Endereço Online</h3>
+                    <a 
+                      href={selectedOng.endereco_online.startsWith('http') ? selectedOng.endereco_online : `https://${selectedOng.endereco_online}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-primary hover:underline"
+                    >
+                      {selectedOng.endereco_online}
+                    </a>
+                  </div>
+                )}
+
+                {selectedOng.necessidades && selectedOng.necessidades.length > 0 && (
+                  <div>
+                    <h3 className="font-semibold text-lg mb-3">Como você pode ajudar</h3>
+                    <div className="flex flex-wrap gap-2">
+                      {selectedOng.necessidades.map((necessidade, index) => (
+                        <Badge key={index} variant="outline">
+                          {necessidade}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                <div className="flex flex-col sm:flex-row gap-3 pt-4">
+                  {selectedOng.whatsapp && (
+                    <Button 
+                      onClick={() => handleWhatsAppClick(selectedOng)}
+                      className="bg-green-600 hover:bg-green-700 text-white rounded-xl flex-1"
+                    >
+                      <Phone className="h-4 w-4 mr-2" />
+                      Conversar no WhatsApp
+                    </Button>
+                  )}
+                </div>
+              </div>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
+      
+      <Footer />
+    </div>
+  )
+}
