@@ -69,7 +69,7 @@ export function Navbar() {
       <div className="max-w-7xl mx-auto flex items-center justify-between px-8 py-2">
         {/* Logo */}
         <Link href="/" className="flex items-center space-x-2 group">
-          <div className="p-2 bg-primary rounded-md group-hover:scale-105 transition-transform">
+          <div className="p-2 bg-green rounded-md group-hover:scale-105 transition-transform">
   <svg
     className="h-6 w-6"
     viewBox="0 0 24 24"
