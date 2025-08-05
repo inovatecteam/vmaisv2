@@ -44,8 +44,8 @@ const ongSchema = z.object({
   nome: z.string().min(2, 'Nome da ONG deve ter pelo menos 2 caracteres'),
   tipo: z.string().min(1, 'Selecione o tipo da organização'),
   descricao: z.string().min(10, 'Descrição deve ter pelo menos 10 caracteres'),
-  localizacao_tipo: z.enum(['presencial', 'online', 'ambos'], { 
-    errorMap: () => ({ message: 'Selecione o tipo de localização' })
+  localizacao_tipo: z.enum(['presencial', 'online', 'ambos'], {
+    message: 'Selecione o tipo de localização' // <-- Alterado de 'errorMap' para 'message'
   }),
   cidade: z.string().optional(),
   estado: z.string().optional(),
