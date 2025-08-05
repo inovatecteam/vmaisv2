@@ -259,7 +259,6 @@ export default function OnboardingPage() {
                 </div>
               </div>
             )}
-
             <div className="flex justify-end">
               <Button
                 onClick={nextStep}
