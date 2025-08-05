@@ -69,22 +69,10 @@ export function Navbar() {
       <div className="max-w-7xl mx-auto flex items-center justify-between px-8 py-2">
         {/* Logo */}
         <Link href="/" className="flex items-center space-x-2 group">
-          <div
-  className="p-2 rounded-md group hover:scale-105 transition-transform"
-  style={{
-    background: `linear-gradient(
-      135deg,
-      green 0%,
-      green 33.33%,
-      red 33.33%,
-      red 66.66%,
-      bg-primary 66.66%,
-      bg-primary 100%
-    )`,
-  }}
->
-  <Heart className="h-6 w-6 text-white" />
-</div>
+          <div className="p-2 bg-primary rounded-md group-hover:scale-105 transition-transform">
+            
+            <Heart className="h-6 w-6 text-white" />
+          </div>
           <span className="text-xl font-bold text-gray-900">Voluntaria<span className="text-primary">+</span></span>
         </Link>
 
