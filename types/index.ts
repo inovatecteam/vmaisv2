@@ -9,7 +9,6 @@ export type User = {
   interesses?: string[] | null
   disponibilidade?: string | null
   localizacao?: string | null
-  foto?: string | null
   onboarded: boolean
   created_at: string
   updated_at: string
