@@ -25,7 +25,7 @@ export const signUp = async (email: string, password: string, userData: Partial<
       profile: null,
       session: authData.session 
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error('Erro no cadastro:', error)
     console.error('Detalhes do erro:', {
       message: error?.message,
@@ -88,7 +88,7 @@ export const signIn = async (email: string, password: string) => {
       }
     }
     return data
-  } catch (error) {
+  } catch (error: any) {
     console.error('Erro no login:', error)
     console.error('Detalhes do erro:', {
       message: error?.message,
@@ -105,7 +105,7 @@ export const signOut = async () => {
   try {
     const { error } = await supabase.auth.signOut()
     if (error) throw error
-  } catch (error) {
+  } catch (error: any) {
     console.error('Erro no logout:', error)
     console.error('Detalhes do erro:', {
       message: error?.message,
@@ -133,7 +133,7 @@ export const getCurrentUser = async () => {
     if (error) throw error
 
     return profile
-  } catch (error) {
+  } catch (error: any) {
     console.error('Erro ao buscar usuário:', error)
     console.error('Detalhes do erro:', {
       message: error?.message,
