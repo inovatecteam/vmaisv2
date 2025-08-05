@@ -16,14 +16,6 @@ import { useAuth } from '@/components/providers/auth-provider'
 import Footer from '@/components/layout/footer'
 import { loadGoogleMaps } from '@/lib/google-maps-loader'
 
-// Tipagem do Google Maps
-declare global {
-  interface Window {
-    google: any;
-    initMap: () => void;
-  }
-}
-
 export default function MapaPage() {
   const [ongs, setOngs] = useState<ONG[]>([])
   const [filteredOngs, setFilteredOngs] = useState<ONG[]>([])
