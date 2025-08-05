@@ -78,8 +78,8 @@ export function Navbar() {
       green 33.33%,
       red 33.33%,
       red 66.66%,
-      yellow 66.66%,
-      yellow 100%
+      bg-primary 66.66%,
+      bg-primary 100%
     )`,
   }}
 >
