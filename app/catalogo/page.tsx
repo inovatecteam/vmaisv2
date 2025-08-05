@@ -58,7 +58,7 @@ export default function CatalogoPage() {
       filtered = filtered.filter(ong =>
         ong.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
         ong.descricao.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        ong.cidade.toLowerCase().includes(searchTerm.toLowerCase())
+        (ong.cidade || '').toLowerCase().includes(searchTerm.toLowerCase())
       )
     }
 

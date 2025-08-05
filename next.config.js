@@ -11,6 +11,13 @@ const nextConfig = {
         ...config.resolve.fallback,
         ws: false,
       };
+    } else {
+      // Para o build do servidor, ignore essas dependências opcionais
+      config.externals = [
+        ...config.externals,
+        'bufferutil',
+        'utf-8-validate',
+      ];
     }
     return config;
   },
