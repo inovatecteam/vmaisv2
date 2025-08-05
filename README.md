@@ -90,7 +90,7 @@ Conta no Google Cloud (para Maps API)
 
 ```bash
 # Clone o repositório
-git clone <repository-url>
+git clone https://github.com/peddrof/vmaisv2
 cd voluntaria-plus
 
 # Instale as dependências
@@ -202,7 +202,7 @@ Este projeto está sob a licença MIT. Veja o arquivo `LICENSE` para mais detalh
 
 Para suporte e dúvidas:
 - Abra uma issue no GitHub
-- Entre em contato: contato@voluntariaplus.com
+- Entre em contato: voluntariamaisrs@gmail.com
 
 ---
 
