@@ -35,7 +35,7 @@ const ongSchema = z.object({
   tipo: z.string().min(1, 'Tipo é obrigatório'),
   descricao: z.string().min(10, 'Descrição deve ter pelo menos 10 caracteres'),
   localizacao_tipo: z.enum(['presencial', 'online', 'ambos'], { 
-    errorMap: () => ({ message: 'Selecione o tipo de localização' })
+    message: 'Selecione o tipo de localização'
   }),
   cidade: z.string().optional(),
   estado: z.string().optional(),
