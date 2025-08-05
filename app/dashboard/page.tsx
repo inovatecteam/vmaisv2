@@ -15,6 +15,7 @@ import {
   AlertCircle,
   TrendingUp,
   Calendar,
+  Search,
   MessageCircle,
   Plus
 } from 'lucide-react'
@@ -393,5 +394,3 @@ export default function DashboardPage() {
     </div>
   )
 }
-
-import { Search } from 'lucide-react'
