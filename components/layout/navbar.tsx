@@ -69,30 +69,22 @@ export function Navbar() {
       <div className="max-w-7xl mx-auto flex items-center justify-between px-8 py-2">
         {/* Logo */}
         <Link href="/" className="flex items-center space-x-2 group">
-          <div className="p-2 bg-green rounded-md group-hover:scale-105 transition-transform">
-  <svg
-    className="h-6 w-6"
-    viewBox="0 0 24 24"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-  >
-    <defs>
-      <linearGradient id="triColorGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop offset="0%" style={{ stopColor: "#00FF00" }} /> {/* Verde */}
-        <stop offset="33.33%" style={{ stopColor: "#00FF00" }} />
-        <stop offset="33.33%" style={{ stopColor: "#FF0000" }} /> {/* Vermelho */}
-        <stop offset="66.66%" style={{ stopColor: "#FF0000" }} />
-        <stop offset="66.66%" style={{ stopColor: "#FFFF00" }} /> {/* Amarelo */}
-        <stop offset="100%" style={{ stopColor: "#FFFF00" }} />
-      </linearGradient>
-    </defs>
-    <path
-      d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
-      fill="url(#triColorGradient)"
-    />
-  </svg>
+          <div
+  className="p-2 rounded-md group hover:scale-105 transition-transform"
+  style={{
+    background: `linear-gradient(
+      135deg,
+      green 0%,
+      green 33.33%,
+      red 33.33%,
+      red 66.66%,
+      yellow 66.66%,
+      yellow 100%
+    )`,
+  }}
+>
+  <Heart className="h-6 w-6 text-white" />
 </div>
-
           <span className="text-xl font-bold text-gray-900">Voluntaria<span className="text-primary">+</span></span>
         </Link>
 
