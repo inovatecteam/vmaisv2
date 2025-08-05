@@ -160,7 +160,7 @@ export default function CatalogoPage() {
                   <SelectContent>
                     <SelectItem value="all">Todos os estados</SelectItem>
                     {estados.map(estado => (
-                      <SelectItem key={estado} value={estado}>{estado}</SelectItem>
+                      <SelectItem key={estado} value={estado as string}>{estado}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
@@ -172,7 +172,7 @@ export default function CatalogoPage() {
                   <SelectContent>
                     <SelectItem value="all">Todos os tipos</SelectItem>
                     {tipos.map(tipo => (
-                      <SelectItem key={tipo} value={tipo}>{tipo}</SelectItem>
+                      <SelectItem key={tipo} value={tipo as string}>{tipo}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
