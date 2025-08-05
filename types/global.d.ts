@@ -13,3 +13,7 @@ declare global {
   // Declare a variável global 'google' diretamente aqui
   const google: typeof window.google;
 }
+
+// Esta instrução de exportação vazia faz com que o arquivo seja um módulo, o que é frequentemente necessário
+// para que 'declare global' seja processado corretamente em projetos baseados em módulos.
+export {};
