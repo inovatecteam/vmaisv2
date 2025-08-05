@@ -42,10 +42,13 @@ export default function MapaPage() {
   }, [ongs, searchTerm, selectedEstado, selectedTipo, selectedLocalizacaoTipo])
 
   useEffect(() => {
-    if (mapInstanceRef.current && filteredOngs.length > 0) {
+    // Este efeito garante que os marcadores sejam atualizados sempre que:
+    // 1. A instância do mapa estiver disponível (mapInstanceRef.current)
+    // 2. A lista de ONGs filtradas (filteredOngs) for alterada
+    if (mapInstanceRef.current) {
       updateMapMarkers()
     }
-  }, [filteredOngs])
+  }, [filteredOngs, mapInstanceRef.current])
 
   const loadOngs = async () => {
     try {
@@ -97,10 +100,6 @@ export default function MapaPage() {
       mapInstanceRef.current = map
       setMapLoading(false)
       
-      // Atualizar marcadores se já temos ONGs carregadas
-      if (filteredOngs.length > 0) {
-        updateMapMarkers()
-      }
     } catch (error) {
       console.error('Erro ao carregar Google Maps:', error)
       showMapPlaceholder()
