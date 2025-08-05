@@ -106,9 +106,9 @@ export default function CatalogoPage() {
     }
   }
 
-  const estados = [...new Set(ongs.map(ong => ong.estado))].sort()
-  const tipos = [...new Set(ongs.map(ong => ong.tipo))].sort()
-
+  const estados = [...new Set(ongs.map(ong => ong.estado).filter(Boolean))].sort()
+  const tipos = [...new Set(ongs.map(ong => ong.tipo).filter(Boolean))].sort()
+ 
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-white via-yellow-50/30 to-orange-50/30">
