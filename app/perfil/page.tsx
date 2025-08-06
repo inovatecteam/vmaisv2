@@ -34,6 +34,9 @@ const ongSchema = z.object({
   nome: z.string().min(2, 'Nome deve ter pelo menos 2 caracteres'),
   tipo: z.string().min(1, 'Tipo é obrigatório'),
   descricao: z.string().min(10, 'Descrição deve ter pelo menos 10 caracteres'),
+  short_description: z.string().max(200, 'Descrição curta deve ter no máximo 200 caracteres').optional(),
+  how_to_help: z.string().optional(),
+  additional_categories: z.string().optional(),
   localizacao_tipo: z.enum(['presencial', 'online', 'ambos'], { 
     message: 'Selecione o tipo de localização'
   }),
@@ -149,6 +152,12 @@ export default function PerfilPage() {
           nome: data.nome || '',
           tipo: data.tipo || '',
           descricao: data.descricao || '',
+          short_description: data.short_description || '',
+          how_to_help: data.how_to_help || '',
+          additional_categories: data.additional_categories?.join(', ') || '',
+          short_description: ongData.short_description || '',
+          how_to_help: ongData.how_to_help || '',
+          additional_categories: ongData.additional_categories?.join(', ') || '',
           localizacao_tipo: data.localizacao_tipo || 'presencial',
           cidade: data.cidade || '',
           estado: data.estado || '',
@@ -164,6 +173,12 @@ export default function PerfilPage() {
           nome: '',
           tipo: '',
           descricao: '',
+          short_description: '',
+          how_to_help: '',
+          additional_categories: '',
+          short_description: '',
+          how_to_help: '',
+          additional_categories: '',
           localizacao_tipo: 'presencial',
           cidade: '',
           estado: '',
@@ -288,6 +303,9 @@ export default function PerfilPage() {
       const ongUpdateData = {
         user_id: user.id,
         ...data,
+        short_description: data.short_description || null,
+        how_to_help: data.how_to_help || null,
+        additional_categories: data.additional_categories ? data.additional_categories.split(',').map(c => c.trim()).filter(Boolean) : null,
         localizacao_tipo: data.localizacao_tipo,
         cidade: data.cidade || null,
         estado: data.estado || null,
@@ -705,6 +723,26 @@ export default function PerfilPage() {
                       </div>
 
                       <div className="space-y-2">
+                        <Label htmlFor="ong-short-description">Descrição curta (máx. 200 caracteres)</Label>
+                        <Textarea
+                          id="ong-short-description"
+                          placeholder="Resumo breve da organização..."
+                          className="rounded-xl resize-none"
+                          rows={2}
+                          maxLength={200}
+                          {...ongForm.register('short_description')}
+                        />
+                        <div className="flex justify-between text-xs text-gray-500">
+                          <span>
+                            {ongForm.formState.errors.short_description && (
+                              <span className="text-red-500">{ongForm.formState.errors.short_description.message}</span>
+                            )}
+                          </span>
+                          <span>{(ongForm.watch('short_description') || '').length}/200</span>
+                        </div>
+                      </div>
+
+                      <div className="space-y-2">
                         <Label htmlFor="ong-descricao">Descrição</Label>
                         <Textarea
                           id="ong-descricao"
@@ -716,6 +754,19 @@ export default function PerfilPage() {
                         {ongForm.formState.errors.descricao && (
                           <p className="text-sm text-red-500">{ongForm.formState.errors.descricao.message}</p>
                         )}
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="ong-additional-categories">Categorias adicionais</Label>
+                        <Input
+                          id="ong-additional-categories"
+                          placeholder="Ex: Tecnologia, Arte, Música (separados por vírgula)"
+                          className="rounded-xl"
+                          {...ongForm.register('additional_categories')}
+                        />
+                        <p className="text-xs text-gray-500">
+                          Adicione categorias extras além do tipo principal
+                        </p>
                       </div>
 
                       {(ongForm.watch('localizacao_tipo') === 'presencial' || ongForm.watch('localizacao_tipo') === 'ambos') && (
@@ -779,6 +830,17 @@ export default function PerfilPage() {
                       </div>
 
                       <div className="space-y-2">
+                        <Label htmlFor="ong-how-to-help">Como voluntários podem ajudar</Label>
+                        <Textarea
+                          id="ong-how-to-help"
+                          placeholder="Descreva como voluntários podem contribuir, que tipo de doações são necessárias, etc..."
+                          className="rounded-xl resize-none"
+                          rows={4}
+                          {...ongForm.register('how_to_help')}
+                        />
+                      </div>
+
+                      <div className="space-y-2">
                         <Label htmlFor="ong-necessidades">Como voluntários podem ajudar</Label>
                         <Textarea
                           id="ong-necessidades"
@@ -787,6 +849,9 @@ export default function PerfilPage() {
                           rows={3}
                           {...ongForm.register('necessidades')}
                         />
+                        <p className="text-xs text-gray-500">
+                          Tags rápidas para categorizar tipos de ajuda (separadas por vírgula)
+                        </p>
                       </div>
 
                       <div className="space-y-2">

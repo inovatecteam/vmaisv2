@@ -20,6 +20,9 @@ export type ONG = {
   nome: string
   tipo: string
   descricao: string
+  short_description?: string | null
+  how_to_help?: string | null
+  additional_categories?: string[] | null
   cidade?: string | null
   estado?: string | null
   localizacao_tipo?: 'presencial' | 'online' | 'ambos' | null
