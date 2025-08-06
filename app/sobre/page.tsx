@@ -90,9 +90,19 @@ export default function SobrePage() {
               Sobre a <span className="text-primary">Voluntaria+</span>
             </h1>
             <p className="text-xl text-gray-600 max-w-4xl mx-auto leading-relaxed">
-              Somos uma plataforma dedicada a conectar corações generosos com causas que fazem a diferença. 
-              Nossa missão é facilitar o encontro entre voluntários e organizações não governamentais, 
-              criando uma rede de solidariedade que transforma comunidades.
+              Somos uma iniciativa estudantil nascida da paixão por transformar comunidades através da tecnologia. 
+              Criado em 2024 por estudantes do ensino médio do Colégio Farroupilha, o Voluntaria+ integra a equipe de 
+              inovação @inovatec_farroups, que busca soluções tecnológicas para os desafios de Porto Alegre.
+            </p>
+            <p className="text-lg text-gray-600 max-w-4xl mx-auto leading-relaxed mt-4">
+              Nossa missão é simples, mas poderosa: conectar corações generosos com causas que fazem a diferença. 
+              Como organização sem fins lucrativos, desenvolvemos uma plataforma que facilita o encontro entre 
+              voluntários e ONGs, democratizando o acesso ao voluntariado em todo o Rio Grande do Sul.
+            </p>
+            <p className="text-lg text-gray-600 max-w-4xl mx-auto leading-relaxed mt-4">
+              Acreditamos que cada pessoa tem o poder de gerar impacto positivo em sua comunidade. Por isso, 
+              criamos uma ponte digital que torna o voluntariado mais acessível, transparente e eficiente, 
+              fortalecendo o tecido social gaúcho através da solidariedade e da inovação jovem.
             </p>
           </div>
 
