@@ -67,11 +67,7 @@ export default function CatalogoPage() {
     }
 
     if (selectedTipo && selectedTipo !== 'all') {
-      filtered = filtered.filter(ong => 
-        Array.isArray(ong.tipo) 
-          ? ong.tipo.includes(selectedTipo)
-          : ong.tipo === selectedTipo
-      )
+      filtered = filtered.filter(ong => ong.tipo.includes(selectedTipo))
     }
 
     if (selectedLocalizacaoTipo && selectedLocalizacaoTipo !== 'all') {
