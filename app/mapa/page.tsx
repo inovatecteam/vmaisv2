@@ -70,19 +70,27 @@ export default function MapaPage() {
   }
 
   const initializeGoogleMaps = async () => {
+    console.log('🗺️ initializeGoogleMaps: Iniciando...')
     try {
       const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
       
       if (!apiKey) {
-        console.warn('Google Maps API key não encontrada')
+        console.warn('⚠️ Google Maps API key não encontrada')
         showMapPlaceholder()
         return
       }
 
+      console.log('🔑 initializeGoogleMaps: API Key encontrada. Carregando Google Maps script...')
       // Carregar a API do Google Maps
       await loadGoogleMaps(apiKey)
+      console.log('✅ initializeGoogleMaps: Google Maps script carregado.')
       
-      if (!mapRef.current) return
+      if (!mapRef.current) {
+        console.error('❌ initializeGoogleMaps: mapRef.current é null. Não foi possível inicializar o mapa.')
+        showMapPlaceholder()
+        return
+      }
+      console.log('📍 initializeGoogleMaps: mapRef.current está disponível:', mapRef.current)
 
       // Inicializar o mapa
       const map = new window.google.maps.Map(mapRef.current, {
@@ -99,6 +107,7 @@ export default function MapaPage() {
 
       mapInstanceRef.current = map
       setMapLoading(false)
+      console.log('🎉 initializeGoogleMaps: Mapa inicializado com sucesso.')
       
     } catch (error) {
       console.error('Erro ao carregar Google Maps:', error)
@@ -393,16 +402,17 @@ export default function MapaPage() {
             <div className="lg:col-span-2">
               <Card className="h-full rounded-2xl shadow-lg overflow-hidden">
                 <CardContent className="p-0 h-full">
-                  {mapLoading ? (
-                    <div className="h-full flex items-center justify-center">
-                      <div className="text-center">
-                        <Loader2 className="h-8 w-8 animate-spin text-primary mx-auto mb-3" />
-                        <p className="text-gray-600">Carregando mapa...</p>
-                      </div>
-                    </div>
-                  ) : (
+                  <div className="relative w-full h-full">
                     <div ref={mapRef} className="w-full h-full" />
-                  )}
+                    {mapLoading && (
+                      <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-75 rounded-2xl">
+                        <div className="text-center">
+                          <Loader2 className="h-8 w-8 animate-spin text-primary mx-auto mb-3" />
+                          <p className="text-gray-600">Carregando mapa...</p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </CardContent>
               </Card>
             </div>
