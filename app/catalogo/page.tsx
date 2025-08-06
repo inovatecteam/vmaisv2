@@ -348,9 +348,13 @@ export default function CatalogoPage() {
                   <div className="flex-1 space-y-3">
                     <div className="flex items-start justify-between">
                       <DialogTitle className="text-2xl font-bold">{selectedOng.nome}</DialogTitle>
-                      <Badge className="bg-primary/10 text-primary ml-4">
-                        {selectedOng.tipo}
-                      </Badge>
+                      <div className="flex flex-wrap gap-2 ml-4">
+                        {(Array.isArray(selectedOng.tipo) ? selectedOng.tipo : [selectedOng.tipo]).map((tipo, index) => (
+                          <Badge key={index} className="bg-primary/10 text-primary">
+                            {tipo}
+                          </Badge>
+                        ))}
+                      </div>
                     </div>
                     
                     <div className="flex items-center text-gray-500">
