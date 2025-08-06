@@ -35,25 +35,6 @@ export default function NotFoundPage() {
               A página que você está procurando pode ter sido movida, removida ou não existe. 
               Mas não se preocupe, você pode encontrar o que precisa através dos links abaixo.
             </p>
-            
-            {/* Navigation Options */}
-            <div className="grid md:grid-cols-2 gap-4 mb-6">
-              <Link href="/catalogo" className="text-left">
-                <div className="p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors">
-                  <h3 className="font-semibold text-gray-900 mb-1">Catálogo de ONGs</h3>
-                  <p className="text-sm text-gray-600">Descubra organizações incríveis</p>
-                </div>
-              </Link>
-              
-              <Link href="/mapa" className="text-left">
-                <div className="p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors">
-                  <h3 className="font-semibold text-gray-900 mb-1">Mapa Interativo</h3>
-                  <p className="text-sm text-gray-600">Encontre ONGs próximas</p>
-                </div>
-              </Link>
-            </div>
-          </CardContent>
-        </Card>
 
         {/* Action Buttons */}
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
