@@ -207,7 +207,7 @@ export default function MapaPage() {
     }
 
     if (selectedTipo && selectedTipo !== 'all') {
-      filtered = filtered.filter(ong => ong.tipo === selectedTipo)
+      filtered = filtered.filter(ong => ong.tipo.includes(selectedTipo))
     }
 
     if (selectedLocalizacaoTipo && selectedLocalizacaoTipo !== 'all') {
@@ -247,7 +247,7 @@ export default function MapaPage() {
   }
 
   const estados = [...new Set(ongs.map(ong => ong.estado).filter(Boolean))].sort()
-  const tipos = [...new Set(ongs.map(ong => ong.tipo).filter(Boolean))].sort()
+  const tipos = [...new Set(ongs.flatMap(ong => ong.tipo).filter(Boolean))].sort()
 
   if (loading) {
     return (
