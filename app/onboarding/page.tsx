@@ -42,7 +42,7 @@ const voluntarioSchema = z.object({
 // Schema para ONGs
 const ongSchema = z.object({
   nome: z.string().min(2, 'Nome da ONG deve ter pelo menos 2 caracteres'),
-  tipo: z.string().min(1, 'Selecione o tipo da organização'),
+  tipo: z.string().min(1, 'Selecione pelo menos um tipo de organização'),
   descricao: z.string().min(10, 'Descrição deve ter pelo menos 10 caracteres'),
   short_description: z.string().max(200, 'Descrição curta deve ter no máximo 200 caracteres').optional(),
   how_to_help: z.string().optional(),
@@ -93,6 +93,7 @@ export default function OnboardingPage() {
   const [currentStep, setCurrentStep] = useState(1)
   const [loading, setLoading] = useState(false)
   const [selectedInteresses, setSelectedInteresses] = useState<string[]>([])
+  const [selectedTipos, setSelectedTipos] = useState<string[]>([])
 
   const voluntarioForm = useForm<VoluntarioData>({
     resolver: zodResolver(voluntarioSchema)
@@ -136,6 +137,17 @@ export default function OnboardingPage() {
       
       voluntarioForm.setValue('interesses', newInteresses.join(', '))
       return newInteresses
+    })
+  }
+
+  const handleTipoToggle = (tipo: string) => {
+    setSelectedTipos(prev => {
+      const newTipos = prev.includes(tipo)
+        ? prev.filter(t => t !== tipo)
+        : [...prev, tipo]
+      
+      ongForm.setValue('tipo', newTipos.join(', '))
+      return newTipos
     })
   }
 
@@ -183,7 +195,7 @@ export default function OnboardingPage() {
       const ongData = {
         user_id: user.id,
         nome: data.nome,
-        tipo: data.tipo,
+        tipo: selectedTipos,
         descricao: data.descricao,
         short_description: data.short_description || null,
         how_to_help: data.how_to_help || null,
@@ -387,20 +399,39 @@ export default function OnboardingPage() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="tipo">Tipo de organização</Label>
-                <Select
-                  value={ongForm.watch('tipo') || ''}
-                  onValueChange={(value) => ongForm.setValue('tipo', value)}
-                >
-                  <SelectTrigger className="rounded-xl">
-                    <SelectValue placeholder="Selecione o tipo" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {tiposOng.map((tipo) => (
-                      <SelectItem key={tipo} value={tipo}>{tipo}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <Label>Tipos de organização</Label>
+                <p className="text-sm text-gray-600 mb-3">Selecione todos os tipos que se aplicam à sua organização</p>
+                
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                  {tiposOng.map((tipo) => (
+                    <button
+                      key={tipo}
+                      type="button"
+                      onClick={() => handleTipoToggle(tipo)}
+                      className={`p-3 rounded-xl border-2 transition-all text-sm font-medium ${
+                        selectedTipos.includes(tipo)
+                          ? 'border-primary bg-primary/10 text-primary'
+                          : 'border-gray-200 hover:border-primary/50 text-gray-700'
+                      }`}
+                    >
+                      {tipo}
+                    </button>
+                  ))}
+                </div>
+
+                {selectedTipos.length > 0 && (
+                  <div className="bg-primary/5 p-4 rounded-xl">
+                    <p className="text-sm text-gray-600 mb-2">Selecionados:</p>
+                    <div className="flex flex-wrap gap-2">
+                      {selectedTipos.map((tipo) => (
+                        <Badge key={tipo} className="bg-primary/10 text-primary">
+                          {tipo}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                
                 {ongForm.formState.errors.tipo && (
                   <p className="text-sm text-red-500">{ongForm.formState.errors.tipo.message}</p>
                 )}
@@ -457,6 +488,7 @@ export default function OnboardingPage() {
             <div className="flex justify-end">
               <Button
                 onClick={nextStep}
+                disabled={selectedTipos.length === 0}
                 className="bg-primary hover:bg-primary/90 rounded-xl"
               >
                 Continuar

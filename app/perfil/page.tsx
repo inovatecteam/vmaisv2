@@ -32,7 +32,7 @@ const profileSchema = z.object({
 
 const ongSchema = z.object({
   nome: z.string().min(2, 'Nome deve ter pelo menos 2 caracteres'),
-  tipo: z.string().min(1, 'Tipo é obrigatório'),
+  tipo: z.string().min(1, 'Selecione pelo menos um tipo'),
   descricao: z.string().min(10, 'Descrição deve ter pelo menos 10 caracteres'),
   short_description: z.string().max(200, 'Descrição curta deve ter no máximo 200 caracteres').optional(),
   how_to_help: z.string().optional(),
@@ -71,6 +71,7 @@ export default function PerfilPage() {
   const [loading, setLoading] = useState(false)
   const [ongData, setOngData] = useState<any>(null)
   const [loadingOng, setLoadingOng] = useState(true)
+  const [selectedTipos, setSelectedTipos] = useState<string[]>([])
   
   // Estados para upload de imagens
   const [selectedAvatarFile, setSelectedAvatarFile] = useState<File | null>(null)
@@ -148,9 +149,11 @@ export default function PerfilPage() {
 
       if (data) {
         setOngData(data)
+        const tipos = Array.isArray(data.tipo) ? data.tipo : [data.tipo]
+        setSelectedTipos(tipos)
         ongForm.reset({
           nome: data.nome || '',
-          tipo: data.tipo || '',
+          tipo: tipos.join(', '),
           descricao: data.descricao || '',
           short_description: data.short_description || '',
           how_to_help: data.how_to_help || '',
@@ -166,6 +169,7 @@ export default function PerfilPage() {
         })
       } else {
         // Se não há dados da ONG, manter valores vazios
+        setSelectedTipos([])
         ongForm.reset({
           nome: '',
           tipo: '',
@@ -241,6 +245,17 @@ export default function PerfilPage() {
     }
   }
 
+  const handleTipoToggle = (tipo: string) => {
+    setSelectedTipos(prev => {
+      const newTipos = prev.includes(tipo)
+        ? prev.filter(t => t !== tipo)
+        : [...prev, tipo]
+      
+      ongForm.setValue('tipo', newTipos.join(', '), { shouldDirty: true })
+      return newTipos
+    })
+  }
+
   const handleProfileSubmit = async (data: ProfileData) => {
     if (!user) return
 
@@ -297,6 +312,7 @@ export default function PerfilPage() {
       const ongUpdateData = {
         user_id: user.id,
         ...data,
+        tipo: selectedTipos,
         short_description: data.short_description || null,
         how_to_help: data.how_to_help || null,
         additional_categories: data.additional_categories ? data.additional_categories.split(',').map(c => c.trim()).filter(Boolean) : null,
@@ -357,9 +373,11 @@ export default function PerfilPage() {
 
   const handleOngCancel = () => {
     if (ongData) {
+      const tipos = Array.isArray(ongData.tipo) ? ongData.tipo : [ongData.tipo]
+      setSelectedTipos(tipos)
       ongForm.reset({
         nome: ongData.nome || '',
-        tipo: ongData.tipo || '',
+        tipo: tipos.join(', '),
         descricao: ongData.descricao || '',
         localizacao_tipo: ongData.localizacao_tipo || 'presencial',
         cidade: ongData.cidade || '',
@@ -371,6 +389,7 @@ export default function PerfilPage() {
         thumbnail_url: ongData.thumbnail_url || '',
       })
     } else {
+      setSelectedTipos([])
       ongForm.reset({
         nome: '',
         tipo: '',
@@ -689,26 +708,39 @@ export default function PerfilPage() {
                           </div>
 
                           <div className="space-y-2">
-                            <Label htmlFor="ong-tipo">Tipo de organização</Label>
-                            <Select
-                              value={ongForm.watch('tipo') || ''}
-                              onValueChange={(value) => ongForm.setValue('tipo', value, { shouldDirty: true })}
-                            >
-                              <SelectTrigger className="rounded-xl">
-                                <SelectValue placeholder="Selecione o tipo" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="Educação">Educação</SelectItem>
-                                <SelectItem value="Saúde">Saúde</SelectItem>
-                                <SelectItem value="Meio Ambiente">Meio Ambiente</SelectItem>
-                                <SelectItem value="Assistência Social">Assistência Social</SelectItem>
-                                <SelectItem value="Cultura">Cultura</SelectItem>
-                                <SelectItem value="Esporte">Esporte</SelectItem>
-                                <SelectItem value="Direitos Humanos">Direitos Humanos</SelectItem>
-                                <SelectItem value="Animais">Proteção Animal</SelectItem>
-                                <SelectItem value="Outros">Outros</SelectItem>
-                              </SelectContent>
-                            </Select>
+                            <Label>Tipos de organização</Label>
+                            <p className="text-sm text-gray-600 mb-3">Selecione todos os tipos que se aplicam à sua organização</p>
+                            
+                            <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                              {['Educação', 'Saúde', 'Meio Ambiente', 'Assistência Social', 'Cultura', 'Esporte', 'Direitos Humanos', 'Proteção Animal', 'Desenvolvimento Comunitário', 'Outros'].map((tipo) => (
+                                <button
+                                  key={tipo}
+                                  type="button"
+                                  onClick={() => handleTipoToggle(tipo)}
+                                  className={`p-3 rounded-xl border-2 transition-all text-sm font-medium ${
+                                    selectedTipos.includes(tipo)
+                                      ? 'border-primary bg-primary/10 text-primary'
+                                      : 'border-gray-200 hover:border-primary/50 text-gray-700'
+                                  }`}
+                                >
+                                  {tipo}
+                                </button>
+                              ))}
+                            </div>
+
+                            {selectedTipos.length > 0 && (
+                              <div className="bg-primary/5 p-4 rounded-xl">
+                                <p className="text-sm text-gray-600 mb-2">Selecionados:</p>
+                                <div className="flex flex-wrap gap-2">
+                                  {selectedTipos.map((tipo) => (
+                                    <Badge key={tipo} className="bg-primary/10 text-primary">
+                                      {tipo}
+                                    </Badge>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+                            
                             {ongForm.formState.errors.tipo && (
                               <p className="text-sm text-red-500">{ongForm.formState.errors.tipo.message}</p>
                             )}

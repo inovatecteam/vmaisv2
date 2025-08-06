@@ -67,7 +67,11 @@ export default function CatalogoPage() {
     }
 
     if (selectedTipo && selectedTipo !== 'all') {
-      filtered = filtered.filter(ong => ong.tipo === selectedTipo)
+      filtered = filtered.filter(ong => 
+        Array.isArray(ong.tipo) 
+          ? ong.tipo.includes(selectedTipo)
+          : ong.tipo === selectedTipo
+      )
     }
 
     if (selectedLocalizacaoTipo && selectedLocalizacaoTipo !== 'all') {
@@ -107,7 +111,9 @@ export default function CatalogoPage() {
   }
 
   const estados = [...new Set(ongs.map(ong => ong.estado).filter(Boolean))].sort()
-  const tipos = [...new Set(ongs.map(ong => ong.tipo).filter(Boolean))].sort()
+  const tipos = [...new Set(ongs.flatMap(ong => 
+    Array.isArray(ong.tipo) ? ong.tipo : [ong.tipo]
+  ).filter(Boolean))].sort()
  
   if (loading) {
     return (
@@ -254,9 +260,18 @@ export default function CatalogoPage() {
                           </span>
                         </div>
                       </div>
-                      <Badge variant="secondary" className="bg-primary/10 text-primary">
-                        {ong.tipo}
-                      </Badge>
+                      <div className="flex flex-wrap gap-1">
+                        {(Array.isArray(ong.tipo) ? ong.tipo : [ong.tipo]).slice(0, 2).map((tipo, index) => (
+                          <Badge key={index} variant="secondary" className="bg-primary/10 text-primary text-xs">
+                            {tipo}
+                          </Badge>
+                        ))}
+                        {(Array.isArray(ong.tipo) ? ong.tipo : [ong.tipo]).length > 2 && (
+                          <Badge variant="secondary" className="bg-gray-100 text-gray-600 text-xs">
+                            +{(Array.isArray(ong.tipo) ? ong.tipo : [ong.tipo]).length - 2}
+                          </Badge>
+                        )}
+                      </div>
                     </div>
                   </CardHeader>
                   

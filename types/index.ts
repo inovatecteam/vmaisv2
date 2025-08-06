@@ -18,7 +18,7 @@ export type ONG = {
   id: string
   user_id: string
   nome: string
-  tipo: string
+  tipo: string[]
   descricao: string
   short_description?: string | null
   how_to_help?: string | null
