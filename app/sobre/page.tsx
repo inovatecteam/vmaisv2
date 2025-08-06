@@ -235,7 +235,7 @@ export default function SobrePage() {
                   
                   <div className="flex items-center justify-center space-x-2">
                     <MapPin className="h-4 w-4 text-primary" />
-                    <span>Porto Alegre, RS - 🇧🇷</span>
+                    <span>Porto Alegre, RS</span>
                   </div>
                 </div>
 
