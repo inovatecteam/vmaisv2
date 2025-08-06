@@ -222,8 +222,7 @@ export default function TermosPage() {
                   tribunais brasileiros.
                 </p>
                 <p>
-                  Para questões relacionadas a estes termos, entre em contato através do email: 
-                  <strong> legal@voluntariaplus.com</strong> ou <strong>voluntariamaisrs@gmail.com</strong>
+                  Para questões relacionadas a estes termos, entre em contato através do email: <strong>voluntariamaisrs@gmail.com</strong>
                 </p>
               </div>
             </CardContent>
