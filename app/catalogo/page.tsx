@@ -362,7 +362,7 @@ export default function CatalogoPage() {
                     <div className="bg-gray-50 p-4 rounded-lg">
                       <h4 className="font-semibold text-gray-900 mb-2">Sobre a organização</h4>
                       <p className="text-gray-600 leading-relaxed text-sm line-clamp-4">
-                        {selectedOng.descricao}
+                        {selectedOng.short_description || selectedOng.descricao}
                       </p>
                     </div>
                   </div>
@@ -371,6 +371,33 @@ export default function CatalogoPage() {
 
               {/* Remaining content (full info, extra fields, buttons) */}
               <div className="space-y-6 p-6 pt-0 border-t border-gray-100">
+                {selectedOng.short_description && (
+                  <div>
+                    <h3 className="font-semibold text-lg mb-2">Descrição completa</h3>
+                    <p className="text-gray-600 leading-relaxed">{selectedOng.descricao}</p>
+                  </div>
+                )}
+
+                {selectedOng.additional_categories && selectedOng.additional_categories.length > 0 && (
+                  <div>
+                    <h3 className="font-semibold text-lg mb-3">Categorias adicionais</h3>
+                    <div className="flex flex-wrap gap-2">
+                      {selectedOng.additional_categories.map((categoria, index) => (
+                        <Badge key={index} variant="secondary" className="text-xs">
+                          {categoria}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {selectedOng.how_to_help && (
+                  <div>
+                    <h3 className="font-semibold text-lg mb-2">Como você pode ajudar</h3>
+                    <p className="text-gray-600 leading-relaxed">{selectedOng.how_to_help}</p>
+                  </div>
+                )}
+
                 {selectedOng.endereco_online && (
                   <div>
                     <h3 className="font-semibold text-lg mb-2">Endereço Online</h3>
@@ -394,7 +421,7 @@ export default function CatalogoPage() {
 
                 {selectedOng.necessidades && selectedOng.necessidades.length > 0 && (
                   <div>
-                    <h3 className="font-semibold text-lg mb-3">Como você pode ajudar</h3>
+                    <h3 className="font-semibold text-lg mb-3">Tipos de ajuda</h3>
                     <div className="flex flex-wrap gap-2">
                       {selectedOng.necessidades.map((necessidade, index) => (
                         <Badge key={index} variant="outline" className="text-xs">
