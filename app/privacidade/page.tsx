@@ -170,7 +170,7 @@ export default function PrivacidadePage() {
                 </p>
                 <div className="bg-gray-50 p-4 rounded-xl">
                   <p><strong>Email:</strong> voluntariamaisrs@gmail.com</p>
-                  <p><strong>Endereço:</strong> Porto Alegre, RS - Brasil</p>
+                  <p><strong>Localização:</strong> Porto Alegre, RS - Brasil</p>
                 </div>
                 <p className="text-sm text-gray-600">
                   Responderemos às suas solicitações dentro do prazo estabelecido pela LGPD (15 dias, 
