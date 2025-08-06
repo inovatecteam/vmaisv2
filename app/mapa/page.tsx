@@ -34,8 +34,13 @@ export default function MapaPage() {
 
   useEffect(() => {
     loadOngs()
-    initializeGoogleMaps()
   }, [])
+
+  useEffect(() => {
+    if (mapRef.current && !mapInstanceRef.current) {
+      initializeGoogleMaps()
+    }
+  }, [mapRef.current])
 
   useEffect(() => {
     filterOngs()
