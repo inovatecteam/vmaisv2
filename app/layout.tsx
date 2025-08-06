@@ -21,6 +21,11 @@ export const metadata: Metadata = {
       { url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' },
     ],
   },
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'default',
+    title: 'Voluntaria+',
+  },
   openGraph: {
     title: 'Voluntaria+ | Conectando ONGs e Voluntários',
     description: 'Transforme vidas através do voluntariado. Conecte-se com ONGs e faça a diferença na sua comunidade.',
