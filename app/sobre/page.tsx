@@ -66,9 +66,9 @@ export default function SobrePage() {
 
   const team = [
     {
-      name: "Equipe Voluntaria+",
+      name: "Equipe InovaTec - Voluntaria+",
       role: "Desenvolvedores e Idealistas",
-      description: "Um grupo apaixonado por tecnologia e impacto social, dedicado a criar pontes entre quem quer ajudar e quem precisa de ajuda.",
+      description: "Somos uma iniciativa estudantil sem fins lucrativos com o objetivo de facilitar a sua inserção em centros de ajuda comunitária, encorajando o voluntariado no Rio Grande do Sul de modo geral.",
       image: null
     }
   ]
@@ -89,11 +89,6 @@ export default function SobrePage() {
             <h1 className="text-4xl md:text-5xl font-bold mb-6">
               Sobre a <span className="text-primary">Voluntaria+</span>
             </h1>
-            <p className="text-xl text-gray-600 max-w-4xl mx-auto leading-relaxed">
-              Somos uma iniciativa estudantil nascida da paixão por transformar comunidades através da tecnologia. 
-              Criado em 2024 por estudantes do ensino médio do Colégio Farroupilha, o Voluntaria+ integra a equipe de 
-              inovação @inovatec_farroups, que busca soluções tecnológicas para os desafios de Porto Alegre.
-            </p>
             <p className="text-lg text-gray-600 max-w-4xl mx-auto leading-relaxed mt-4">
               Nossa missão é simples, mas poderosa: conectar corações generosos com causas que fazem a diferença. 
               Como organização sem fins lucrativos, desenvolvemos uma plataforma que facilita o encontro entre 
@@ -240,7 +235,7 @@ export default function SobrePage() {
                   
                   <div className="flex items-center justify-center space-x-2">
                     <MapPin className="h-4 w-4 text-primary" />
-                    <span>Porto Alegre, Rio Grande do Sul - Brasil</span>
+                    <span>Porto Alegre, RS - 🇧🇷</span>
                   </div>
                 </div>
 
