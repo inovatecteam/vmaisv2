@@ -88,7 +88,14 @@ function Footer() {
               </li>
               <li className="flex items-center space-x-3">
                 <Instagram className="h-5 w-5 text-yellow-500" />
-                <a href="https://instagram.com/voluntariamais" target="_blank" className="text-gray-400">@voluntariamais</a>
+                <a 
+                  href="https://instagram.com/voluntariamais" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-gray-400 hover:text-yellow-500 transition-colors"
+                >
+                  @voluntariamais
+                </a>
               </li>
               <li className="flex items-center space-x-3">
                 <MapPin className="h-5 w-5 text-yellow-500" />
