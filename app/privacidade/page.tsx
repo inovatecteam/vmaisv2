@@ -169,8 +169,7 @@ export default function PrivacidadePage() {
                   relacionados aos seus dados pessoais, entre em contato conosco:
                 </p>
                 <div className="bg-gray-50 p-4 rounded-xl">
-                  <p><strong>Email:</strong> privacidade@voluntariaplus.com</p>
-                  <p><strong>Email Geral:</strong> voluntariamaisrs@gmail.com</p>
+                  <p><strong>Email:</strong> voluntariamaisrs@gmail.com</p>
                   <p><strong>Endereço:</strong> Porto Alegre, RS - Brasil</p>
                 </div>
                 <p className="text-sm text-gray-600">
