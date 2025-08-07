@@ -52,6 +52,22 @@ export default function DashboardPage() {
     }
   }, [user])
 
+  // Show login message for non-authenticated users
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-white via-yellow-50/30 to-orange-50/30">
+        <Navbar />
+        <div className="pt-32 flex items-center justify-center">
+          <Card className="rounded-2xl shadow-lg">
+            <CardContent className="p-8 text-center">
+              <p className="text-gray-600">Faça login para acessar seu dashboard.</p>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    )
+  }
+
   const loadDashboardData = async () => {
     if (!user) return
 
