@@ -494,7 +494,7 @@ export default function MapaPage() {
                     {/* Short description */}
                     <div className="bg-gray-50 p-4 rounded-lg">
                       <h4 className="font-semibold text-gray-900 mb-2">Sobre a organização</h4>
-                      <p className="text-gray-600 leading-relaxed text-sm line-clamp-4">
+                      <p className="text-gray-600 leading-relaxed text-sm line-clamp-4 whitespace-pre-wrap">
                         {selectedOng.short_description || selectedOng.descricao}
                       </p>
                     </div>
@@ -507,7 +507,7 @@ export default function MapaPage() {
                 {selectedOng.short_description && (
                   <div>
                     <h3 className="font-semibold text-lg mb-2">Descrição completa</h3>
-                    <p className="text-gray-600 leading-relaxed">{selectedOng.descricao}</p>
+                    <p className="text-gray-600 leading-relaxed whitespace-pre-wrap">{selectedOng.descricao}</p>
                   </div>
                 )}
 
@@ -527,7 +527,7 @@ export default function MapaPage() {
                 {selectedOng.how_to_help && (
                   <div>
                     <h3 className="font-semibold text-lg mb-2">Como você pode ajudar</h3>
-                    <p className="text-gray-600 leading-relaxed">{selectedOng.how_to_help}</p>
+                    <p className="text-gray-600 leading-relaxed whitespace-pre-wrap">{selectedOng.how_to_help}</p>
                   </div>
                 )}
 
@@ -548,7 +548,7 @@ export default function MapaPage() {
                 {selectedOng.horarios_funcionamento && (
                   <div>
                     <h3 className="font-semibold text-lg mb-2">Horários de funcionamento</h3>
-                    <p className="text-gray-600 leading-relaxed">{selectedOng.horarios_funcionamento}</p>
+                    <p className="text-gray-600 leading-relaxed whitespace-pre-wrap">{selectedOng.horarios_funcionamento}</p>
                   </div>
                 )}
 
