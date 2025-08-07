@@ -9,6 +9,7 @@ import { Badge } from '@/components/ui/badge'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Search, MapPin, Phone, Filter, Heart, Loader2 } from 'lucide-react'
+import { Search, MapPin, Phone, Filter, Heart, Loader2, ExternalLink } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import { ONG } from '@/types'
 import { toast } from 'sonner'
@@ -437,29 +438,42 @@ export default function MapaPage() {
 
       {/* Modal de Detalhes */}
       <Dialog open={!!selectedOng} onOpenChange={() => setSelectedOng(null)}>
-        <DialogContent className="max-w-2xl rounded-2xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-4xl rounded-2xl max-h-[90vh] overflow-y-auto p-0">
           {selectedOng && (
             <>
-              <DialogHeader>
-                <div className="h-48 bg-gradient-to-br from-primary/10 to-primary/5 rounded-xl mb-6 overflow-hidden">
-                  {selectedOng.thumbnail_url ? (
-                    <img 
-                      src={selectedOng.thumbnail_url} 
-                      alt={selectedOng.nome}
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center">
-                      <Heart className="h-16 w-16 text-primary/30 fill-current" />
+              {/* Top section: Image + Name/Type/Location + Short Description */}
+              <div className="p-6 pb-0">
+                <div className="flex flex-col lg:flex-row gap-6 mb-6">
+                  {/* Image on left */}
+                  <div className="flex-shrink-0 w-full lg:w-64 h-48 bg-gradient-to-br from-primary/10 to-primary/5 rounded-xl overflow-hidden">
+                    {selectedOng.thumbnail_url ? (
+                      <img 
+                        src={selectedOng.thumbnail_url} 
+                        alt={selectedOng.nome}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center">
+                        <Heart className="h-16 w-16 text-primary/30 fill-current" />
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Text content on right */}
+                  <div className="flex-1 space-y-3">
+                    <div className="flex items-start justify-between">
+                      <DialogTitle className="text-2xl font-bold">{selectedOng.nome}</DialogTitle>
+                      <div className="flex flex-wrap gap-2 ml-4">
+                        {(Array.isArray(selectedOng.tipo) ? selectedOng.tipo : [selectedOng.tipo]).map((tipo, index) => (
+                          <Badge key={index} className="bg-primary/10 text-primary">
+                            {tipo}
+                          </Badge>
+                        ))}
+                      </div>
                     </div>
-                  )}
-                </div>
-                
-                <div className="flex items-start justify-between">
-                  <div>
-                    <DialogTitle className="text-2xl">{selectedOng.nome}</DialogTitle>
+                    
                     <div className="flex items-center text-gray-500 mt-2">
-                      <MapPin className="h-4 w-4 mr-1" />
+                      <MapPin className="h-4 w-4 mr-2 flex-shrink-0" />
                       <span>
                         {selectedOng.localizacao_tipo === 'online' ? (
                           selectedOng.endereco_online || 'Online'
@@ -477,18 +491,46 @@ export default function MapaPage() {
                         )}
                       </span>
                     </div>
+                    
+                    {/* Short description */}
+                    <div className="bg-gray-50 p-4 rounded-lg">
+                      <h4 className="font-semibold text-gray-900 mb-2">Sobre a organização</h4>
+                      <p className="text-gray-600 leading-relaxed text-sm line-clamp-4">
+                        {selectedOng.short_description || selectedOng.descricao}
+                      </p>
+                    </div>
                   </div>
-                  <Badge className="bg-primary/10 text-primary">
-                    {selectedOng.tipo}
-                  </Badge>
                 </div>
-              </DialogHeader>
+              </div>
 
-              <div className="space-y-6">
-                <div>
-                  <h3 className="font-semibold text-lg mb-2">Sobre a organização</h3>
-                  <p className="text-gray-600 leading-relaxed">{selectedOng.descricao}</p>
-                </div>
+              {/* Remaining content (full info, extra fields, buttons) */}
+              <div className="space-y-6 p-6 pt-0 border-t border-gray-100">
+                {selectedOng.short_description && (
+                  <div>
+                    <h3 className="font-semibold text-lg mb-2">Descrição completa</h3>
+                    <p className="text-gray-600 leading-relaxed">{selectedOng.descricao}</p>
+                  </div>
+                )}
+
+                {selectedOng.additional_categories && selectedOng.additional_categories.length > 0 && (
+                  <div>
+                    <h3 className="font-semibold text-lg mb-3">Categorias adicionais</h3>
+                    <div className="flex flex-wrap gap-2">
+                      {selectedOng.additional_categories.map((categoria, index) => (
+                        <Badge key={index} variant="secondary" className="text-xs">
+                          {categoria}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {selectedOng.how_to_help && (
+                  <div>
+                    <h3 className="font-semibold text-lg mb-2">Como você pode ajudar</h3>
+                    <p className="text-gray-600 leading-relaxed">{selectedOng.how_to_help}</p>
+                  </div>
+                )}
 
                 {selectedOng.endereco_online && (
                   <div>
@@ -497,19 +539,26 @@ export default function MapaPage() {
                       href={selectedOng.endereco_online.startsWith('http') ? selectedOng.endereco_online : `https://${selectedOng.endereco_online}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-primary hover:underline"
+                      className="text-primary hover:underline break-all"
                     >
                       {selectedOng.endereco_online}
                     </a>
                   </div>
                 )}
 
+                {selectedOng.horarios_funcionamento && (
+                  <div>
+                    <h3 className="font-semibold text-lg mb-2">Horários de funcionamento</h3>
+                    <p className="text-gray-600 leading-relaxed">{selectedOng.horarios_funcionamento}</p>
+                  </div>
+                )}
+
                 {selectedOng.necessidades && selectedOng.necessidades.length > 0 && (
                   <div>
-                    <h3 className="font-semibold text-lg mb-3">Como você pode ajudar</h3>
+                    <h3 className="font-semibold text-lg mb-3">Tipos de ajuda</h3>
                     <div className="flex flex-wrap gap-2">
                       {selectedOng.necessidades.map((necessidade, index) => (
-                        <Badge key={index} variant="outline">
+                        <Badge key={index} variant="outline" className="text-xs">
                           {necessidade}
                         </Badge>
                       ))}
@@ -517,7 +566,7 @@ export default function MapaPage() {
                   </div>
                 )}
 
-                <div className="flex flex-col sm:flex-row gap-3 pt-4">
+                <div className="flex flex-col sm:flex-row gap-3 pt-6 border-t border-gray-100">
                   {selectedOng.whatsapp && (
                     <Button 
                       onClick={() => handleWhatsAppClick(selectedOng)}
@@ -527,6 +576,18 @@ export default function MapaPage() {
                       Conversar no WhatsApp
                     </Button>
                   )}
+                  
+                  <Button 
+                    variant="outline" 
+                    onClick={() => {
+                      handleInteraction(selectedOng.id)
+                      setSelectedOng(null)
+                    }}
+                    className="rounded-xl sm:w-auto w-full"
+                  >
+                    <ExternalLink className="h-4 w-4 mr-2" />
+                    Fechar
+                  </Button>
                 </div>
               </div>
             </>
