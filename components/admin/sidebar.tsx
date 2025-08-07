@@ -107,7 +107,7 @@ export function AdminSidebar() {
 
       {/* Footer */}
       <div className="p-4 border-t border-gray-800">
-        <Link href="/">
+        <Link href="/dashboard">
           <Button variant="outline" className="w-full border-gray-700 text-gray-300 hover:text-white hover:bg-gray-800">
             <Home className="h-4 w-4 mr-2" />
             Voltar ao Site

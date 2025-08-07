@@ -26,20 +26,20 @@ export async function middleware(request: NextRequest) {
   }
 
   // Rotas públicas que não requerem autenticação
-  const publicRoutes = ['/', '/catalogo', '/mapa', '/entrar', '/cadastrar', '/esqueci-senha', '/404', '/sobre', '/privacidade', '/termos', '/ajuda', '/admin-login']
+  const publicRoutes = ['/entrar', '/cadastrar', '/esqueci-senha', '/404', '/sobre', '/privacidade', '/termos', '/ajuda', '/admin/login']
   const isPublicRoute = publicRoutes.some(route => 
     request.nextUrl.pathname.startsWith(route)
   )
   
   // Verificar se é uma rota admin
   const isAdminRoute = request.nextUrl.pathname.startsWith('/admin')
-  const isAdminLoginRoute = request.nextUrl.pathname === '/admin-login'
+  const isAdminLoginRoute = request.nextUrl.pathname === '/admin/login'
 
   // Lógica específica para rotas admin
   if (isAdminRoute && !isAdminLoginRoute) {
     // Se não estiver autenticado, redirecionar para login admin
     if (!session) {
-      return NextResponse.redirect(new URL('/admin-login', request.url))
+      return NextResponse.redirect(new URL('/admin/login', request.url))
     }
     
     // Se estiver autenticado mas não for admin, redirecionar para dashboard
@@ -95,8 +95,8 @@ export const config = {
      * - privacidade (página de privacidade)
      * - termos (página de termos)
      * - ajuda (página de ajuda)
-      * - admin-login (página de login admin)
+      * - admin/login (página de login admin)
      */
-    '/((?!api|_next/static|_next/image|favicon.ico|entrar|cadastrar|esqueci-senha|404|sobre|privacidade|termos|ajuda|admin-login).*)',
+    '/((?!api|_next/static|_next/image|favicon.ico|entrar|cadastrar|esqueci-senha|404|sobre|privacidade|termos|ajuda|admin/login).*)',
   ]
 }
