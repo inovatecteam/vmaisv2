@@ -250,9 +250,9 @@ export default function CatalogoPage() {
                           <MapPin className="h-4 w-4 mr-1" />
                           <span className="text-sm">
                             {ong.localizacao_tipo === 'online' ? (
-                              ong.endereco_online ? 'Online' : 'Online'
+                              'Online'
                             ) : ong.localizacao_tipo === 'ambos' ? (
-                              ong.endereco_online ? 'Online e Presencial' : `${ong.cidade}, ${ong.estado}`
+                              'Online e Presencial'
                             ) : (
                               `${ong.cidade}, ${ong.estado}`
                             )}
@@ -360,16 +360,9 @@ export default function CatalogoPage() {
                       <MapPin className="h-4 w-4 mr-2 flex-shrink-0" />
                       <span className="text-sm">
                         {selectedOng.localizacao_tipo === 'online' ? (
-                          selectedOng.endereco_online || 'Online'
+                          'Online'
                         ) : selectedOng.localizacao_tipo === 'ambos' ? (
-                          <>
-                            {selectedOng.endereco_online && (
-                              <span className="mr-2">{selectedOng.endereco_online}</span>
-                            )}
-                            {selectedOng.cidade && selectedOng.estado && (
-                              <span>{selectedOng.cidade}, {selectedOng.estado}</span>
-                            )}
-                          </>
+                          'Online e Presencial'
                         ) : (
                           `${selectedOng.cidade}, ${selectedOng.estado}`
                         )}
@@ -416,17 +409,26 @@ export default function CatalogoPage() {
                   </div>
                 )}
 
-                {selectedOng.endereco_online && (
+                {selectedOng.endereco_online && selectedOng.endereco_online.length > 0 && (
                   <div>
-                    <h3 className="font-semibold text-lg mb-2">Endereço Online</h3>
-                    <a 
-                      href={selectedOng.endereco_online.startsWith('http') ? selectedOng.endereco_online : `https://${selectedOng.endereco_online}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-primary hover:underline break-all"
-                    >
-                      {selectedOng.endereco_online}
-                    </a>
+                    <h3 className="font-semibold text-lg mb-3">
+                      {selectedOng.endereco_online.length === 1 ? 'Endereço Online' : 'Endereços Online'}
+                    </h3>
+                    <div className="space-y-2">
+                      {selectedOng.endereco_online.map((endereco, index) => (
+                        <div key={index} className="flex items-center space-x-2">
+                          <div className="w-2 h-2 bg-primary rounded-full flex-shrink-0" />
+                          <a 
+                            href={endereco.startsWith('http') ? endereco : `https://${endereco}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-primary hover:underline break-all"
+                          >
+                            {endereco}
+                          </a>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 )}
 
