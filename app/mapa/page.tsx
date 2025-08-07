@@ -357,7 +357,7 @@ export default function MapaPage() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="p-0">
-                  <div className="max-h-96 overflow-y-auto px-4 pb-4">
+                  <div className="overflow-y-auto px-4 pb-4" style={{ maxHeight: 'calc(100vh - 400px)' }}>
                     {filteredOngs.length > 0 ? (
                       <div className="space-y-3">
                         {filteredOngs.map((ong) => (
@@ -384,9 +384,13 @@ export default function MapaPage() {
                                     )}
                                   </span>
                                 </div>
-                                <Badge variant="secondary" className="text-xs mt-2 bg-primary/10 text-primary">
-                                  {ong.tipo}
-                                </Badge>
+                                <div className="flex flex-wrap gap-1 mt-2">
+                                  {(Array.isArray(ong.tipo) ? ong.tipo : [ong.tipo]).map((tipo, index) => (
+                                    <Badge key={index} variant="secondary" className="text-xs bg-primary/10 text-primary">
+                                      {tipo}
+                                    </Badge>
+                                  ))}
+                                </div>
                               </div>
                             </div>
                           </Card>
