@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { Navbar } from '@/components/layout/navbar'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
 import { Heart, Users, MapPin, Search, HandHeart, Target, Shield } from 'lucide-react'
 import { AuthModal } from '@/components/auth/auth-modal'
 import { useAuth } from '@/components/providers/auth-provider'
@@ -38,20 +39,28 @@ export default function HomePage() {
 
 const faqs = [
     {
-      question: 'Como faço para me cadastrar como voluntário?',
-      answer: 'É muito simples! Clique em "Cadastrar" no menu superior, escolha "Voluntário", preencha seus dados e interesses. Após a confirmação do email, você já pode explorar as oportunidades.'
+      question: 'E se eu não tiver experiência prévia em voluntariado?',
+      answer: 'Não se preocupe! A maioria das ONGs oferece treinamento e orientação para novos voluntários. Muitas atividades não requerem experiência específica, apenas boa vontade e comprometimento. É uma excelente oportunidade para aprender novas habilidades enquanto ajuda sua comunidade.'
     },
     {
-      question: 'É gratuito para ONGs utilizarem a plataforma?',
-      answer: 'Sim! Nossa plataforma é totalmente gratuita para ONGs. Nosso objetivo é facilitar a conexão entre organizações e voluntários sem custos adicionais.'
+      question: 'Como posso ter certeza de que as ONGs são confiáveis?',
+      answer: 'Todas as organizações passam por um processo de verificação rigoroso antes de serem aprovadas na plataforma. Verificamos documentação, histórico de atividades e legitimidade. Além disso, você pode ver avaliações de outros voluntários e sempre pode entrar em contato conosco se tiver dúvidas sobre alguma organização.'
     },
     {
-      question: 'Como são verificadas as ONGs na plataforma?',
-      answer: 'Todas as ONGs passam por um processo de verificação onde analisamos documentação, histórico e legitimidade da organização antes de aprovarem o cadastro.'
+      question: 'E se eu não conseguir cumprir o compromisso assumido?',
+      answer: 'Entendemos que imprevistos acontecem. O importante é comunicar com antecedência à ONG sobre qualquer mudança na sua disponibilidade. A maioria das organizações é compreensiva e pode ajustar as atividades ou encontrar alternativas que funcionem para ambos.'
     },
     {
-      question: 'Posso participar de várias atividades ao mesmo tempo?',
-      answer: 'Claro! Você pode se inscrever em quantas atividades conseguir participar. Recomendamos que avalie bem sua disponibilidade para não comprometer os compromissos assumidos.'
+      question: 'O voluntariado realmente faz diferença ou é só para "limpar a consciência"?',
+      answer: 'O voluntariado gera impacto real e mensurável nas comunidades. Cada hora dedicada contribui para projetos concretos: crianças alfabetizadas, famílias alimentadas, animais resgatados, meio ambiente preservado. Além do impacto social, você desenvolve habilidades, expande sua rede de contatos e ganha uma perspectiva mais ampla da sociedade.'
+    },
+    {
+      question: 'Preciso me comprometer por muito tempo ou posso ajudar pontualmente?',
+      answer: 'Oferecemos opções para todos os perfis! Há atividades pontuais (eventos, campanhas) e projetos de longo prazo. Você pode começar com ações esporádicas e, se gostar, aumentar gradualmente seu envolvimento. O importante é encontrar um ritmo sustentável para você.'
+    },
+    {
+      question: 'Como voluntário, vou ter gastos ou custos adicionais?',
+      answer: 'A maioria das atividades de voluntariado não gera custos para você. Algumas ONGs até fornecem transporte, alimentação ou materiais necessários. Quando há algum custo (como transporte para locais específicos), isso é sempre comunicado com antecedência, e muitas organizações oferecem ajuda de custo ou alternativas.'
     }
   ];
   
@@ -83,12 +92,12 @@ const faqs = [
       {/* Hero Section */}
       <section className="min-h-screen flex items-center justify-center px-4 pt-20 sm:pt-32 pb-8">
         <div className="max-w-6xl mx-auto text-center">
-          <div className="inline-flex items-center bg-primary/10 rounded-full px-6 py-2 mb-8">
+          <div className="inline-flex items-center bg-primary/10 rounded-full px-4 py-1 sm:px-6 sm:py-2 mb-8">
             <Heart className="h-5 w-5 text-primary mr-2 fill-current" />
-            <span className="text-primary font-medium">Conectando corações e causas</span>
+            <span className="text-sm sm:text-base text-primary font-medium">Conectando corações e causas</span>
           </div>
           
-          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-6 sm:mb-8 bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 bg-clip-text text-transparent leading-tight px-2">
+          <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold mb-6 sm:mb-8 bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 bg-clip-text text-transparent leading-tight px-2">
             Transforme vidas através do{' '}
             <span className="text-primary">voluntariado</span>
           </h1>
@@ -98,10 +107,10 @@ const faqs = [
             Descubra oportunidades próximas de você e seja parte da mudança que o mundo precisa.
           </p>
           
-          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center px-4">
+          <div className="flex flex-row gap-3 sm:gap-4 justify-center items-center px-4">
             {user ? (
               <Link href="/catalogo">
-                <Button size="lg" className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-white font-semibold rounded-2xl px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg">
+                <Button size="lg" className="bg-primary hover:bg-primary/90 text-white font-semibold rounded-2xl px-4 sm:px-8 py-3 sm:py-4 text-sm sm:text-lg">
                   Explorar ONGs
                 </Button>
               </Link>
@@ -109,7 +118,7 @@ const faqs = [
               <Link href="/cadastrar">
                 <Button 
                   size="lg" 
-                  className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-white font-semibold rounded-2xl px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg"
+                  className="bg-primary hover:bg-primary/90 text-white font-semibold rounded-2xl px-4 sm:px-8 py-3 sm:py-4 text-sm sm:text-lg"
                 >
                   Começar Agora
                 </Button>
@@ -119,7 +128,7 @@ const faqs = [
               <Button 
                 variant="outline" 
                 size="lg" 
-                className="w-full sm:w-auto border-2 border-gray-300 hover:border-primary hover:text-primary rounded-2xl px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg"
+                className="border-2 border-gray-300 hover:border-primary hover:text-primary rounded-2xl px-4 sm:px-8 py-3 sm:py-4 text-sm sm:text-lg"
               >
                 Ver ONGs
               </Button>
@@ -230,18 +239,18 @@ const faqs = [
             </p>
           </div>
 
-          <div className="space-y-4 sm:space-y-6">
+          <Accordion type="single" collapsible className="space-y-4">
             {faqs.map((faq, index) => (
-              <div key={index} className="bg-white p-4 sm:p-6 rounded-2xl shadow-sm">
-                <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-2 sm:mb-3">
+              <AccordionItem key={index} value={`item-${index}`} className="bg-white rounded-2xl shadow-sm border-0">
+                <AccordionTrigger className="text-left text-base sm:text-lg font-semibold text-gray-900 px-4 sm:px-6 py-4 hover:no-underline hover:text-primary transition-colors">
                   {faq.question}
-                </h3>
-                <p className="text-sm sm:text-base text-gray-600 leading-relaxed">
+                </AccordionTrigger>
+                <AccordionContent className="text-sm sm:text-base text-gray-600 leading-relaxed px-4 sm:px-6 pb-4">
                   {faq.answer}
-                </p>
-              </div>
+                </AccordionContent>
+              </AccordionItem>
             ))}
-          </div>
+          </Accordion>
         </div>
       </section>
 
