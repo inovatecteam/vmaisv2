@@ -161,7 +161,7 @@ export default function PerfilPage() {
           localizacao_tipo: data.localizacao_tipo || 'presencial',
           cidade: data.cidade || '',
           estado: data.estado || '',
-          endereco_online: data.endereco_online || '',
+          endereco_online: data.endereco_online ? data.endereco_online.join(', ') : '',
           whatsapp: data.whatsapp || '',
           necessidades: data.necessidades?.join(', ') || '',
           horarios_funcionamento: data.horarios_funcionamento || '',
@@ -319,7 +319,8 @@ export default function PerfilPage() {
         localizacao_tipo: data.localizacao_tipo,
         cidade: data.cidade || null,
         estado: data.estado || null,
-        endereco_online: data.endereco_online || null,
+        endereco_online: data.endereco_online ? data.endereco_online.split(',').map(e => e.trim()).filter(Boolean) : null,
+        whatsapp: data.whatsapp || null,
         necessidades: data.necessidades ? data.necessidades.split(',').map(n => n.trim()).filter(Boolean) : null,
         thumbnail_url: thumbnailUrl || null,
         updated_at: new Date().toISOString(),
@@ -382,7 +383,7 @@ export default function PerfilPage() {
         localizacao_tipo: ongData.localizacao_tipo || 'presencial',
         cidade: ongData.cidade || '',
         estado: ongData.estado || '',
-        endereco_online: ongData.endereco_online || '',
+        endereco_online: ongData.endereco_online ? ongData.endereco_online.join(', ') : '',
         whatsapp: ongData.whatsapp || '',
         necessidades: ongData.necessidades?.join(', ') || '',
         horarios_funcionamento: ongData.horarios_funcionamento || '',
@@ -827,13 +828,16 @@ export default function PerfilPage() {
 
                       {(ongForm.watch('localizacao_tipo') === 'online' || ongForm.watch('localizacao_tipo') === 'ambos') && (
                         <div className="space-y-2">
-                          <Label htmlFor="ong-endereco-online">Endereço Online</Label>
+                          <Label htmlFor="ong-endereco-online">Endereços Online</Label>
                           <Input
                             id="ong-endereco-online"
-                            placeholder="Site, Instagram, Facebook, etc."
+                            placeholder="https://site.com, https://instagram.com/perfil, https://facebook.com/pagina"
                             className="rounded-xl"
                             {...ongForm.register('endereco_online')}
                           />
+                          <p className="text-xs text-gray-500">
+                            Adicione múltiplos links separados por vírgula (site, Instagram, Facebook, etc.)
+                          </p>
                           {ongForm.formState.errors.endereco_online && (
                             <p className="text-sm text-red-500">{ongForm.formState.errors.endereco_online.message}</p>
                           )}
