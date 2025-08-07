@@ -16,7 +16,7 @@ export async function middleware(request: NextRequest) {
   if (session?.user) {
     const { data: profile, error } = await supabase
       .from('users')
-      .select('onboarded')
+      .select('onboarded, is_admin')
       .eq('id', session.user.id)
       .maybeSingle()
     userProfile = profile
