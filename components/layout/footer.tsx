@@ -12,7 +12,7 @@ function Footer() {
     pathname === '/cadastrar' || 
     pathname === '/esqueci-senha' ||
     pathname === '/onboarding' ||
-    pathname === '/admin/login'
+    pathname === '/admin-login'
   ) {
     return null
   }
