@@ -18,6 +18,7 @@ import { useRouter } from 'next/navigation'
 export function Navbar() {
   const { user, signOut } = useAuth()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const pathname = usePathname()
   
   // Debug logs
   console.log('🔍 Navbar: user recebido do useAuth:', user)
@@ -31,6 +32,17 @@ export function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false)
   const [showNavbar, setShowNavbar] = useState(true)
   const [lastScrollY, setLastScrollY] = useState(0)
+
+  // Hide navbar on auth pages, onboarding, and admin login
+  if (
+    pathname === '/entrar' || 
+    pathname === '/cadastrar' || 
+    pathname === '/esqueci-senha' ||
+    pathname === '/onboarding' ||
+    pathname === '/admin/login'
+  ) {
+    return null
+  }
 
   useEffect(() => {
     const handleScroll = () => {

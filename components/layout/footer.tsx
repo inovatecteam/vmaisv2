@@ -11,7 +11,8 @@ function Footer() {
     pathname === '/entrar' || 
     pathname === '/cadastrar' || 
     pathname === '/esqueci-senha' ||
-    pathname === '/onboarding'
+    pathname === '/onboarding' ||
+    pathname === '/admin/login'
   ) {
     return null
   }
