@@ -203,7 +203,7 @@ export default function OnboardingPage() {
         localizacao_tipo: data.localizacao_tipo,
         cidade: data.cidade,
         estado: data.estado,
-        endereco_online: data.endereco_online || null,
+        endereco_online: data.endereco_online ? data.endereco_online.split(',').map(e => e.trim()).filter(Boolean) : null,
         whatsapp: data.whatsapp || null,
         necessidades: data.necessidades ? data.necessidades.split(',').map(n => n.trim()).filter(Boolean) : null,
         horarios_funcionamento: data.horarios_funcionamento || null,
@@ -560,13 +560,16 @@ export default function OnboardingPage() {
 
               {(ongForm.watch('localizacao_tipo') === 'online' || ongForm.watch('localizacao_tipo') === 'ambos') && (
                 <div className="space-y-2">
-                  <Label htmlFor="endereco_online">Endereço Online</Label>
+                  <Label htmlFor="endereco_online">Endereços Online</Label>
                   <Input
                     id="endereco_online"
-                    placeholder="Site, Instagram, Facebook, etc."
+                    placeholder="https://site.com, https://instagram.com/perfil, https://facebook.com/pagina"
                     className="rounded-xl"
                     {...ongForm.register('endereco_online')}
                   />
+                  <p className="text-xs text-gray-500">
+                    Adicione múltiplos links separados por vírgula (site, Instagram, Facebook, etc.)
+                  </p>
                   {ongForm.formState.errors.endereco_online && (
                     <p className="text-sm text-red-500">{ongForm.formState.errors.endereco_online.message}</p>
                   )}
