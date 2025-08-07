@@ -163,6 +163,12 @@ export default function MapaPage() {
         position,
         map: mapInstanceRef.current,
         title: ong.nome,
+        label: {
+          text: ong.nome,
+          color: '#1F2937', // Cor escura para boa visibilidade
+          fontSize: '12px',
+          fontWeight: 'bold'
+        },
         icon: {
           path: window.google.maps.SymbolPath.CIRCLE,
           scale: 8,
@@ -356,8 +362,8 @@ export default function MapaPage() {
                     ONGs Encontradas ({filteredOngs.length})
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="p-0">
-                  <div className="overflow-y-auto px-4 pb-4" style={{ maxHeight: 'calc(100vh - 400px)' }}>
+                <CardContent className="p-0 flex flex-col flex-1">
+                  <div className="flex-1 overflow-y-auto px-4 pb-4">
                     {filteredOngs.length > 0 ? (
                       <div className="space-y-3">
                         {filteredOngs.map((ong) => (
