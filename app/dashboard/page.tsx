@@ -60,7 +60,7 @@ export default function DashboardPage() {
         <div className="pt-32 flex items-center justify-center">
           <Card className="rounded-2xl shadow-lg">
             <CardContent className="p-8 text-center">
-              <p className="text-gray-600">Faça login para acessar seu dashboard.</p>
+              <p className="text-gray-600">Faça login para acessar sua dashboard.</p>
             </CardContent>
           </Card>
         </div>
