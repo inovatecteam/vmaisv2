@@ -1,6 +1,7 @@
 import { createMiddlewareClient } from '@supabase/auth-helpers-nextjs'
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
+import { User } from '@/types'
 
 export async function middleware(request: NextRequest) {
   const response = NextResponse.next()
@@ -29,6 +30,9 @@ export async function middleware(request: NextRequest) {
   const isPublicRoute = publicRoutes.some(route => 
     request.nextUrl.pathname.startsWith(route)
   )
+  
+  // Verificar se é uma rota admin
+  const isAdminRoute = request.nextUrl.pathname.startsWith('/admin')
 
   // Redirecionar para login se não estiver autenticado em rota não-pública
   if (!isPublicRoute && !session) {
@@ -50,6 +54,13 @@ export async function middleware(request: NextRequest) {
     // Se já fez onboarding e está tentando acessar /onboarding
     if (!needsOnboarding && request.nextUrl.pathname.startsWith('/onboarding')) {
       return NextResponse.redirect(new URL('/dashboard', request.url))
+    }
+    
+    // Verificar acesso admin
+    if (isAdminRoute) {
+      if (!userProfile || !userProfile.is_admin) {
+        return NextResponse.redirect(new URL('/dashboard', request.url))
+      }
     }
   }
 

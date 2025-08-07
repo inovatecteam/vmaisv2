@@ -1,6 +1,9 @@
 User-agent: *
 Allow: /
 
+# Disallow admin panel
+Disallow: /admin/
+
 # Sitemap
 Sitemap: https://voluntariaplus.com/sitemap.xml
 
