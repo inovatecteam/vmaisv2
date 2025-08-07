@@ -356,14 +356,14 @@ export default function MapaPage() {
               </Card>
 
               {/* Lista de ONGs */}
-              <Card className="rounded-2xl shadow-lg flex-1 overflow-hidden">
-                <CardHeader className="pb-3">
+              <Card className="rounded-2xl shadow-lg flex-1 flex flex-col">
+                <CardHeader className="pb-3 flex-shrink-0">
                   <CardTitle className="text-lg">
                     ONGs Encontradas ({filteredOngs.length})
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="p-0 flex flex-col flex-1">
-                  <div className="flex-1 overflow-y-auto px-4 pb-4">
+                <CardContent className="p-0 flex-1 overflow-y-auto">
+                  <div className="px-4 pb-4">
                     {filteredOngs.length > 0 ? (
                       <div className="space-y-3">
                         {filteredOngs.map((ong) => (
