@@ -37,6 +37,7 @@ const ongSchema = z.object({
   descricao: z.string().min(10, 'Descrição deve ter pelo menos 10 caracteres'),
   short_description: z.string().max(200, 'Descrição curta deve ter no máximo 200 caracteres').optional(),
   additional_categories: z.string().optional(),
+  localizacao_tipo: z.enum(['presencial', 'online', 'ambos'], {
     message: 'Selecione o tipo de localização'
   }),
   cidade: z.string().optional(),
@@ -46,6 +47,9 @@ const ongSchema = z.object({
   necessidades: z.string().optional(),
   horarios_funcionamento: z.string().optional(),
   lat: z.number().optional(),
+  lng: z.number().optional(),
+  how_to_help: z.string().optional(),
+  thumbnail_url: z.string().optional(),
 }).refine((data) => {
   if (data.localizacao_tipo === 'presencial') {
     return data.cidade && data.estado && data.lat && data.lng
@@ -475,7 +479,7 @@ export default function PerfilPage() {
                     <Avatar className="h-20 w-20 border-4 border-primary/20">
                       <AvatarImage src={profileForm.watch('foto') || user.foto || ''} alt={user.nome} />
                       <AvatarFallback className="bg-primary text-white text-2xl font-bold">
-                        {user.nome.split(' ').map(n => n).join('').slice(0, 2).toUpperCase()}
+                        {user.nome.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()}
                       </AvatarFallback>
                     </Avatar>
                     <button
