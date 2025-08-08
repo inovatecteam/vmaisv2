@@ -38,7 +38,6 @@ const ongSchema = z.object({
   short_description: z.string().max(200, 'Descrição curta deve ter no máximo 200 caracteres').optional(),
   how_to_help: z.string().optional(),
   additional_categories: z.string().optional(),
-  localizacao_tipo: z.enum(['presencial', 'online', 'ambos'], { 
     message: 'Selecione o tipo de localização'
   }),
   cidade: z.string().optional(),
@@ -49,7 +48,6 @@ const ongSchema = z.object({
   horarios_funcionamento: z.string().optional(),
   thumbnail_url: z.string().optional(),
   lat: z.number().optional(),
-  lng: z.number().optional(),
 }).refine((data) => {
   if (data.localizacao_tipo === 'presencial') {
     return data.cidade && data.estado && data.lat && data.lng
@@ -109,11 +107,14 @@ export default function PerfilPage() {
       nome: '',
       tipo: '',
       descricao: '',
+      short_description: '',
+      how_to_help: '',
+      localizacao_tipo: 'presencial',
       cidade: '',
       estado: '',
+      endereco_online: '',
       whatsapp: '',
       necessidades: '',
-      horarios_funcionamento: '',
       thumbnail_url: '',
     }
   })
@@ -166,14 +167,12 @@ export default function PerfilPage() {
           descricao: data.descricao || '',
           short_description: data.short_description || '',
           how_to_help: data.how_to_help || '',
-          additional_categories: ongData.additional_categories?.join(', ') || '',
           localizacao_tipo: data.localizacao_tipo || 'presencial',
           cidade: data.cidade || '',
           estado: data.estado || '',
           endereco_online: data.endereco_online ? data.endereco_online.join(', ') : '',
           whatsapp: data.whatsapp || '',
           necessidades: data.necessidades?.join(', ') || '',
-          horarios_funcionamento: data.horarios_funcionamento || '',
           thumbnail_url: data.thumbnail_url || '',
           lat: data.lat || undefined,
           lng: data.lng || undefined,
@@ -189,14 +188,12 @@ export default function PerfilPage() {
           descricao: '',
           short_description: '',
           how_to_help: '',
-          additional_categories: '',
           localizacao_tipo: 'presencial',
           cidade: '',
           estado: '',
           endereco_online: '',
           whatsapp: '',
           necessidades: '',
-          horarios_funcionamento: '',
           thumbnail_url: '',
           lat: undefined,
           lng: undefined,
@@ -329,14 +326,12 @@ export default function PerfilPage() {
         ...data,
         tipo: selectedTipos,
         short_description: data.short_description || null,
-        how_to_help: data.how_to_help || null,
         additional_categories: data.additional_categories ? data.additional_categories.split(',').map(c => c.trim()).filter(Boolean) : null,
         localizacao_tipo: data.localizacao_tipo,
         cidade: data.cidade || null,
         estado: data.estado || null,
         endereco_online: data.endereco_online ? data.endereco_online.split(',').map(e => e.trim()).filter(Boolean) : null,
         whatsapp: data.whatsapp || null,
-        necessidades: data.necessidades ? data.necessidades.split(',').map(n => n.trim()).filter(Boolean) : null,
         thumbnail_url: thumbnailUrl || null,
         updated_at: new Date().toISOString(),
         lat: selectedLat,
@@ -406,13 +401,14 @@ export default function PerfilPage() {
         nome: ongData.nome || '',
         tipo: tipos.join(', '),
         descricao: ongData.descricao || '',
+        short_description: ongData.short_description || '',
+        how_to_help: ongData.how_to_help || '',
         localizacao_tipo: ongData.localizacao_tipo || 'presencial',
         cidade: ongData.cidade || '',
         estado: ongData.estado || '',
         endereco_online: ongData.endereco_online ? ongData.endereco_online.join(', ') : '',
         whatsapp: ongData.whatsapp || '',
         necessidades: ongData.necessidades?.join(', ') || '',
-        horarios_funcionamento: ongData.horarios_funcionamento || '',
         thumbnail_url: ongData.thumbnail_url || '',
         lat: ongData.lat || undefined,
         lng: ongData.lng || undefined,
@@ -425,13 +421,14 @@ export default function PerfilPage() {
         nome: '',
         tipo: '',
         descricao: '',
+        short_description: '',
+        how_to_help: '',
         localizacao_tipo: 'presencial',
         cidade: '',
         estado: '',
         endereco_online: '',
         whatsapp: '',
         necessidades: '',
-        horarios_funcionamento: '',
         thumbnail_url: '',
         lat: undefined,
         lng: undefined,
@@ -830,18 +827,6 @@ export default function PerfilPage() {
                         )}
                       </div>
 
-                      <div className="space-y-2">
-                        <Label htmlFor="ong-additional-categories">Categorias adicionais</Label>
-                        <Input
-                          id="ong-additional-categories"
-                          placeholder="Ex: Tecnologia, Arte, Música (separados por vírgula)"
-                          className="rounded-xl"
-                          {...ongForm.register('additional_categories')}
-                        />
-                        <p className="text-xs text-gray-500">
-                          Adicione categorias extras além do tipo principal
-                        </p>
-                      </div>
 
                       {(ongForm.watch('localizacao_tipo') === 'presencial' || ongForm.watch('localizacao_tipo') === 'ambos') && (
                         <div className="grid md:grid-cols-2 gap-6">
@@ -931,19 +916,9 @@ export default function PerfilPage() {
                         </p>
                       </div>
 
-                      <div className="space-y-2">
-                        <Label htmlFor="ong-horarios">Horários de funcionamento</Label>
-                        <Textarea
-                          id="ong-horarios"
-                          placeholder="Ex: Segunda a Sexta: 8h às 17h, Sábados: 8h às 12h"
-                          className="rounded-xl resize-none"
-                          rows={3}
-                          {...ongForm.register('horarios_funcionamento')}
-                        />
-                      </div>
 
                       {/* Botões condicionais */}
-                      {ongForm.formState.isDirty && (
+                      {!loadingOng && (
                         <div className="flex justify-end space-x-3 pt-4 border-t">
                           <Button
                             type="button"
