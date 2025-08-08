@@ -204,14 +204,12 @@ export default function OnboardingPage() {
         descricao: data.descricao,
         short_description: data.short_description || null,
         how_to_help: data.how_to_help || null,
-        additional_categories: data.additional_categories ? data.additional_categories.split(',').map(c => c.trim()).filter(Boolean) : null,
         localizacao_tipo: data.localizacao_tipo,
         cidade: data.cidade,
         estado: data.estado,
         endereco_online: data.endereco_online ? data.endereco_online.split(',').map(e => e.trim()).filter(Boolean) : null,
         whatsapp: data.whatsapp || null,
         necessidades: data.necessidades ? data.necessidades.split(',').map(n => n.trim()).filter(Boolean) : null,
-        horarios_funcionamento: data.horarios_funcionamento || null,
         lat: selectedLat,
         lng: selectedLng,
       }
@@ -485,18 +483,6 @@ export default function OnboardingPage() {
                 </div>
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="additional_categories">Categorias adicionais</Label>
-                <Input
-                  id="additional_categories"
-                  placeholder="Ex: Tecnologia, Arte, Música (separados por vírgula)"
-                  className="rounded-xl"
-                  {...ongForm.register('additional_categories')}
-                />
-                <p className="text-xs text-gray-500">
-                  Adicione categorias extras além do tipo principal
-                </p>
-              </div>
             </div>
 
             <div className="flex justify-end">
@@ -681,16 +667,6 @@ export default function OnboardingPage() {
                 />
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="horarios_funcionamento">Horários de funcionamento (opcional)</Label>
-                <Textarea
-                  id="horarios_funcionamento"
-                  placeholder="Ex: Segunda a Sexta: 8h às 17h, Sábados: 8h às 12h"
-                  className="rounded-xl resize-none"
-                  rows={3}
-                  {...ongForm.register('horarios_funcionamento')}
-                />
-              </div>
             </div>
 
             <div className="flex justify-between">

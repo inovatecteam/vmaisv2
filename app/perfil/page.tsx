@@ -36,7 +36,6 @@ const ongSchema = z.object({
   tipo: z.string().min(1, 'Selecione pelo menos um tipo'),
   descricao: z.string().min(10, 'Descrição deve ter pelo menos 10 caracteres'),
   short_description: z.string().max(200, 'Descrição curta deve ter no máximo 200 caracteres').optional(),
-  how_to_help: z.string().optional(),
   additional_categories: z.string().optional(),
     message: 'Selecione o tipo de localização'
   }),
@@ -46,7 +45,6 @@ const ongSchema = z.object({
   whatsapp: z.string().optional(),
   necessidades: z.string().optional(),
   horarios_funcionamento: z.string().optional(),
-  thumbnail_url: z.string().optional(),
   lat: z.number().optional(),
 }).refine((data) => {
   if (data.localizacao_tipo === 'presencial') {
