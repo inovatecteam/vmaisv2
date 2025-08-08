@@ -212,13 +212,13 @@ const faqs = [
           </p>
           <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center px-4">
             <Link
-              href="/cadastro"
+              href="/cadastrar"
               className="w-full sm:w-auto bg-white text-yellow-600 hover:bg-gray-50 px-6 sm:px-8 py-3 sm:py-4 rounded-2xl font-semibold text-base sm:text-lg transition-all text-center"
             >
               Sou Voluntário
             </Link>
             <Link
-              href="/cadastro"
+              href="/cadastrar"
               className="w-full sm:w-auto border-2 border-white text-white hover:bg-white hover:text-yellow-600 px-6 sm:px-8 py-3 sm:py-4 rounded-2xl font-semibold text-base sm:text-lg transition-all text-center"
             >
               Sou uma ONG
