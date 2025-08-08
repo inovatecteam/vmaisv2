@@ -17,6 +17,7 @@ import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/components/providers/auth-provider'
 import { toast } from 'sonner'
 import { formatPhone } from '@/lib/utils'
+import { LocationPickerMap } from '@/components/map/location-picker-map'
 import { 
   Heart, 
   User, 
@@ -50,6 +51,8 @@ const ongSchema = z.object({
   localizacao_tipo: z.enum(['presencial', 'online', 'ambos'], {
     message: 'Selecione o tipo de localização'
   }),
+  lat: z.number().optional(),
+  lng: z.number().optional(),
   cidade: z.string().optional(),
   estado: z.string().optional(),
   endereco_online: z.string().optional(),
@@ -58,17 +61,17 @@ const ongSchema = z.object({
   horarios_funcionamento: z.string().optional(),
 }).refine((data) => {
   if (data.localizacao_tipo === 'presencial') {
-    return data.cidade && data.estado
+    return data.cidade && data.estado && data.lat && data.lng
   }
   if (data.localizacao_tipo === 'online') {
     return data.endereco_online
   }
   if (data.localizacao_tipo === 'ambos') {
-    return (data.cidade && data.estado) || data.endereco_online
+    return ((data.cidade && data.estado && data.lat && data.lng) || data.endereco_online)
   }
   return true
 }, {
-  message: "Preencha os campos obrigatórios para o tipo de localização selecionado",
+  message: "Preencha os campos obrigatórios para o tipo de localização selecionado, incluindo a localização no mapa",
   path: ["localizacao_tipo"]
 })
 
@@ -94,6 +97,8 @@ export default function OnboardingPage() {
   const [loading, setLoading] = useState(false)
   const [selectedInteresses, setSelectedInteresses] = useState<string[]>([])
   const [selectedTipos, setSelectedTipos] = useState<string[]>([])
+  const [selectedLat, setSelectedLat] = useState<number | null>(null)
+  const [selectedLng, setSelectedLng] = useState<number | null>(null)
 
   const voluntarioForm = useForm<VoluntarioData>({
     resolver: zodResolver(voluntarioSchema)
@@ -207,6 +212,8 @@ export default function OnboardingPage() {
         whatsapp: data.whatsapp || null,
         necessidades: data.necessidades ? data.necessidades.split(',').map(n => n.trim()).filter(Boolean) : null,
         horarios_funcionamento: data.horarios_funcionamento || null,
+        lat: selectedLat,
+        lng: selectedLng,
       }
 
       const { error: ongError } = await supabase
@@ -223,6 +230,13 @@ export default function OnboardingPage() {
     } finally {
       setLoading(false)
     }
+  }
+
+  const handleLocationSelect = (lat: number, lng: number) => {
+    setSelectedLat(lat)
+    setSelectedLng(lng)
+    ongForm.setValue('lat', lat, { shouldDirty: true })
+    ongForm.setValue('lng', lng, { shouldDirty: true })
   }
 
   const nextStep = () => {
@@ -590,6 +604,21 @@ export default function OnboardingPage() {
                   maxLength={15}
                 />
               </div>
+
+              {/* Mapa de localização para ONGs presenciais */}
+              {(ongForm.watch('localizacao_tipo') === 'presencial' || ongForm.watch('localizacao_tipo') === 'ambos') && (
+                <div className="space-y-2">
+                  <Label>Localização no Mapa</Label>
+                  <p className="text-sm text-gray-600 mb-3">
+                    Clique no mapa para marcar a localização exata da sua organização
+                  </p>
+                  <LocationPickerMap
+                    initialLat={selectedLat}
+                    initialLng={selectedLng}
+                    onLocationSelect={handleLocationSelect}
+                  />
+                </div>
+              )}
             </div>
 
             <div className="flex justify-between">
@@ -605,6 +634,10 @@ export default function OnboardingPage() {
               <Button
                 onClick={nextStep}
                 className="bg-primary hover:bg-primary/90 rounded-xl"
+                disabled={
+                  (ongForm.watch('localizacao_tipo') === 'presencial' || ongForm.watch('localizacao_tipo') === 'ambos') && 
+                  (!selectedLat || !selectedLng)
+                }
               >
                 Continuar
                 <ArrowRight className="h-4 w-4 ml-2" />
