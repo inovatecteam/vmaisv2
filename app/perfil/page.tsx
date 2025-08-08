@@ -18,6 +18,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { formatPhone } from '@/lib/utils'
+import { LocationPickerMap } from '@/components/map/location-picker-map'
 import Footer from '@/components/layout/footer'
 
 const profileSchema = z.object({
@@ -47,19 +48,21 @@ const ongSchema = z.object({
   necessidades: z.string().optional(),
   horarios_funcionamento: z.string().optional(),
   thumbnail_url: z.string().optional(),
+  lat: z.number().optional(),
+  lng: z.number().optional(),
 }).refine((data) => {
   if (data.localizacao_tipo === 'presencial') {
-    return data.cidade && data.estado
+    return data.cidade && data.estado && data.lat && data.lng
   }
   if (data.localizacao_tipo === 'online') {
     return data.endereco_online
   }
   if (data.localizacao_tipo === 'ambos') {
-    return (data.cidade && data.estado) || data.endereco_online
+    return ((data.cidade && data.estado && data.lat && data.lng) || data.endereco_online)
   }
   return true
 }, {
-  message: "Preencha os campos obrigatórios para o tipo de localização selecionado",
+  message: "Preencha os campos obrigatórios para o tipo de localização selecionado, incluindo a localização no mapa",
   path: ["localizacao_tipo"]
 })
 
@@ -82,6 +85,10 @@ export default function PerfilPage() {
   // Refs para inputs de arquivo
   const avatarInputRef = useRef<HTMLInputElement>(null)
   const thumbnailInputRef = useRef<HTMLInputElement>(null)
+  
+  // Estados para coordenadas do mapa
+  const [selectedLat, setSelectedLat] = useState<number | null>(null)
+  const [selectedLng, setSelectedLng] = useState<number | null>(null)
 
   const profileForm = useForm<ProfileData>({
     resolver: zodResolver(profileSchema),
@@ -151,6 +158,8 @@ export default function PerfilPage() {
         setOngData(data)
         const tipos = Array.isArray(data.tipo) ? data.tipo : [data.tipo]
         setSelectedTipos(tipos)
+        setSelectedLat(data.lat || null)
+        setSelectedLng(data.lng || null)
         ongForm.reset({
           nome: data.nome || '',
           tipo: tipos.join(', '),
@@ -166,10 +175,14 @@ export default function PerfilPage() {
           necessidades: data.necessidades?.join(', ') || '',
           horarios_funcionamento: data.horarios_funcionamento || '',
           thumbnail_url: data.thumbnail_url || '',
+          lat: data.lat || undefined,
+          lng: data.lng || undefined,
         })
       } else {
         // Se não há dados da ONG, manter valores vazios
         setSelectedTipos([])
+        setSelectedLat(null)
+        setSelectedLng(null)
         ongForm.reset({
           nome: '',
           tipo: '',
@@ -185,6 +198,8 @@ export default function PerfilPage() {
           necessidades: '',
           horarios_funcionamento: '',
           thumbnail_url: '',
+          lat: undefined,
+          lng: undefined,
         })
       }
     } catch (error) {
@@ -324,6 +339,8 @@ export default function PerfilPage() {
         necessidades: data.necessidades ? data.necessidades.split(',').map(n => n.trim()).filter(Boolean) : null,
         thumbnail_url: thumbnailUrl || null,
         updated_at: new Date().toISOString(),
+        lat: selectedLat,
+        lng: selectedLng,
       }
 
       if (ongData) {
@@ -357,6 +374,13 @@ export default function PerfilPage() {
     }
   }
 
+  const handleLocationSelect = (lat: number, lng: number) => {
+    setSelectedLat(lat)
+    setSelectedLng(lng)
+    ongForm.setValue('lat', lat, { shouldDirty: true })
+    ongForm.setValue('lng', lng, { shouldDirty: true })
+  }
+
   const handleProfileCancel = () => {
     if (user) {
       profileForm.reset({
@@ -376,6 +400,8 @@ export default function PerfilPage() {
     if (ongData) {
       const tipos = Array.isArray(ongData.tipo) ? ongData.tipo : [ongData.tipo]
       setSelectedTipos(tipos)
+      setSelectedLat(ongData.lat || null)
+      setSelectedLng(ongData.lng || null)
       ongForm.reset({
         nome: ongData.nome || '',
         tipo: tipos.join(', '),
@@ -388,9 +414,13 @@ export default function PerfilPage() {
         necessidades: ongData.necessidades?.join(', ') || '',
         horarios_funcionamento: ongData.horarios_funcionamento || '',
         thumbnail_url: ongData.thumbnail_url || '',
+        lat: ongData.lat || undefined,
+        lng: ongData.lng || undefined,
       })
     } else {
       setSelectedTipos([])
+      setSelectedLat(null)
+      setSelectedLng(null)
       ongForm.reset({
         nome: '',
         tipo: '',
@@ -403,6 +433,8 @@ export default function PerfilPage() {
         necessidades: '',
         horarios_funcionamento: '',
         thumbnail_url: '',
+        lat: undefined,
+        lng: undefined,
       })
     }
     setSelectedThumbnailFile(null)
@@ -748,6 +780,21 @@ export default function PerfilPage() {
                           </div>
                         </div>
                       </div>
+
+                      {/* Mapa de localização para ONGs presenciais */}
+                      {(ongForm.watch('localizacao_tipo') === 'presencial' || ongForm.watch('localizacao_tipo') === 'ambos') && (
+                        <div className="space-y-2">
+                          <Label>Localização no Mapa</Label>
+                          <p className="text-sm text-gray-600 mb-3">
+                            Clique no mapa para marcar a localização exata da sua organização
+                          </p>
+                          <LocationPickerMap
+                            initialLat={selectedLat}
+                            initialLng={selectedLng}
+                            onLocationSelect={handleLocationSelect}
+                          />
+                        </div>
+                      )}
 
                       <div className="space-y-2">
                         <Label htmlFor="ong-short-description">Descrição curta (máx. 200 caracteres)</Label>
