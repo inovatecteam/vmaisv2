@@ -356,7 +356,7 @@ export default function MapaPage() {
               </Card>
 
               {/* Lista de ONGs */}
-              <Card className="rounded-2xl shadow-lg flex-1 flex flex-col">
+              <Card className="rounded-2xl shadow-lg flex-1 flex flex-col min-h-0">
                 <CardHeader className="pb-3 flex-shrink-0">
                   <CardTitle className="text-lg">
                     ONGs Encontradas ({filteredOngs.length})
