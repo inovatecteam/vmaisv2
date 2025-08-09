@@ -109,7 +109,7 @@ const faqs = [
           
           <div className="flex flex-row gap-3 sm:gap-4 justify-center items-center px-4">
             {user ? (
-              <Link href="/catalogo">
+              <Link href="/oportunidades">
                 <Button size="lg" className="bg-primary hover:bg-primary/90 text-white font-semibold rounded-2xl px-4 sm:px-8 py-3 sm:py-4 text-sm sm:text-lg">
                   Explorar Oportunidades
                 </Button>
@@ -124,7 +124,7 @@ const faqs = [
                 </Button>
               </Link>
             )}
-            <Link href="/catalogo">
+            <Link href="/oportunidades">
               <Button 
                 variant="outline" 
                 size="lg" 
