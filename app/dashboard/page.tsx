@@ -10,14 +10,8 @@ import {
   Heart, 
   Users, 
   MapPin, 
-  CheckCircle, 
-  Clock, 
-  AlertCircle,
-  TrendingUp,
-  Calendar,
   Search,
   MessageCircle,
-  Plus
 } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/components/providers/auth-provider'
@@ -28,10 +22,7 @@ import Footer from '@/components/layout/footer'
 interface DashboardStats {
   totalInteracoes: number
   ongsSalvas: number
-  tarefasPendentes: number
-  tarefasConcluidas: number
   interacoesRecentes: any[]
-  tarefasRecentes: any[]
 }
 
 export default function DashboardPage() {
@@ -39,10 +30,7 @@ export default function DashboardPage() {
   const [stats, setStats] = useState<DashboardStats>({
     totalInteracoes: 0,
     ongsSalvas: 0,
-    tarefasPendentes: 0,
-    tarefasConcluidas: 0,
     interacoesRecentes: [],
-    tarefasRecentes: []
   })
   const [loading, setLoading] = useState(true)
 
@@ -84,27 +72,13 @@ export default function DashboardPage() {
 
       if (interacoesError) throw interacoesError
 
-      // Carregar tarefas
-      const { data: tarefas, error: tarefasError } = await supabase
-        .from('tarefas')
-        .select('*')
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: false })
-
-      if (tarefasError) throw tarefasError
-
       // Calcular estatísticas
-      const tarefasPendentes = tarefas?.filter(t => t.status === 'pendente').length || 0
-      const tarefasConcluidas = tarefas?.filter(t => t.status === 'concluida').length || 0
       const ongsUnicas = new Set(interacoes?.map(i => i.ong_id))
 
       setStats({
         totalInteracoes: interacoes?.length || 0,
         ongsSalvas: ongsUnicas.size,
-        tarefasPendentes,
-        tarefasConcluidas,
         interacoesRecentes: interacoes?.slice(0, 5) || [],
-        tarefasRecentes: tarefas?.slice(0, 5) || []
       })
 
     } catch (error) {
@@ -112,27 +86,6 @@ export default function DashboardPage() {
       toast.error('Erro ao carregar dados do dashboard')
     } finally {
       setLoading(false)
-    }
-  }
-
-  const getProgressPercentage = () => {
-    const total = stats.tarefasPendentes + stats.tarefasConcluidas
-    return total > 0 ? (stats.tarefasConcluidas / total) * 100 : 0
-  }
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'concluida': return 'bg-green-500'
-      case 'em_andamento': return 'bg-yellow-500'
-      default: return 'bg-gray-500'
-    }
-  }
-
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case 'concluida': return CheckCircle
-      case 'em_andamento': return Clock
-      default: return AlertCircle
     }
   }
 
@@ -200,11 +153,11 @@ export default function DashboardPage() {
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-yellow-600 mb-1">Tarefas Pendentes</p>
-                    <p className="text-3xl font-bold text-yellow-700">{stats.tarefasPendentes}</p>
+                    <p className="text-sm font-medium text-yellow-600 mb-1">Atividades</p>
+                    <p className="text-3xl font-bold text-yellow-700">Em Breve</p>
                   </div>
                   <div className="p-3 bg-yellow-500 rounded-xl">
-                    <Clock className="h-6 w-6 text-white" />
+                    <Search className="h-6 w-6 text-white" />
                   </div>
                 </div>
               </CardContent>
@@ -214,11 +167,11 @@ export default function DashboardPage() {
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-purple-600 mb-1">Tarefas Concluídas</p>
-                    <p className="text-3xl font-bold text-purple-700">{stats.tarefasConcluidas}</p>
+                    <p className="text-sm font-medium text-purple-600 mb-1">Impacto</p>
+                    <p className="text-3xl font-bold text-purple-700">Crescendo</p>
                   </div>
                   <div className="p-3 bg-purple-500 rounded-xl">
-                    <CheckCircle className="h-6 w-6 text-white" />
+                    <Heart className="h-6 w-6 text-white fill-current" />
                   </div>
                 </div>
               </CardContent>
@@ -226,54 +179,8 @@ export default function DashboardPage() {
           </div>
 
           <div className="grid lg:grid-cols-3 gap-8">
-            {/* Progresso de Tarefas */}
-            <div className="lg:col-span-1 flex flex-col">
-              <Card className="rounded-2xl shadow-lg mb-6">
-                <CardHeader>
-                  <CardTitle className="flex items-center">
-                    <TrendingUp className="h-5 w-5 text-primary mr-2" />
-                    Progresso das Tarefas
-                  </CardTitle>
-                  <CardDescription>
-                    Seu progresso no voluntariado
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <div>
-                      <div className="flex justify-between items-center mb-2">
-                        <span className="text-sm font-medium">Concluídas</span>
-                        <span className="text-sm text-gray-500">
-                          {stats.tarefasConcluidas}/{stats.tarefasPendentes + stats.tarefasConcluidas}
-                        </span>
-                      </div>
-                      <Progress value={getProgressPercentage()} className="h-3" />
-                      <p className="text-xs text-gray-500 mt-1">
-                        {getProgressPercentage().toFixed(1)}% das tarefas concluídas
-                      </p>
-                    </div>
-
-                    <div className="pt-4 border-t">
-                      <div className="flex items-center justify-between text-sm">
-                        <div className="flex items-center">
-                          <div className="w-3 h-3 bg-green-500 rounded-full mr-2"></div>
-                          <span>Concluídas</span>
-                        </div>
-                        <span className="font-medium">{stats.tarefasConcluidas}</span>
-                      </div>
-                      <div className="flex items-center justify-between text-sm mt-2">
-                        <div className="flex items-center">
-                          <div className="w-3 h-3 bg-yellow-500 rounded-full mr-2"></div>
-                          <span>Pendentes</span>
-                        </div>
-                        <span className="font-medium">{stats.tarefasPendentes}</span>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Quick Actions */}
+            {/* Quick Actions */}
+            <div className="lg:col-span-1">
               <Card className="rounded-2xl shadow-lg flex-grow">
                 <CardHeader>
                   <CardTitle>Ações Rápidas</CardTitle>
@@ -302,7 +209,7 @@ export default function DashboardPage() {
             </div>
 
             {/* Atividades Recentes */}
-            <div className="lg:col-span-2 space-y-6">
+            <div className="lg:col-span-2">
               {/* Interações Recentes */}
               <Card className="rounded-2xl shadow-lg">
                 <CardHeader>
@@ -347,57 +254,6 @@ export default function DashboardPage() {
                           Explorar ONGs
                         </Button>
                       </Link>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-
-              {/* Tarefas Recentes */}
-              <Card className="rounded-2xl shadow-lg">
-                <CardHeader>
-                  <CardTitle className="flex items-center">
-                    <Calendar className="h-5 w-5 text-primary mr-2" />
-                    Tarefas Recentes
-                  </CardTitle>
-                  <CardDescription>
-                    Suas atividades de voluntariado
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  {stats.tarefasRecentes.length > 0 ? (
-                    <div className="space-y-4">
-                      {stats.tarefasRecentes.map((tarefa) => {
-                        const StatusIcon = getStatusIcon(tarefa.status)
-                        return (
-                          <div key={tarefa.id} className="flex items-center space-x-4 p-4 bg-gray-50 rounded-xl">
-                            <div className={`w-3 h-3 rounded-full ${getStatusColor(tarefa.status)}`} />
-                            <div className="flex-1">
-                              <h3 className="font-medium">{tarefa.titulo}</h3>
-                              {tarefa.descricao && (
-                                <p className="text-sm text-gray-600 mt-1">{tarefa.descricao}</p>
-                              )}
-                              <div className="flex items-center text-xs text-gray-500 mt-2">
-                                <Calendar className="h-3 w-3 mr-1" />
-                                <span>{new Date(tarefa.data).toLocaleDateString('pt-BR')}</span>
-                              </div>
-                            </div>
-                            <Badge variant="outline" className="capitalize">
-                              <StatusIcon className="h-3 w-3 mr-1" />
-                              {tarefa.status.replace('_', ' ')}
-                            </Badge>
-                          </div>
-                        )
-                      })}
-                    </div>
-                  ) : (
-  
-                    <div className="text-center py-8">
-                      <Calendar className="h-12 w-12 text-gray-300 mx-auto mb-3" />
-                      <p className="text-gray-500 mb-4">Nenhuma tarefa cadastrada</p>
-                      <Button variant="outline" className="rounded-xl">
-                        <Plus className="h-4 w-4 mr-2" />
-                        Adicionar Tarefa
-                      </Button>
                     </div>
                   )}
                 </CardContent>

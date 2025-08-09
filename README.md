@@ -71,10 +71,6 @@ Uma plataforma web moderna que conecta ONGs a voluntários, facilitando o encont
 - Histórico de conexões entre usuários e ONGs
 - Métricas de engajamento
 
-**tarefas**
-- Sistema de tarefas/atividades dos voluntários
-- Status e acompanhamento
-
 ## ⚙️ Configuração
 
 ### 1. Pré-requisitos

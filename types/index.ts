@@ -43,14 +43,3 @@ export type Interacao = {
   ong_id: string
   timestamp: string
 }
-
-export type Tarefa = {
-  id: string
-  user_id: string
-  titulo: string
-  descricao?: string | null
-  status: 'pendente' | 'em_andamento' | 'concluida'
-  data: string
-  created_at: string
-  updated_at: string
-}
