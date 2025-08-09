@@ -191,67 +191,47 @@ export default function SobrePage() {
           </div>
 
           {/* Team */}
-          <div className="mb-16">
-  <div className="text-center mb-12">
-    <h2 className="text-3xl font-bold mb-4">Nossa Equipe</h2>
-    <p className="text-xl text-gray-600">As pessoas por trás da Voluntaria+</p>
-  </div>
-
-  <div className="grid md:grid-cols-2 gap-8 mt-12">
-    {/* Membro 1 */}
-    <div className="text-center">
-      <div className="relative w-full h-64 bg-gray-100 rounded-xl overflow-hidden mb-4 group">
-        <img
-          src="/images/team/inovatec-team-1.jpg"
-          alt="Equipe InovaTec - Foto 1"
-          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-          onError={(e) => {
-            e.currentTarget.classList.add('hidden');
-            const placeholder = e.currentTarget.nextElementSibling;
-            if (placeholder) placeholder.classList.remove('hidden');
-          }}
-        />
-        <div className="hidden w-full h-full bg-primary/10 rounded-xl flex items-center justify-center">
-          {/* Placeholder ou ícone aqui */}
-        </div>
-      </div>
-      <h3 className="text-lg font-semibold">Nome do Membro 1</h3>
-      <p className="text-primary">Função / Cargo</p>
-      <p className="text-gray-600 mt-2">
-        Breve descrição ou bio do membro.
-      </p>
-    </div>
-
-    {/* Membro 2 */}
-    <div className="text-center">
-      <div className="relative w-full h-64 bg-gray-100 rounded-xl overflow-hidden mb-4 group">
-        <img
-          src="/images/team/inovatec-team-2.jpg"
-          alt="Equipe InovaTec - Foto 2"
-          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-          onError={(e) => {
-            e.currentTarget.classList.add('hidden');
-            const placeholder = e.currentTarget.nextElementSibling;
-            if (placeholder) placeholder.classList.remove('hidden');
-          }}
-        />
-        <div className="hidden w-full h-full bg-primary/10 rounded-xl flex items-center justify-center">
-          {/* Placeholder ou ícone aqui */}
-        </div>
-      </div>
-      <h3 className="text-lg font-semibold">Nome do Membro 2</h3>
-      <p className="text-primary">Função / Cargo</p>
-      <p className="text-gray-600 mt-2">
-        Breve descrição ou bio do membro.
-      </p>
-    </div>
-  </div>
-
-  {/* Card geral */}
-  <div className="max-w-4xl mx-auto mt-16">
+         <div className="mb-16">
+  <div className="max-w-4xl mx-auto">
     <Card className="rounded-2xl shadow-lg">
       <CardContent className="p-8">
-        <div className="text-center mb-8">
+        {/* Fotos lado a lado */}
+        <div className="grid md:grid-cols-2 gap-8 mb-8">
+          <div className="relative w-full h-64 bg-gray-100 rounded-xl overflow-hidden group">
+            <img
+              src="/images/team/inovatec-team-1.jpg"
+              alt="Equipe InovaTec - Foto 1"
+              className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+              onError={(e) => {
+                e.currentTarget.classList.add('hidden');
+                const placeholder = e.currentTarget.nextElementSibling;
+                if (placeholder) placeholder.classList.remove('hidden');
+              }}
+            />
+            <div className="hidden w-full h-full bg-primary/10 rounded-xl flex items-center justify-center">
+              {/* Placeholder */}
+            </div>
+          </div>
+
+          <div className="relative w-full h-64 bg-gray-100 rounded-xl overflow-hidden group">
+            <img
+              src="/images/team/inovatec-team-2.jpg"
+              alt="Equipe InovaTec - Foto 2"
+              className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+              onError={(e) => {
+                e.currentTarget.classList.add('hidden');
+                const placeholder = e.currentTarget.nextElementSibling;
+                if (placeholder) placeholder.classList.remove('hidden');
+              }}
+            />
+            <div className="hidden w-full h-full bg-primary/10 rounded-xl flex items-center justify-center">
+              {/* Placeholder */}
+            </div>
+          </div>
+        </div>
+
+        {/* Texto */}
+        <div className="text-center">
           <h3 className="text-2xl font-semibold mb-2">Equipe InovaTec - Voluntaria+</h3>
           <p className="text-primary font-medium mb-6">Desenvolvedores e Idealistas</p>
           <p className="text-gray-600 leading-relaxed max-w-3xl mx-auto">
@@ -262,6 +242,7 @@ export default function SobrePage() {
     </Card>
   </div>
 </div>
+
 
           {/* Contact Information */}
           <Card className="rounded-2xl shadow-lg">
