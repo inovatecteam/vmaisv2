@@ -196,23 +196,7 @@ export default function SobrePage() {
               <h2 className="text-3xl font-bold mb-4">Nossa Equipe</h2>
               <p className="text-xl text-gray-600">As pessoas por trás da Voluntaria+</p>
             </div>
-
-            <div className="max-w-4xl mx-auto">
-              <Card className="rounded-2xl shadow-lg">
-                <CardContent className="p-8">
-                  <div className="text-center mb-8">
-                    <div className="w-24 h-24 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
-                      <Users className="h-12 w-12 text-primary" />
-                    </div>
-                    <h3 className="text-2xl font-semibold mb-2">Equipe InovaTec - Voluntaria+</h3>
-                    <p className="text-primary font-medium mb-6">Desenvolvedores e Idealistas</p>
-                    <p className="text-gray-600 leading-relaxed max-w-3xl mx-auto">
-                      Somos uma iniciativa estudantil sem fins lucrativos com o objetivo de facilitar a sua inserção em centros de ajuda comunitária, encorajando o voluntariado no Rio Grande do Sul de modo geral.
-                    </p>
-                  </div>
-                  
-                  {/* Team Photos */}
-                  <div className="grid md:grid-cols-2 gap-8 mt-12">
+<div className="grid md:grid-cols-2 gap-8 mt-12">
                     <div className="text-center">
                       <div className="relative w-full h-64 bg-gray-100 rounded-xl overflow-hidden mb-4 group">
                         <img 
@@ -237,7 +221,7 @@ export default function SobrePage() {
                     <div className="text-center">
                       <div className="relative w-full h-64 bg-gray-100 rounded-xl overflow-hidden mb-4 group">
                         <img 
-                          src="/images/team/inovatec-team-2.jpg" 
+                          src="/public/images/team/inovatec-team-2.jpg" 
                           alt="Equipe InovaTec - Foto 2"
                           className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                           onError={(e) => {
@@ -245,15 +229,21 @@ export default function SobrePage() {
                             e.currentTarget.nextElementSibling.style.display = 'flex'
                           }}
                         />
-                        <div className="w-full h-full bg-primary/10 rounded-xl flex items-center justify-center" style={{display: 'none'}}>
-                          <div className="text-center">
-                            <Users className="h-16 w-16 text-primary/50 mx-auto mb-2" />
-                            <p className="text-primary/70 text-sm">Foto da Equipe 2</p>
                           </div>
                         </div>
                       </div>
-                      <p className="text-sm text-gray-600">Momentos de desenvolvimento</p>
                     </div>
+                  </div>
+            <div className="max-w-4xl mx-auto">
+              <Card className="rounded-2xl shadow-lg">
+                <CardContent className="p-8">
+                  <div className="text-center mb-8">
+                    
+                    <h3 className="text-2xl font-semibold mb-2">Equipe InovaTec - Voluntaria+</h3>
+                    <p className="text-primary font-medium mb-6">Desenvolvedores e Idealistas</p>
+                    <p className="text-gray-600 leading-relaxed max-w-3xl mx-auto">
+                      Somos uma iniciativa estudantil sem fins lucrativos com o objetivo de facilitar a sua inserção em centros de ajuda comunitária, encorajando o voluntariado no Rio Grande do Sul de modo geral.
+                    </p>
                   </div>
                 </CardContent>
               </Card>
