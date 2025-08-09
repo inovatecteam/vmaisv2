@@ -72,7 +72,7 @@ export default function AjudaPage() {
       id: 5,
       category: 'voluntario',
       question: 'Como encontro oportunidades de voluntariado?',
-      answer: 'Use nossa página de Catálogo para buscar ONGs por localização, causa ou tipo de atividade. Você também pode usar o Mapa Interativo para encontrar organizações próximas a você.'
+      answer: 'Use nossa página de Oportunidades para buscar ONGs por localização, causa ou tipo de atividade. Você também pode usar o Mapa Interativo para encontrar organizações próximas a você.'
     },
     {
       id: 6,
