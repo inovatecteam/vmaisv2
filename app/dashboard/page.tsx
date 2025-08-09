@@ -186,7 +186,7 @@ export default function DashboardPage() {
                   <CardTitle>Ações Rápidas</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <Link href="/catalogo">
+                  <Link href="/oportunidades">
                     <Button className="w-full justify-start bg-primary hover:bg-primary/90 rounded-xl">
                       <Search className="h-4 w-4 mr-2" />
                       Explorar Oportunidades
@@ -249,7 +249,7 @@ export default function DashboardPage() {
                     <div className="text-center py-8">
                       <MessageCircle className="h-12 w-12 text-gray-300 mx-auto mb-3" />
                       <p className="text-gray-500 mb-4">Nenhuma interação ainda</p>
-                      <Link href="/catalogo">
+                      <Link href="/oportunidades">
                         <Button className="bg-primary hover:bg-primary/90 rounded-xl">
                           Explorar Oportunidades
                         </Button>
