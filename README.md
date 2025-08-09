@@ -40,7 +40,7 @@ Uma plataforma web moderna que conecta ONGs a voluntários, facilitando o encont
 
 ```
 ├── app/                    # Páginas do Next.js App Router
-│   ├── catalogo/          # Oportunidades de Voluntariado
+│   ├── oportunidades/          # Oportunidades de Voluntariado
 │   ├── mapa/              # Mapa interativo
 │   ├── dashboard/         # Dashboard do usuário
 │   └── perfil/            # Perfil e configurações
