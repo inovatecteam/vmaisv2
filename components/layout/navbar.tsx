@@ -93,7 +93,7 @@ export function Navbar() {
         {/* Navigation Links */}
         <div className="hidden lg:flex items-center space-x-10">
           <Link 
-            href="/catalogo"
+            href="/oportunidades"
             className="text-gray-700 hover:text-primary font-medium transition-colors relative group"
           >
             Oportunidades
@@ -204,7 +204,7 @@ export function Navbar() {
                 <div className="flex-1 p-6">
                   <nav className="space-y-4">
                     <Link 
-                      href="/catalogo"
+                      href="/oportunidades"
                       className="block text-lg font-medium text-gray-700 hover:text-primary transition-colors py-2"
                       onClick={() => setMobileMenuOpen(false)}
                     >
