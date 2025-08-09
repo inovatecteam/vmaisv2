@@ -203,19 +203,12 @@ export default function SobrePage() {
                           src="/images/team/inovatec-team-1.jpg" 
                           alt="Equipe InovaTec - Foto 1"
                           className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                          onError={(e) => {
-                            e.currentTarget.style.display = 'none'
-                            e.currentTarget.nextElementSibling.style.display = 'flex'
-                          }}
-                        />
+                          />
                         <div className="w-full h-full bg-primary/10 rounded-xl flex items-center justify-center" style={{display: 'none'}}>
-                          <div className="text-center">
-                            <Users className="h-16 w-16 text-primary/50 mx-auto mb-2" />
-                            <p className="text-primary/70 text-sm">Foto da Equipe 1</p>
-                          </div>
+                          
                         </div>
                       </div>
-                      <p className="text-sm text-gray-600">Equipe InovaTec em ação</p>
+                      
                     </div>
                     
                     <div className="text-center">
