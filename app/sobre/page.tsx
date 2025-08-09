@@ -101,6 +101,58 @@ export default function SobrePage() {
             </p>
           </div>
 
+          {/* Team */}
+         <div className="mb-16">
+  <div className="max-w-4xl mx-auto">
+    <Card className="rounded-2xl shadow-lg">
+      <CardContent className="p-8">
+        {/* Fotos lado a lado */}
+        <div className="grid md:grid-cols-2 gap-8 mb-8">
+          <div className="relative w-full h-64 bg-gray-100 rounded-xl overflow-hidden group">
+            <img
+              src="/images/team/inovatec-team-1.jpg"
+              alt="Equipe InovaTec - Foto 1"
+              className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+              onError={(e) => {
+                e.currentTarget.classList.add('hidden');
+                const placeholder = e.currentTarget.nextElementSibling;
+                if (placeholder) placeholder.classList.remove('hidden');
+              }}
+            />
+            <div className="hidden w-full h-full bg-primary/10 rounded-xl flex items-center justify-center">
+              {/* Placeholder */}
+            </div>
+          </div>
+
+          <div className="relative w-full h-64 bg-gray-100 rounded-xl overflow-hidden group">
+            <img
+              src="/images/team/inovatec-team-2.jpg"
+              alt="Equipe InovaTec - Foto 2"
+              className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+              onError={(e) => {
+                e.currentTarget.classList.add('hidden');
+                const placeholder = e.currentTarget.nextElementSibling;
+                if (placeholder) placeholder.classList.remove('hidden');
+              }}
+            />
+            <div className="hidden w-full h-full bg-primary/10 rounded-xl flex items-center justify-center">
+              {/* Placeholder */}
+            </div>
+          </div>
+        </div>
+
+        {/* Texto */}
+        <div className="text-center">
+          <h3 className="text-2xl font-semibold mb-2">Equipe InovaTec - Voluntaria+</h3>
+          <p className="text-primary font-medium mb-6">Desenvolvedores e Idealistas</p>
+          <p className="text-gray-600 leading-relaxed max-w-3xl mx-auto">
+            Somos uma iniciativa estudantil sem fins lucrativos com o objetivo de facilitar a sua inserção em centros de ajuda comunitária, encorajando o voluntariado no Rio Grande do Sul de modo geral.
+          </p>
+        </div>
+      </CardContent>
+    </Card>
+  </div>
+</div>
           {/* Mission & Vision */}
           <div className="grid md:grid-cols-2 gap-8 mb-16">
             <Card className="rounded-2xl shadow-lg border-0 bg-gradient-to-br from-blue-50 to-blue-100">
@@ -189,61 +241,6 @@ export default function SobrePage() {
               ))}
             </div>
           </div>
-
-          {/* Team */}
-         <div className="mb-16">
-  <div className="max-w-4xl mx-auto">
-    <Card className="rounded-2xl shadow-lg">
-      <CardContent className="p-8">
-        {/* Fotos lado a lado */}
-        <div className="grid md:grid-cols-2 gap-8 mb-8">
-          <div className="relative w-full h-64 bg-gray-100 rounded-xl overflow-hidden group">
-            <img
-              src="/images/team/inovatec-team-1.jpg"
-              alt="Equipe InovaTec - Foto 1"
-              className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-              onError={(e) => {
-                e.currentTarget.classList.add('hidden');
-                const placeholder = e.currentTarget.nextElementSibling;
-                if (placeholder) placeholder.classList.remove('hidden');
-              }}
-            />
-            <div className="hidden w-full h-full bg-primary/10 rounded-xl flex items-center justify-center">
-              {/* Placeholder */}
-            </div>
-          </div>
-
-          <div className="relative w-full h-64 bg-gray-100 rounded-xl overflow-hidden group">
-            <img
-              src="/images/team/inovatec-team-2.jpg"
-              alt="Equipe InovaTec - Foto 2"
-              className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-              onError={(e) => {
-                e.currentTarget.classList.add('hidden');
-                const placeholder = e.currentTarget.nextElementSibling;
-                if (placeholder) placeholder.classList.remove('hidden');
-              }}
-            />
-            <div className="hidden w-full h-full bg-primary/10 rounded-xl flex items-center justify-center">
-              {/* Placeholder */}
-            </div>
-          </div>
-        </div>
-
-        {/* Texto */}
-        <div className="text-center">
-          <h3 className="text-2xl font-semibold mb-2">Equipe InovaTec - Voluntaria+</h3>
-          <p className="text-primary font-medium mb-6">Desenvolvedores e Idealistas</p>
-          <p className="text-gray-600 leading-relaxed max-w-3xl mx-auto">
-            Somos uma iniciativa estudantil sem fins lucrativos com o objetivo de facilitar a sua inserção em centros de ajuda comunitária, encorajando o voluntariado no Rio Grande do Sul de modo geral.
-          </p>
-        </div>
-      </CardContent>
-    </Card>
-  </div>
-</div>
-
-
           {/* Contact Information */}
           <Card className="rounded-2xl shadow-lg">
             <CardHeader>
