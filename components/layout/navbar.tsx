@@ -38,6 +38,7 @@ export function Navbar() {
     pathname === '/entrar' || 
     pathname === '/cadastrar' || 
     pathname === '/esqueci-senha' ||
+    pathname === '/redefinir-senha' ||
     pathname === '/onboarding' ||
     pathname === '/admin/login'
   ) {
