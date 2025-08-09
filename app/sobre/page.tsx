@@ -215,6 +215,11 @@ export default function SobrePage() {
           {/* Placeholder ou ícone aqui */}
         </div>
       </div>
+      <h3 className="text-lg font-semibold">Nome do Membro 1</h3>
+      <p className="text-primary">Função / Cargo</p>
+      <p className="text-gray-600 mt-2">
+        Breve descrição ou bio do membro.
+      </p>
     </div>
 
     {/* Membro 2 */}
@@ -234,10 +239,15 @@ export default function SobrePage() {
           {/* Placeholder ou ícone aqui */}
         </div>
       </div>
+      <h3 className="text-lg font-semibold">Nome do Membro 2</h3>
+      <p className="text-primary">Função / Cargo</p>
+      <p className="text-gray-600 mt-2">
+        Breve descrição ou bio do membro.
+      </p>
     </div>
   </div>
 
-  {/* Card de descrição */}
+  {/* Card geral */}
   <div className="max-w-4xl mx-auto mt-16">
     <Card className="rounded-2xl shadow-lg">
       <CardContent className="p-8">
