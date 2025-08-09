@@ -10,7 +10,6 @@ export type User = {
   disponibilidade?: string | null
   localizacao?: string | null
   onboarded: boolean
-  is_admin?: boolean
   created_at: string
   updated_at: string
 }

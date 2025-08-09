@@ -117,14 +117,6 @@ export default function ConfiguracoesPage() {
 
       if (profileError) throw profileError
 
-      // Depois, deletar a conta de autenticação
-      const { error: authError } = await supabase.auth.admin.deleteUser(user?.id || '')
-
-      if (authError) {
-        console.warn('Erro ao deletar conta de autenticação:', authError)
-        // Continuar mesmo se houver erro na exclusão da conta de auth
-      }
-
       toast.success('Conta excluída com sucesso')
       await signOut()
       router.push('/')
