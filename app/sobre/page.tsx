@@ -200,7 +200,7 @@ export default function SobrePage() {
                     <div className="text-center">
                       <div className="relative w-full h-64 bg-gray-100 rounded-xl overflow-hidden mb-4 group">
                         <img 
-                          src="/images/team/inovatec-team-1.jpg" 
+                          src="/public/images/team/inovatec-team-1.jpg" 
                           alt="Equipe InovaTec - Foto 1"
                           className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                           />
