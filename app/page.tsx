@@ -111,7 +111,7 @@ const faqs = [
             {user ? (
               <Link href="/catalogo">
                 <Button size="lg" className="bg-primary hover:bg-primary/90 text-white font-semibold rounded-2xl px-4 sm:px-8 py-3 sm:py-4 text-sm sm:text-lg">
-                  Explorar ONGs
+                  Explorar Oportunidades
                 </Button>
               </Link>
             ) : (
@@ -130,7 +130,7 @@ const faqs = [
                 size="lg" 
                 className="border-2 border-gray-300 hover:border-primary hover:text-primary rounded-2xl px-4 sm:px-8 py-3 sm:py-4 text-sm sm:text-lg"
               >
-                Ver ONGs
+                Ver Oportunidades
               </Button>
             </Link>
           </div>

@@ -41,12 +41,12 @@ function Footer() {
             <ul className="space-y-2">
               <li>
                 <Link href="/catalogo" className="text-gray-400 hover:text-yellow-500 transition-colors">
-                  Catálogo de ONGs
+                  Oportunidades de Voluntariado
                 </Link>
               </li>
               <li>
                 <Link href="/mapa" className="text-gray-400 hover:text-yellow-500 transition-colors">
-                  Mapa de Oportunidades
+                  Mapa Interativo
                 </Link>
               </li>
               <li>

@@ -93,10 +93,10 @@ export function Navbar() {
         {/* Navigation Links */}
         <div className="hidden lg:flex items-center space-x-10">
           <Link 
-            href="/catalogo" 
+            href="/catalogo"
             className="text-gray-700 hover:text-primary font-medium transition-colors relative group"
           >
-            Catálogo
+            Oportunidades
             <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all group-hover:w-full" />
           </Link>
           <Link 
@@ -204,11 +204,11 @@ export function Navbar() {
                 <div className="flex-1 p-6">
                   <nav className="space-y-4">
                     <Link 
-                      href="/catalogo" 
+                      href="/catalogo"
                       className="block text-lg font-medium text-gray-700 hover:text-primary transition-colors py-2"
                       onClick={() => setMobileMenuOpen(false)}
                     >
-                      Catálogo
+                      Oportunidades
                     </Link>
                     <Link 
                       href="/mapa" 

@@ -189,7 +189,7 @@ export default function DashboardPage() {
                   <Link href="/catalogo">
                     <Button className="w-full justify-start bg-primary hover:bg-primary/90 rounded-xl">
                       <Search className="h-4 w-4 mr-2" />
-                      Explorar ONGs
+                      Explorar Oportunidades
                     </Button>
                   </Link>
                   <Link href="/mapa">
@@ -251,7 +251,7 @@ export default function DashboardPage() {
                       <p className="text-gray-500 mb-4">Nenhuma interação ainda</p>
                       <Link href="/catalogo">
                         <Button className="bg-primary hover:bg-primary/90 rounded-xl">
-                          Explorar ONGs
+                          Explorar Oportunidades
                         </Button>
                       </Link>
                     </div>

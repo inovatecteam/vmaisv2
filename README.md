@@ -31,7 +31,7 @@ Uma plataforma web moderna que conecta ONGs a voluntários, facilitando o encont
 
 ### Para ONGs
 - ✅ Cadastro completo da organização
-- ✅ Publicação no catálogo público
+- ✅ Publicação nas oportunidades públicas
 - ✅ Definição de necessidades de voluntariado
 - ✅ Recebimento de contatos qualificados
 - ✅ Presença no mapa da região
@@ -40,7 +40,7 @@ Uma plataforma web moderna que conecta ONGs a voluntários, facilitando o encont
 
 ```
 ├── app/                    # Páginas do Next.js App Router
-│   ├── catalogo/          # Catálogo de ONGs
+│   ├── catalogo/          # Oportunidades de Voluntariado
 │   ├── mapa/              # Mapa interativo
 │   ├── dashboard/         # Dashboard do usuário
 │   └── perfil/            # Perfil e configurações
