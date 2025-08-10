@@ -172,7 +172,7 @@ Equipe Voluntaria+
 
     // TODO: Replace this simulation with actual email sending
     // Example with Resend:
-    /*
+    
     const resendApiKey = Deno.env.get('RESEND_API_KEY')
     if (!resendApiKey) {
       throw new Error('RESEND_API_KEY not configured')
@@ -186,7 +186,7 @@ Equipe Voluntaria+
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        from: 'Voluntaria+ <noreply@voluntariaplus.com>',
+        from: 'Voluntaria+ <info@voluntariaplus.com>',
         to: ['voluntariamaisrs@gmail.com'],
         subject: adminEmailSubject,
         text: adminEmailBody,
@@ -201,13 +201,13 @@ Equipe Voluntaria+
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        from: 'Voluntaria+ <noreply@voluntariaplus.com>',
+        from: 'Voluntaria+ <info@voluntariaplus.com>',
         to: [ongOwner.email],
         subject: ongEmailSubject,
         text: ongEmailBody,
       }),
     })
-    */
+    
 
     return new Response(
       JSON.stringify({ 
