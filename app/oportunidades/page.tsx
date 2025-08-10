@@ -13,12 +13,15 @@ import { supabase } from '@/lib/supabase'
 import { ONG } from '@/types'
 import { toast } from 'sonner'
 import { useAuth } from '@/components/providers/auth-provider'
+import { AuthModal } from '@/components/auth/auth-modal'
 import Footer from '@/components/layout/footer'
 
 export default function CatalogoPage() {
   const [ongs, setOngs] = useState<ONG[]>([])
   const [filteredOngs, setFilteredOngs] = useState<ONG[]>([])
   const [selectedOng, setSelectedOng] = useState<ONG | null>(null)
+  const [showAuthModal, setShowAuthModal] = useState(false)
+  const [ongToOpenAfterAuth, setOngToOpenAfterAuth] = useState<ONG | null>(null)
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedEstado, setSelectedEstado] = useState<string>('all')
@@ -109,6 +112,21 @@ export default function CatalogoPage() {
     }
   }
 
+  const handleOngClick = (ong: ONG) => {
+    if (!user) {
+      setOngToOpenAfterAuth(ong)
+      setShowAuthModal(true)
+    } else {
+      setSelectedOng(ong)
+    }
+  }
+
+  const handleAuthSuccess = () => {
+    if (ongToOpenAfterAuth) {
+      setSelectedOng(ongToOpenAfterAuth)
+      setOngToOpenAfterAuth(null)
+    }
+  }
   const estados = [...new Set(ongs.map(ong => ong.estado).filter(Boolean))].sort()
   const tipos = [...new Set(ongs.flatMap(ong => 
     Array.isArray(ong.tipo) ? ong.tipo : [ong.tipo]
@@ -218,7 +236,7 @@ export default function CatalogoPage() {
                 <Card 
                   key={ong.id} 
                   className="cursor-pointer hover:shadow-xl transition-all duration-300 rounded-2xl overflow-hidden group"
-                  onClick={() => setSelectedOng(ong)}
+                  onClick={() => handleOngClick(ong)}
                 >
                   <div className="h-48 bg-gradient-to-br from-primary/10 to-primary/5 relative overflow-hidden">
                     {ong.thumbnail_url ? (
@@ -474,6 +492,13 @@ export default function CatalogoPage() {
           )}
         </DialogContent>
       </Dialog>
+      
+      {/* Modal de Autenticação */}
+      <AuthModal 
+        open={showAuthModal} 
+        onOpenChange={setShowAuthModal}
+        onAuthSuccess={handleAuthSuccess}
+      />
       
       <Footer />
     </div>

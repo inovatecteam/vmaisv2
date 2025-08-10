@@ -13,6 +13,7 @@ import { supabase } from '@/lib/supabase'
 import { ONG } from '@/types'
 import { toast } from 'sonner'
 import { useAuth } from '@/components/providers/auth-provider'
+import { AuthModal } from '@/components/auth/auth-modal'
 import Footer from '@/components/layout/footer'
 import { loadGoogleMaps } from '@/lib/google-maps-loader'
 
@@ -20,6 +21,8 @@ export default function MapaPage() {
   const [ongs, setOngs] = useState<ONG[]>([])
   const [filteredOngs, setFilteredOngs] = useState<ONG[]>([])
   const [selectedOng, setSelectedOng] = useState<ONG | null>(null)
+  const [showAuthModal, setShowAuthModal] = useState(false)
+  const [ongToOpenAfterAuth, setOngToOpenAfterAuth] = useState<ONG | null>(null)
   const [loading, setLoading] = useState(true)
   const [mapLoading, setMapLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
@@ -181,7 +184,7 @@ export default function MapaPage() {
 
       // Adicionar listener de clique
       marker.addListener('click', () => {
-        setSelectedOng(ong)
+        handleOngClick(ong)
       })
 
       markersRef.current.push(marker)
@@ -252,6 +255,21 @@ export default function MapaPage() {
     }
   }
 
+  const handleOngClick = (ong: ONG) => {
+    if (!user) {
+      setOngToOpenAfterAuth(ong)
+      setShowAuthModal(true)
+    } else {
+      setSelectedOng(ong)
+    }
+  }
+
+  const handleAuthSuccess = () => {
+    if (ongToOpenAfterAuth) {
+      setSelectedOng(ongToOpenAfterAuth)
+      setOngToOpenAfterAuth(null)
+    }
+  }
   const estados = [...new Set(ongs.map(ong => ong.estado).filter(Boolean))].sort()
   const tipos = [...new Set(ongs.flatMap(ong => ong.tipo).filter(Boolean))].sort()
 
@@ -358,7 +376,7 @@ export default function MapaPage() {
                           <Card 
                             key={ong.id}
                             className="cursor-pointer hover:shadow-md transition-all duration-200 rounded-xl p-3"
-                            onClick={() => setSelectedOng(ong)}
+                            onClick={() => handleOngClick(ong)}
                           >
                             <div className="flex items-start space-x-3">
                               <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
@@ -583,6 +601,13 @@ export default function MapaPage() {
           )}
         </DialogContent>
       </Dialog>
+      
+      {/* Modal de Autenticação */}
+      <AuthModal 
+        open={showAuthModal} 
+        onOpenChange={setShowAuthModal}
+        onAuthSuccess={handleAuthSuccess}
+      />
       
       <Footer />
     </div>

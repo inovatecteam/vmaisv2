@@ -41,14 +41,14 @@ type RegisterData = z.infer<typeof registerSchema>
 interface AuthModalProps {
   open: boolean
   onOpenChange: (open: boolean) => void
+  onAuthSuccess?: () => void
 }
 
-export function AuthModal({ open, onOpenChange }: AuthModalProps) {
+export function AuthModal({ open, onOpenChange, onAuthSuccess }: AuthModalProps) {
   const [isLogin, setIsLogin] = useState(true)
   const [loading, setLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
   const { refreshUser } = useAuth()
-  const router = useRouter()
 
   const loginForm = useForm<LoginData>({
     resolver: zodResolver(loginSchema)
@@ -73,8 +73,11 @@ export function AuthModal({ open, onOpenChange }: AuthModalProps) {
       
       await refreshUser()
       toast.success('Login realizado com sucesso!')
+      
+      if (onAuthSuccess) {
+        onAuthSuccess()
+      }
       onOpenChange(false)
-      router.push('/')
     } catch (error: any) {
       if (error.message?.includes('Invalid login credentials')) {
         toast.error('Email ou senha incorretos.')
@@ -104,8 +107,11 @@ export function AuthModal({ open, onOpenChange }: AuthModalProps) {
         // Sessão estabelecida imediatamente
         await refreshUser()
         toast.success('Conta criada com sucesso!')
+        
+        if (onAuthSuccess) {
+          onAuthSuccess()
+        }
         onOpenChange(false)
-        router.push('/')
       }
     } catch (error: any) {
       if (error.message?.includes('User already registered')) {
