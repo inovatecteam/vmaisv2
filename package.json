@@ -70,5 +70,8 @@
     "typescript": "5.2.2",
     "vaul": "^0.9.9",
     "zod": "^4.0.10"
+  },
+  "devDependencies": {
+    "supabase": "^2.33.9"
   }
 }
