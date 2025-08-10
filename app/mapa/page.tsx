@@ -301,18 +301,6 @@ export default function MapaPage() {
                         className="pl-10 rounded-xl text-sm"
                       />
                     </div>
-                    
-                    <Select value={selectedEstado} onValueChange={setSelectedEstado}>
-                      <SelectTrigger className="rounded-xl text-sm">
-                        <SelectValue placeholder="Estado" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all">Todos os estados</SelectItem>
-                        {estados.map(estado => (
-                          <SelectItem key={estado} value={estado as string}>{estado}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
 
                     <Select value={selectedTipo} onValueChange={setSelectedTipo}>
                       <SelectTrigger className="rounded-xl text-sm">
