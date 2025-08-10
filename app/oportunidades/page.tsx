@@ -205,7 +205,7 @@ export default function CatalogoPage() {
   </CardContent>
 </Card>
      {/* Resultados */}
-          <div className="mb-6">
+          <div className="mb-6 mt-6">
             <p className="text-gray-600">
               {filteredOngs.length} ONG{filteredOngs.length !== 1 ? 's' : ''} encontrada{filteredOngs.length !== 1 ? 's' : ''}
             </p>
