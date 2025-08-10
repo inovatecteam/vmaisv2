@@ -228,6 +228,85 @@ export default function TermosPage() {
             </CardContent>
           </Card>
 
+          {/* Volunteer Terms */}
+          <Card className="rounded-2xl shadow-lg mt-8">
+            <CardHeader>
+              <CardTitle className="flex items-center text-xl">
+                <div className="p-2 bg-primary/10 rounded-lg mr-3">
+                  <Users className="h-5 w-5 text-primary" />
+                </div>
+                Termo de Voluntariado
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4 text-gray-700">
+                <p>
+                  Pelo presente termo, o(a) candidato(a) a voluntário(a) ("<strong>VOLUNTÁRIO(A)</strong>"), 
+                  inscrito(a) na plataforma Voluntaria+ ("<strong>Plataforma</strong>"), se compromete a 
+                  desempenhar Trabalho Voluntário, conforme o disposto na Lei nº 9.608 de 18/02/98.
+                </p>
+                
+                <div>
+                  <h4 className="font-semibold text-gray-900 mb-3">Considerando que:</h4>
+                  <ul className="space-y-2 ml-4">
+                    <li>• A Plataforma Voluntaria+ é digital e gratuita para todos os usuários, com a finalidade de mobilizar e conectar pessoas interessadas em voluntariado com organizações, coletivos sociais e organizações não-governamentais ("<strong>ONGs</strong>") que divulgam suas oportunidades de trabalho voluntário;</li>
+                    <li>• O Voluntaria+ atua apenas como um meio de conexão entre as partes, não se responsabilizando pela relação entre VOLUNTÁRIO(A) e ONG;</li>
+                    <li>• O Trabalho Voluntário será realizado diretamente dentro e para uma ONG cadastrada no Voluntaria+, escolhida pelo(a) próprio(a) VOLUNTÁRIO(A);</li>
+                    <li>• Cabe exclusivamente às ONGs e VOLUNTÁRIOS(AS) assinarem entre si um termo de adesão ao trabalho voluntário, detalhando atividades, prazos e demais recomendações legais.</li>
+                  </ul>
+                </div>
+
+                <p>
+                  Dessa forma, o(a) <strong>VOLUNTÁRIO(A)</strong> declara estar ciente e de acordo com os seguintes termos:
+                </p>
+
+                <div>
+                  <h4 className="font-semibold text-gray-900 mb-2">1. Prestação do Trabalho Voluntário</h4>
+                  <p className="mb-2">
+                    O trabalho voluntário a ser prestado pelo(a) VOLUNTÁRIO(A) será de forma gratuita (sem remuneração) 
+                    e para fins sociais, sendo de livre e espontânea vontade a sua participação.
+                  </p>
+                  <p className="text-sm italic">
+                    <strong>Parágrafo único:</strong> O trabalho voluntário realizado não gera vínculo empregatício 
+                    entre o(a) VOLUNTÁRIO(A) e a ONG, não resultando em obrigações trabalhistas, previdenciárias 
+                    ou tributárias de nenhuma das partes.
+                  </p>
+                </div>
+
+                <div>
+                  <h4 className="font-semibold text-gray-900 mb-2">2. Termo de Adesão</h4>
+                  <p>
+                    A atuação do(a) VOLUNTÁRIO(A) na ONG escolhida deve ocorrer mediante a assinatura de um termo 
+                    de adesão entre ele(a) e a organização, definindo as condições, responsabilidades e duração da atividade.
+                  </p>
+                </div>
+
+                <div>
+                  <h4 className="font-semibold text-gray-900 mb-2">3. Custos e Despesas</h4>
+                  <p>
+                    O(a) VOLUNTÁRIO(A) é responsável por todas as despesas pessoais relacionadas à sua participação, 
+                    incluindo alimentação e deslocamento, exceto quando houver acordo prévio e expresso com a ONG.
+                  </p>
+                </div>
+
+                <div>
+                  <h4 className="font-semibold text-gray-900 mb-2">4. Responsabilidade da Plataforma</h4>
+                  <p>
+                    O Voluntaria+ atua exclusivamente como uma plataforma de conexão, não sendo responsável por 
+                    qualquer dano, perda ou conflito decorrente da relação entre VOLUNTÁRIO(A) e ONG.
+                  </p>
+                </div>
+
+                <div className="bg-primary/5 p-4 rounded-xl">
+                  <p className="text-sm">
+                    <strong>Em caso de dúvidas</strong>, o VOLUNTÁRIO(A) pode entrar em contato pelo e-mail: 
+                    <strong> voluntariamaisrs@gmail.com</strong>
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
           {/* Contact */}
           <Card className="rounded-2xl shadow-lg mt-8">
             <CardContent className="p-6 text-center">
