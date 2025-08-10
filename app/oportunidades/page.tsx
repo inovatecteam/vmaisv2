@@ -145,12 +145,11 @@ export default function CatalogoPage() {
           </div>
 
            {/* Filtros */}
-              <Card className="rounded-2xl shadow-lg flex-shrink-0">
+              <Card className="rounded-2xl shadow-lg flex-shrink-0 w-full">
   <CardContent className="p-4">
-    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
-      
-      {/* Search bar (50% on desktop, full on mobile) */}
-      <div className="relative w-full md:w-1/2">
+    <div className="flex flex-col md:flex-row gap-3">
+      {/* Search Bar (Left, ~50% width) */}
+      <div className="relative md:w-1/2">
         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
         <Input
           placeholder="Buscar ONGs..."
@@ -160,23 +159,24 @@ export default function CatalogoPage() {
         />
       </div>
 
-      {/* Filters + button */}
-      <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
-        
+      {/* Right Side (Selects and Button in a row) */}
+      <div className="flex flex-col md:flex-row md:w-1/2 gap-3">
         <Select value={selectedTipo} onValueChange={setSelectedTipo}>
-          <SelectTrigger className="rounded-xl text-sm">
+          <SelectTrigger className="rounded-xl text-sm w-full">
             <SelectValue placeholder="Tipo" />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">Todos os tipos</SelectItem>
-            {tipos.map(tipo => (
-              <SelectItem key={tipo} value={tipo as string}>{tipo}</SelectItem>
+            {tipos.map((tipo) => (
+              <SelectItem key={tipo} value={tipo as string}>
+                {tipo}
+              </SelectItem>
             ))}
           </SelectContent>
         </Select>
 
         <Select value={selectedLocalizacaoTipo} onValueChange={setSelectedLocalizacaoTipo}>
-          <SelectTrigger className="rounded-xl text-sm">
+          <SelectTrigger className="rounded-xl text-sm w-full">
             <SelectValue placeholder="Localização" />
           </SelectTrigger>
           <SelectContent>
@@ -189,25 +189,22 @@ export default function CatalogoPage() {
         <Button
           variant="outline"
           onClick={() => {
-            setSearchTerm('')
-            setSelectedEstado('all')
-            setSelectedTipo('all')
-            setSelectedLocalizacaoTipo('all')
+            setSearchTerm('');
+            setSelectedEstado('all');
+            setSelectedTipo('all');
+            setSelectedLocalizacaoTipo('all');
           }}
-          className="rounded-xl text-sm"
+          className="rounded-xl text-sm w-full md:w-auto"
           size="sm"
         >
           <Filter className="h-3 w-3 mr-2" />
           Limpar filtros
         </Button>
-
       </div>
     </div>
   </CardContent>
 </Card>
-
-
-          {/* Resultados */}
+     {/* Resultados */}
           <div className="mb-6">
             <p className="text-gray-600">
               {filteredOngs.length} ONG{filteredOngs.length !== 1 ? 's' : ''} encontrada{filteredOngs.length !== 1 ? 's' : ''}
