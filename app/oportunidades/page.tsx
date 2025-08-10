@@ -146,58 +146,66 @@ export default function CatalogoPage() {
 
            {/* Filtros */}
               <Card className="rounded-2xl shadow-lg flex-shrink-0">
-                <CardContent className="p-4">
-                  <div className="space-y-3">
-                    <div className="relative">
-                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-                      <Input
-                        placeholder="Buscar ONGs..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        className="pl-10 rounded-xl text-sm"
-                      />
-                    </div>
+  <CardContent className="p-4">
+    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+      
+      {/* Search bar (50% on desktop, full on mobile) */}
+      <div className="relative w-full md:w-1/2">
+        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+        <Input
+          placeholder="Buscar ONGs..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="pl-10 rounded-xl text-sm w-full"
+        />
+      </div>
 
-                    <Select value={selectedTipo} onValueChange={setSelectedTipo}>
-                      <SelectTrigger className="rounded-xl text-sm">
-                        <SelectValue placeholder="Tipo" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all">Todos os tipos</SelectItem>
-                        {tipos.map(tipo => (
-                          <SelectItem key={tipo} value={tipo as string}>{tipo}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+      {/* Filters + button */}
+      <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
+        
+        <Select value={selectedTipo} onValueChange={setSelectedTipo}>
+          <SelectTrigger className="rounded-xl text-sm">
+            <SelectValue placeholder="Tipo" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Todos os tipos</SelectItem>
+            {tipos.map(tipo => (
+              <SelectItem key={tipo} value={tipo as string}>{tipo}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
 
-                    <Select value={selectedLocalizacaoTipo} onValueChange={setSelectedLocalizacaoTipo}>
-                      <SelectTrigger className="rounded-xl text-sm">
-                        <SelectValue placeholder="Localização" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all">Presencial e Online</SelectItem>
-                        <SelectItem value="presencial">Presencial</SelectItem>
-                        <SelectItem value="online">Online</SelectItem>
-                  </SelectContent>
-                    </Select>
+        <Select value={selectedLocalizacaoTipo} onValueChange={setSelectedLocalizacaoTipo}>
+          <SelectTrigger className="rounded-xl text-sm">
+            <SelectValue placeholder="Localização" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Presencial e Online</SelectItem>
+            <SelectItem value="presencial">Presencial</SelectItem>
+            <SelectItem value="online">Online</SelectItem>
+          </SelectContent>
+        </Select>
 
-                    <Button
-                      variant="outline"
-                      onClick={() => {
-                        setSearchTerm('')
-                        setSelectedEstado('all')
-                        setSelectedTipo('all')
-                        setSelectedLocalizacaoTipo('all')
-                      }}
-                      className="w-full rounded-xl text-sm"
-                      size="sm"
-                    >
-                      <Filter className="h-3 w-3 mr-2" />
-                      Limpar filtros
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
+        <Button
+          variant="outline"
+          onClick={() => {
+            setSearchTerm('')
+            setSelectedEstado('all')
+            setSelectedTipo('all')
+            setSelectedLocalizacaoTipo('all')
+          }}
+          className="rounded-xl text-sm"
+          size="sm"
+        >
+          <Filter className="h-3 w-3 mr-2" />
+          Limpar filtros
+        </Button>
+
+      </div>
+    </div>
+  </CardContent>
+</Card>
+
 
           {/* Resultados */}
           <div className="mb-6">
