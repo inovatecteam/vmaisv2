@@ -14,6 +14,8 @@ import { ONG } from '@/types'
 import { toast } from 'sonner'
 import { useAuth } from '@/components/providers/auth-provider'
 import { AuthModal } from '@/components/auth/auth-modal'
+import { WhatsAppConfirmModal } from '@/components/whatsapp-confirm-modal'
+import { sendContactEmail } from '@/lib/api'
 import Footer from '@/components/layout/footer'
 
 export default function CatalogoPage() {
@@ -22,6 +24,8 @@ export default function CatalogoPage() {
   const [selectedOng, setSelectedOng] = useState<ONG | null>(null)
   const [showAuthModal, setShowAuthModal] = useState(false)
   const [ongToOpenAfterAuth, setOngToOpenAfterAuth] = useState<ONG | null>(null)
+  const [showWhatsappConfirmModal, setShowWhatsappConfirmModal] = useState(false)
+  const [ongToConfirmWhatsapp, setOngToConfirmWhatsapp] = useState<ONG | null>(null)
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedEstado, setSelectedEstado] = useState<string>('all')
@@ -105,10 +109,42 @@ export default function CatalogoPage() {
   }
 
   const handleWhatsAppClick = (ong: ONG) => {
+    if (!user) {
+      setOngToOpenAfterAuth(ong)
+      setShowAuthModal(true)
+      return
+    }
+
     if (ong.whatsapp) {
-      handleInteraction(ong.id)
-      const whatsappUrl = `https://wa.me/${ong.whatsapp.replace(/\D/g, '')}?text=Olá! Encontrei vocês na plataforma Voluntaria%2B e gostaria de saber como posso ajudar como voluntário.`
+      setOngToConfirmWhatsapp(ong)
+      setShowWhatsappConfirmModal(true)
+    }
+  }
+
+  const handleWhatsappConfirmed = async (observation: string) => {
+    if (!ongToConfirmWhatsapp || !user) return
+
+    try {
+      // Send contact email
+      await sendContactEmail({
+        user_id: user.id,
+        ong_id: ongToConfirmWhatsapp.id,
+        observation_message: observation
+      })
+
+      // Register interaction
+      await handleInteraction(ongToConfirmWhatsapp.id)
+
+      // Redirect to WhatsApp
+      const whatsappUrl = `https://wa.me/${ongToConfirmWhatsapp.whatsapp!.replace(/\D/g, '')}?text=Olá! Encontrei vocês na plataforma Voluntaria%2B e gostaria de saber como posso ajudar como voluntário.`
       window.open(whatsappUrl, '_blank')
+
+      toast.success('Informações enviadas! Redirecionando para WhatsApp...')
+      setShowWhatsappConfirmModal(false)
+      setOngToConfirmWhatsapp(null)
+    } catch (error: any) {
+      console.error('Erro ao enviar informações:', error)
+      toast.error('Erro ao enviar informações. Tente novamente.')
     }
   }
 
@@ -498,6 +534,15 @@ export default function CatalogoPage() {
         open={showAuthModal} 
         onOpenChange={setShowAuthModal}
         onAuthSuccess={handleAuthSuccess}
+      />
+      
+      {/* Modal de Confirmação do WhatsApp */}
+      <WhatsAppConfirmModal
+        open={showWhatsappConfirmModal}
+        onOpenChange={setShowWhatsappConfirmModal}
+        ong={ongToConfirmWhatsapp}
+        user={user}
+        onConfirm={handleWhatsappConfirmed}
       />
       
       <Footer />
