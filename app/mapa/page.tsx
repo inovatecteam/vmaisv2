@@ -340,10 +340,9 @@ export default function MapaPage() {
           </div>
 
           <div className="grid lg:grid-cols-3 gap-6">
-            {/* Sidebar com filtros e lista */}
-            <div className="lg:col-span-1 space-y-4 overflow-hidden flex flex-col h-96 lg:h-auto">
-              {/* Filtros */}
-              <Card className="rounded-2xl shadow-lg flex-shrink-0">
+            {/* Filtros - Always first on mobile */}
+            <div className="lg:col-span-1 order-1">
+              <Card className="rounded-2xl shadow-xl shadow-gray-200/50 flex-shrink-0">
                 <CardContent className="p-4">
                   <div className="space-y-3">
                     <div className="relative">
@@ -396,9 +395,30 @@ export default function MapaPage() {
                   </div>
                 </CardContent>
               </Card>
+            </div>
 
-              {/* Lista de ONGs */}
-              <Card className="rounded-2xl shadow-lg flex-1 flex flex-col min-h-0">
+            {/* Mapa - Second on mobile, spans 2 columns on desktop */}
+            <div className="lg:col-span-2 order-2 h-96 lg:h-full">
+              <Card className="h-full rounded-2xl shadow-xl shadow-gray-200/50 overflow-hidden">
+                <CardContent className="p-0 h-full">
+                  <div className="relative w-full h-full">
+                    <div ref={mapRef} className="w-full h-full" />
+                    {mapLoading && (
+                      <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-75 rounded-2xl">
+                        <div className="text-center">
+                          <Loader2 className="h-8 w-8 animate-spin text-primary mx-auto mb-3" />
+                          <p className="text-gray-600">Carregando mapa...</p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Lista de ONGs - Third on mobile, first column on desktop */}
+            <div className="lg:col-span-1 order-3 lg:order-3 space-y-4 overflow-hidden flex flex-col h-96 lg:h-auto">
+              <Card className="rounded-2xl shadow-xl shadow-gray-200/50 flex-1 flex flex-col min-h-0">
                 <CardHeader className="pb-3 flex-shrink-0">
                   <CardTitle className="text-lg">
                     ONGs Encontradas ({filteredOngs.length})
@@ -448,25 +468,6 @@ export default function MapaPage() {
                       <div className="text-center py-8">
                         <Search className="h-12 w-12 text-gray-300 mx-auto mb-3" />
                         <p className="text-sm text-gray-500">Nenhuma ONG encontrada</p>
-                      </div>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-
-            {/* Mapa */}
-            <div className="lg:col-span-2 h-96 lg:h-full">
-              <Card className="h-full rounded-2xl shadow-lg overflow-hidden">
-                <CardContent className="p-0 h-full">
-                  <div className="relative w-full h-full">
-                    <div ref={mapRef} className="w-full h-full" />
-                    {mapLoading && (
-                      <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-75 rounded-2xl">
-                        <div className="text-center">
-                          <Loader2 className="h-8 w-8 animate-spin text-primary mx-auto mb-3" />
-                          <p className="text-gray-600">Carregando mapa...</p>
-                        </div>
                       </div>
                     )}
                   </div>
