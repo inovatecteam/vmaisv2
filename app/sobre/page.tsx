@@ -83,10 +83,10 @@ export default function SobrePage() {
           <div className="text-center mb-16">
             <div className="inline-flex items-center bg-primary/10 rounded-full px-6 py-2 mb-6">
               <Heart className="h-5 w-5 text-primary mr-2 fill-current" />
-              <span className="text-primary font-medium">Nossa História</span>
+              <span className="text-primary text-sm font-medium">Nossa História</span>
             </div>
             
-            <h1 className="text-4xl md:text-5xl font-bold mb-6">
+            <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6">
               Sobre a <span className="text-primary">Voluntaria+</span>
             </h1>
             <p className="text-lg text-gray-600 max-w-4xl mx-auto leading-relaxed mt-4">
