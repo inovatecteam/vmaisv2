@@ -398,7 +398,7 @@ export default function MapaPage() {
             </div>
 
             {/* Mapa - Second on mobile, spans 2 columns on desktop */}
-            <div className="lg:col-span-2 order-2 h-96 lg:h-full">
+            <div className="lg:col-span-2 order-2 h-96 lg:h-auto lg:min-h-[600px]">
               <Card className="h-full rounded-2xl shadow-xl shadow-gray-200/50 overflow-hidden">
                 <CardContent className="p-0 h-full">
                   <div className="relative w-full h-full">
@@ -417,7 +417,7 @@ export default function MapaPage() {
             </div>
 
             {/* Lista de ONGs - Third on mobile, first column on desktop */}
-            <div className="lg:col-span-1 order-3 lg:order-3 space-y-4 overflow-hidden flex flex-col h-96 lg:h-auto">
+            <div className="lg:col-span-1 order-3 lg:order-3 space-y-4 overflow-hidden flex flex-col h-96 lg:h-96">
               <Card className="rounded-2xl shadow-xl shadow-gray-200/50 flex-1 flex flex-col min-h-0">
                 <CardHeader className="pb-3 flex-shrink-0">
                   <CardTitle className="text-lg">
