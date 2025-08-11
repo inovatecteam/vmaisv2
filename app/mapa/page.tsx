@@ -341,7 +341,7 @@ export default function MapaPage() {
 
           <div className="grid lg:grid-cols-3 gap-6 h-[calc(100vh-300px)]">
             {/* Sidebar com filtros e lista */}
-            <div className="lg:col-span-1 space-y-4 overflow-hidden flex flex-col">
+            <div className="lg:col-span-1 space-y-4 overflow-hidden flex flex-col h-96 lg:h-auto">
               {/* Filtros */}
               <Card className="rounded-2xl shadow-lg flex-shrink-0">
                 <CardContent className="p-4">
@@ -456,7 +456,7 @@ export default function MapaPage() {
             </div>
 
             {/* Mapa */}
-            <div className="lg:col-span-2">
+            <div className="lg:col-span-2 h-96 lg:h-full">
               <Card className="h-full rounded-2xl shadow-lg overflow-hidden">
                 <CardContent className="p-0 h-full">
                   <div className="relative w-full h-full">
