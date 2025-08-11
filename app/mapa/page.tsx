@@ -339,7 +339,7 @@ export default function MapaPage() {
             </p>
           </div>
 
-          <div className="grid lg:grid-cols-3 gap-6 h-[calc(100vh-300px)]">
+          <div className="grid lg:grid-cols-3 gap-6">
             {/* Sidebar com filtros e lista */}
             <div className="lg:col-span-1 space-y-4 overflow-hidden flex flex-col h-96 lg:h-auto">
               {/* Filtros */}
