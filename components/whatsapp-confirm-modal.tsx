@@ -12,6 +12,7 @@ import { z } from 'zod'
 import { toast } from 'sonner'
 import { Loader2, MessageCircle, CheckCircle, AlertTriangle } from 'lucide-react'
 import { User, ONG } from '@/types'
+import Link from 'next/link'
 
 const confirmationSchema = z.object({
   acceptTerms: z.boolean().refine(val => val === true, {
@@ -120,7 +121,16 @@ export function WhatsAppConfirmModal({
               />
               <div className="flex-1">
                 <Label htmlFor="acceptTerms" className="text-sm font-medium cursor-pointer">
-                  Li e aceito os Termos de Uso e Voluntariado
+                  Li e aceito os{' '}
+                  <Link 
+                    href="/termos" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="text-primary hover:underline"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    Termos de Uso e Voluntariado
+                  </Link>
                 </Label>
                 <p className="text-xs text-gray-500 mt-1">
                   Ao marcar esta opção, você confirma que leu e concorda com nossos termos.
