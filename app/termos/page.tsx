@@ -70,7 +70,7 @@ export default function TermosPage() {
             </div>
             
             <h1 className="text-4xl md:text-5xl font-bold mb-4">
-              Termos de <span className="text-primary">Uso</span>
+              Termos de <span className="text-primary">Uso</span> e Voluntariado
             </h1>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
               Condições gerais para utilização da plataforma Voluntaria+ e seus serviços.
