@@ -77,24 +77,24 @@ export default function SobrePage() {
     <div className="min-h-screen bg-gradient-to-br from-white via-yellow-50/30 to-orange-50/30">
       <Navbar />
       
-      <div className="pt-32 pb-20 px-4">
+      <div className="pt-24 sm:pt-28 md:pt-32 lg:pt-36 pb-20 px-4">
         <div className="max-w-6xl mx-auto">
           {/* Header */}
           <div className="text-center mb-16">
-            <div className="inline-flex items-center bg-primary/10 rounded-full px-6 py-2 mb-6">
-              <Heart className="h-5 w-5 text-primary mr-2 fill-current" />
-              <span className="text-primary text-sm font-medium">Nossa História</span>
+            <div className="inline-flex items-center bg-primary/10 rounded-full px-3 py-1.5 sm:px-4 sm:py-2 md:px-6 md:py-2 mb-6">
+              <Heart className="h-4 w-4 sm:h-5 sm:w-5 text-primary mr-2 fill-current" />
+              <span className="text-xs sm:text-sm md:text-base text-primary font-medium">Nossa História</span>
             </div>
             
-            <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6">
+            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-6">
               Sobre a <span className="text-primary">Voluntaria+</span>
             </h1>
-            <p className="text-lg text-gray-600 max-w-4xl mx-auto leading-relaxed mt-4">
+            <p className="text-base sm:text-lg text-gray-600 max-w-4xl mx-auto leading-relaxed mt-4">
               Nossa missão é simples, mas poderosa: conectar corações generosos com causas que fazem a diferença. 
               Como organização sem fins lucrativos, desenvolvemos uma plataforma que facilita o encontro entre 
               voluntários e ONGs, democratizando o acesso ao voluntariado em todo o Rio Grande do Sul.
             </p>
-            <p className="text-lg text-gray-600 max-w-4xl mx-auto leading-relaxed mt-4">
+            <p className="text-base sm:text-lg text-gray-600 max-w-4xl mx-auto leading-relaxed mt-4">
               Acreditamos que cada pessoa tem o poder de gerar impacto positivo em sua comunidade. Por isso, 
               criamos uma ponte digital que torna o voluntariado mais acessível, transparente e eficiente, 
               fortalecendo o tecido social gaúcho através da solidariedade e da inovação jovem.

@@ -90,14 +90,14 @@ const faqs = [
       <Navbar />
       
       {/* Hero Section */}
-      <section className="min-h-screen flex items-center justify-center px-4 pt-20 sm:pt-32 pb-8">
+      <section className="min-h-screen flex items-center justify-center px-4 pt-24 sm:pt-28 md:pt-32 lg:pt-36 pb-8">
         <div className="max-w-6xl mx-auto text-center">
-          <div className="inline-flex items-center bg-primary/10 rounded-full px-4 py-1 sm:px-6 sm:py-2 mb-8">
-            <Heart className="h-5 w-5 text-primary mr-2 fill-current" />
-            <span className="text-sm sm:text-base text-primary font-medium">Conectando corações e causas</span>
+          <div className="inline-flex items-center bg-primary/10 rounded-full px-3 py-1.5 sm:px-4 sm:py-2 md:px-6 md:py-2 mb-6 sm:mb-8">
+            <Heart className="h-4 w-4 sm:h-5 sm:w-5 text-primary mr-2 fill-current" />
+            <span className="text-xs sm:text-sm md:text-base text-primary font-medium">Conectando corações e causas</span>
           </div>
           
-          <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold mb-6 sm:mb-8 bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 bg-clip-text text-transparent leading-tight px-2">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold mb-6 sm:mb-8 bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 bg-clip-text text-transparent leading-tight px-2">
             Transforme vidas através do{' '}
             <span className="text-primary">voluntariado</span>
           </h1>
