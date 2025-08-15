@@ -7,8 +7,8 @@ import { Eye, DollarSign, Printer, ExternalLink, Heart } from 'lucide-react'
 import Link from 'next/link'
 
 export function UcergsFundraisingCard() {
-  // Link externo para a página de arrecadação (substitua por um link real)
-  const fundraisingLink = "https://example.com/ucergs-arrecadacao" 
+  // Link externo para a página de arrecadação
+  const fundraisingLink = "https://www.vakinha.com.br/5679745" 
 
   return (
     <Card className="rounded-2xl shadow-xl border-0 bg-gradient-to-br from-yellow-50 to-orange-50 hover:shadow-2xl transition-all duration-300">
@@ -27,7 +27,7 @@ export function UcergsFundraisingCard() {
           </div>
         </div>
         <CardDescription className="text-gray-700 text-base leading-relaxed">
-          Apoie a União de Cegos do Rio Grande do Sul na aquisição de um móvel adequado para a impressora braille Índex DV5.
+          Apoie a União de Cegos do Rio Grande do Sul na aquisição de um móvel que permita o uso ideal e seguro da impressora braille Índex DV5, essencial para a produção de materiais táteis e inclusão de pessoas com deficiência visual.
         </CardDescription>
       </CardHeader>
       
@@ -60,19 +60,17 @@ export function UcergsFundraisingCard() {
               Por que sua ajuda é importante?
             </h3>
             <p className="text-sm text-gray-600 leading-relaxed">
-              A impressora braille Índex DV5 é essencial para a produção de materiais didáticos e informativos, 
-              promovendo a autonomia e inclusão de pessoas cegas. Um móvel adequado garante a eficácia e 
-              durabilidade do equipamento, otimizando o trabalho da UCERGS.
+              Há mais de 40 anos, a UCERGS promove a habilitação e reabilitação de pessoas cegas. A impressora braille Índex DV5 permite imprimir livros e textos táteis, garantindo acesso à alfabetização, cultura e oportunidades. Um móvel adequado reduzirá o ruído e protegerá o equipamento, assegurando sua durabilidade.
             </p>
           </div>
 
           <div className="bg-blue-50 p-4 rounded-xl border border-blue-100">
             <h4 className="font-semibold text-blue-800 mb-2">Impacto esperado:</h4>
             <ul className="text-sm text-blue-700 space-y-1">
-              <li>• Melhoria na qualidade dos materiais impressos</li>
-              <li>• Maior durabilidade e proteção do equipamento</li>
-              <li>• Aumento da eficiência na produção de conteúdo</li>
-              <li>• Benefício direto para a comunidade de pessoas cegas</li>
+              <li>• Expansão da produção de livros e materiais em braille</li>
+              <li>• Proteção contra desgaste e danos ambientais</li>
+              <li>• Mais eficiência no atendimento da comunidade</li>
+              <li>• Fortalecimento da autonomia e inclusão social</li>
             </ul>
           </div>
         </div>
