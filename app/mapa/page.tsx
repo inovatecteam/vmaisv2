@@ -341,7 +341,7 @@ export default function MapaPage() {
 
           <div className="grid lg:grid-cols-3 gap-6">
             {/* Left side - Filters and ONGs list (1/3 width) */}
-            <div className="lg:col-span-1 order-1 space-y-4 flex flex-col">
+            <div className="lg:col-span-1 order-1 space-y-4 flex flex-col h-96 lg:h-[600px]">
               {/* Filtros */}
               <Card className="rounded-2xl shadow-xl shadow-gray-200/50 flex-shrink-0">
                 <CardContent className="p-4">
