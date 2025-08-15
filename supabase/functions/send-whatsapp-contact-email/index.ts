@@ -186,7 +186,7 @@ Equipe Voluntaria+
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        from: 'Voluntaria+ <info@voluntariaplus.com>',
+        from: 'Voluntaria+ <info@voluntariamais.com.br>',
         to: ['voluntariamaisrs@gmail.com'],
         subject: adminEmailSubject,
         text: adminEmailBody,
@@ -201,7 +201,7 @@ Equipe Voluntaria+
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        from: 'Voluntaria+ <info@voluntariaplus.com>',
+        from: 'Voluntaria+ <info@voluntariamais.com.br>',
         to: [ongOwner.email],
         subject: ongEmailSubject,
         text: ongEmailBody,
