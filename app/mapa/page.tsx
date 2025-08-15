@@ -397,8 +397,8 @@ export default function MapaPage() {
                 </CardContent>
               </Card>
 
-              {/* Lista de ONGs - Below filters, fills remaining height */}
-              <Card className="rounded-2xl shadow-xl shadow-gray-200/50 flex-1 flex flex-col min-h-0 h-96 lg:h-auto lg:min-h-[600px]">
+              {/* Lista de ONGs - Below filters, matches map height exactly */}
+              <Card className="rounded-2xl shadow-xl shadow-gray-200/50 flex flex-col min-h-0 h-96 lg:h-auto lg:min-h-[600px]">
                 <CardHeader className="pb-3 flex-shrink-0">
                   <CardTitle className="text-lg">
                     ONGs Encontradas ({filteredOngs.length})
@@ -457,7 +457,7 @@ export default function MapaPage() {
 
             {/* Right side - Map (2/3 width) */}
             <div className="lg:col-span-2 order-2">
-              <Card className="h-full rounded-2xl shadow-xl shadow-gray-200/50 overflow-hidden h-96 lg:h-auto lg:min-h-[600px]">
+              <Card className="h-96 lg:h-auto lg:min-h-[600px] rounded-2xl shadow-xl shadow-gray-200/50 overflow-hidden">
                 <CardContent className="p-0 h-full">
                   <div className="relative w-full h-full">
                     <div ref={mapRef} className="w-full h-full" />
