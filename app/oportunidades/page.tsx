@@ -17,6 +17,7 @@ import { AuthModal } from '@/components/auth/auth-modal'
 import { WhatsAppConfirmModal } from '@/components/whatsapp-confirm-modal'
 import { sendContactEmail } from '@/lib/api'
 import Footer from '@/components/layout/footer'
+import { UcergsFundraisingCard } from '@/components/ucergs-fundraising-card'
 
 export default function CatalogoPage() {
   const [ongs, setOngs] = useState<ONG[]>([])
@@ -196,6 +197,11 @@ export default function CatalogoPage() {
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
               Descubra oportunidades incríveis de voluntariado na sua região e conecte-se com causas que fazem sentido para você.
             </p>
+          </div>
+
+          {/* Card de Arrecadação UCERGS */}
+          <div className="mb-8 max-w-2xl mx-auto">
+            <UcergsFundraisingCard />
           </div>
 
            {/* Filtros */}
