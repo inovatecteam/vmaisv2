@@ -397,70 +397,75 @@ export default function MapaPage() {
                 </CardContent>
               </Card>
 
-              {/* Lista de ONGs - Below filters, matches map height exactly */}
-              <Card className="rounded-2xl shadow-xl shadow-gray-200/50 flex flex-col min-h-0 h-96 lg:h-auto lg:min-h-[600px]">
-                <CardHeader className="pb-3 flex-shrink-0">
-                  <CardTitle className="text-lg">
-                    ONGs Encontradas ({filteredOngs.length})
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="p-0 flex-1 overflow-y-auto">
-                  <div className="px-4 pb-4">
-                    {filteredOngs.length > 0 ? (
-                      <div className="space-y-3">
-                        {filteredOngs.map((ong) => (
-                          <Card 
-                            key={ong.id}
-                            className="cursor-pointer hover:shadow-md transition-all duration-200 rounded-xl p-3"
-                            onClick={() => handleOngClick(ong)}
-                          >
-                            <div className="flex items-start space-x-3">
-                              <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
-                                <Heart className="h-5 w-5 text-primary fill-current" />
-                              </div>
-                              <div className="flex-1 min-w-0">
-                                <h3 className="font-medium text-sm truncate">{ong.nome}</h3>
-                                <div className="flex items-center text-xs text-gray-500 mt-1">
-                                  <MapPin className="h-3 w-3 mr-1" />
-                                  <span className="text-sm truncate">
-                                    {ong.localizacao_tipo === 'online' ? (
-                                      'Online'
-                                    ) : ong.localizacao_tipo === 'ambos' ? (
-                                      'Online e Presencial'
-                                    ) : (
-                                      `${ong.cidade}, ${ong.estado}`
-                                    )}
-                                  </span>
+              {/* Lista de ONGs - Below filters, exact same height as map */}
+              <div className="h-96 lg:h-[600px]">
+                <Card className="rounded-2xl shadow-xl shadow-gray-200/50 h-full flex flex-col">
+                  <CardHeader className="pb-3 flex-shrink-0">
+                    <CardTitle className="text-lg">
+                      ONGs Encontradas ({filteredOngs.length})
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="p-0 flex-1 min-h-0 overflow-y-auto">
+                    <div className="px-4 pb-4">
+                      {filteredOngs.length > 0 ? (
+                        <div className="space-y-3">
+                          {filteredOngs.map((ong) => (
+                            <Card 
+                              key={ong.id}
+                              className="cursor-pointer hover:shadow-md transition-all duration-200 rounded-xl p-3"
+                              onClick={() => handleOngClick(ong)}
+                            >
+                              <div className="flex items-start space-x-3">
+                                <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                                  <Heart className="h-5 w-5 text-primary fill-current" />
                                 </div>
-                                <div className="flex flex-wrap gap-1 mt-2">
-                                  {(Array.isArray(ong.tipo) ? ong.tipo : [ong.tipo]).map((tipo, index) => (
-                                    <Badge key={index} variant="secondary" className="text-xs bg-primary/10 text-primary">
-                                      {tipo}
-                                    </Badge>
-                                  ))}
+                                <div className="flex-1 min-w-0">
+                                  <h3 className="font-medium text-sm truncate">{ong.nome}</h3>
+                                  <div className="flex items-center text-xs text-gray-500 mt-1">
+                                    <MapPin className="h-3 w-3 mr-1" />
+                                    <span className="text-sm truncate">
+                                      {ong.localizacao_tipo === 'online' ? (
+                                        'Online'
+                                      ) : ong.localizacao_tipo === 'ambos' ? (
+                                        'Online e Presencial'
+                                      ) : (
+                                        `${ong.cidade}, ${ong.estado}`
+                                      )}
+                                    </span>
+                                  </div>
+                                  <div className="flex flex-wrap gap-1 mt-2">
+                                    {(Array.isArray(ong.tipo) ? ong.tipo : [ong.tipo]).map((tipo, index) => (
+                                      <Badge key={index} variant="secondary" className="text-xs bg-primary/10 text-primary">
+                                        {tipo}
+                                      </Badge>
+                                    ))}
+                                  </div>
                                 </div>
                               </div>
-                            </div>
-                          </Card>
-                        ))}
-                      </div>
-                    ) : (
-                      <div className="text-center py-8">
-                        <Search className="h-12 w-12 text-gray-300 mx-auto mb-3" />
-                        <p className="text-sm text-gray-500">Nenhuma ONG encontrada</p>
-                      </div>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
+                            </Card>
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="text-center py-8">
+                          <Search className="h-12 w-12 text-gray-300 mx-auto mb-3" />
+                          <p className="text-sm text-gray-500">Nenhuma ONG encontrada</p>
+                        </div>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
             </div>
 
             {/* Right side - Map (2/3 width) */}
             <div className="lg:col-span-2 order-2">
-              <Card className="h-96 lg:h-auto lg:min-h-[600px] rounded-2xl shadow-xl shadow-gray-200/50 overflow-hidden">
+              <Card className="h-96 lg:h-[600px] rounded-2xl shadow-xl shadow-gray-200/50 overflow-hidden">
                 <CardContent className="p-0 h-full">
                   <div className="relative w-full h-full">
-                    <div ref={mapRef} className="w-full h-full" />
+                    <div 
+                      ref={mapRef} 
+                      className="w-full h-full bg-gray-50" 
+                    />
                     {mapLoading && (
                       <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-75 rounded-2xl">
                         <div className="text-center">

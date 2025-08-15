@@ -3,6 +3,7 @@ import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import { Toaster } from "@/components/ui/sonner"
 import { AuthProvider } from '@/components/providers/auth-provider'
+import { Analytics } from '@vercel/analytics/react'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -80,6 +81,7 @@ export default function RootLayout({
           {children}
           <Toaster position="top-center" richColors />
         </AuthProvider>
+        <Analytics />
       </body>
     </html>
   )
