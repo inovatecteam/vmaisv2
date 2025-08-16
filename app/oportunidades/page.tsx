@@ -443,19 +443,6 @@ export default function CatalogoPage() {
                   </div>
                 )}
 
-                {selectedOng.additional_categories && selectedOng.additional_categories.length > 0 && (
-                  <div>
-                    <h3 className="font-semibold text-lg mb-3">Categorias adicionais</h3>
-                    <div className="flex flex-wrap gap-2">
-                      {selectedOng.additional_categories.map((categoria, index) => (
-                        <Badge key={index} variant="secondary" className="text-xs">
-                          {categoria}
-                        </Badge>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
                 {selectedOng.how_to_help && (
                   <div>
                     <h3 className="font-semibold text-lg mb-2">Como você pode ajudar</h3>
