@@ -137,13 +137,13 @@ export default function AjudaPage() {
     <div className="min-h-screen bg-gradient-to-br from-white via-yellow-50/30 to-orange-50/30">
       <Navbar />
       
-      <div className="pt-24 sm:pt-28 md:pt-32 lg:pt-36 pb-20 px-4">
+      <div className="pt-28 sm:pt-32 md:pt-36 lg:pt-40 pb-20 px-4">
         <div className="max-w-6xl mx-auto">
           {/* Header */}
           <div className="text-center mb-12">
             <div className="inline-flex items-center bg-primary/10 rounded-full px-3 py-1.5 sm:px-4 sm:py-2 md:px-6 md:py-2 mb-6">
               <HelpCircle className="h-4 w-4 sm:h-5 sm:w-5 text-primary mr-2" />
-              <span className="text-xs sm:text-sm md:text-base text-primary font-medium">Suporte e Ajuda</span>
+              <span className="text-sm sm:text-base md:text-lg text-primary font-medium">Suporte e Ajuda</span>
             </div>
             
             <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4">

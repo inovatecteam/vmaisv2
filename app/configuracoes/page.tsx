@@ -146,13 +146,13 @@ export default function ConfiguracoesPage() {
     <div className="min-h-screen bg-gradient-to-br from-white via-yellow-50/30 to-orange-50/30">
       <Navbar />
       
-      <div className="pt-32 pb-20 px-4">
+      <div className="pt-36 pb-20 px-4">
         <div className="max-w-4xl mx-auto">
           {/* Header */}
           <div className="text-center mb-8">
             <div className="inline-flex items-center bg-primary/10 rounded-full px-6 py-2 mb-6">
               <Settings className="h-5 w-5 text-primary mr-2" />
-              <span className="text-primary font-medium">Configurações da Conta</span>
+              <span className="text-sm sm:text-base md:text-lg text-primary font-medium">Configurações da Conta</span>
             </div>
             
             <h1 className="text-4xl font-bold mb-4">
