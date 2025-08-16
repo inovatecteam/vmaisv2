@@ -341,7 +341,7 @@ export default function MapaPage() {
 
           <div className="grid lg:grid-cols-3 gap-6">
             {/* Left side - Filters and ONGs list (1/3 width) */}
-            <div className="lg:col-span-1 order-1 lg:order-1 space-y-4 flex flex-col h-96 lg:h-[600px]">
+            <div className="lg:col-span-1 order-1 lg:order-1 space-y-4 flex flex-col h-auto md:h-96 lg:h-[600px]">
               {/* Filtros */}
               <Card className="rounded-2xl shadow-xl shadow-gray-200/50 flex-shrink-0">
                 <CardContent className="p-4">
@@ -398,7 +398,7 @@ export default function MapaPage() {
               </Card>
 
               {/* Lista de ONGs - Scrollable container with fixed height */}
-              <Card className="rounded-2xl shadow-xl shadow-gray-200/50 flex-1 flex flex-col min-h-0">
+              <Card className="rounded-2xl shadow-xl shadow-gray-200/50 flex-1 hidden md:flex flex-col min-h-0">
                 <CardHeader className="pb-3 flex-shrink-0">
                   <CardTitle className="text-lg">
                     ONGs Encontradas ({filteredOngs.length})
@@ -478,63 +478,64 @@ export default function MapaPage() {
             </div>
 
             {/* Mobile-only ONGs list - appears below map on mobile */}
-            <div className="lg:hidden order-3">
-              <Card className="rounded-2xl shadow-xl shadow-gray-200/50 h-80">
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-lg">
-                    ONGs Encontradas ({filteredOngs.length})
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="p-0 h-full overflow-hidden">
-                  <div className="h-full overflow-y-auto px-4 pb-4">
-                    {filteredOngs.length > 0 ? (
-                      <div className="space-y-3">
-                        {filteredOngs.map((ong) => (
-                          <Card 
-                            key={ong.id}
-                            className="cursor-pointer hover:shadow-md transition-all duration-200 rounded-xl p-3"
-                            onClick={() => handleOngClick(ong)}
-                          >
-                            <div className="flex items-start space-x-3">
-                              <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
-                                <Heart className="h-5 w-5 text-primary fill-current" />
-                              </div>
-                              <div className="flex-1 min-w-0">
-                                <h3 className="font-medium text-sm truncate">{ong.nome}</h3>
-                                <div className="flex items-center text-xs text-gray-500 mt-1">
-                                  <MapPin className="h-3 w-3 mr-1" />
-                                  <span className="text-sm truncate">
-                                    {ong.localizacao_tipo === 'online' ? (
-                                      'Online'
-                                    ) : ong.localizacao_tipo === 'ambos' ? (
-                                      'Online e Presencial'
-                                    ) : (
-                                      `${ong.cidade}, ${ong.estado}`
-                                    )}
-                                  </span>
-                                </div>
-                                <div className="flex flex-wrap gap-1 mt-2">
-                                  {(Array.isArray(ong.tipo) ? ong.tipo : [ong.tipo]).map((tipo, index) => (
-                                    <Badge key={index} variant="secondary" className="text-xs bg-primary/10 text-primary">
-                                      {tipo}
-                                    </Badge>
-                                  ))}
-                                </div>
-                              </div>
-                            </div>
-                          </Card>
-                        ))}
-                      </div>
-                    ) : (
-                      <div className="text-center py-8">
-                        <Search className="h-12 w-12 text-gray-300 mx-auto mb-3" />
-                        <p className="text-sm text-gray-500">Nenhuma ONG encontrada</p>
-                      </div>
-                    )}
+            {/* Mobile-only ONGs list - appears below map on mobile */}
+<div className="lg:hidden order-3">
+  <Card className="rounded-2xl shadow-xl shadow-gray-200/50 h-80 flex flex-col">
+    <CardHeader className="pb-3 flex-shrink-0">
+      <CardTitle className="text-lg">
+        ONGs Encontradas ({filteredOngs.length})
+      </CardTitle>
+    </CardHeader>
+    <CardContent className="p-0 flex-1 overflow-hidden">
+      <div className="h-full overflow-y-auto px-4 pb-4">
+        {filteredOngs.length > 0 ? (
+          <div className="space-y-3">
+            {filteredOngs.map((ong) => (
+              <Card 
+                key={ong.id}
+                className="cursor-pointer hover:shadow-md transition-all duration-200 rounded-xl p-3"
+                onClick={() => handleOngClick(ong)}
+              >
+                <div className="flex items-start space-x-3">
+                  <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <Heart className="h-5 w-5 text-primary fill-current" />
                   </div>
-                </CardContent>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-medium text-sm truncate">{ong.nome}</h3>
+                    <div className="flex items-center text-xs text-gray-500 mt-1">
+                      <MapPin className="h-3 w-3 mr-1" />
+                      <span className="text-sm truncate">
+                        {ong.localizacao_tipo === 'online' ? (
+                          'Online'
+                        ) : ong.localizacao_tipo === 'ambos' ? (
+                          'Online e Presencial'
+                        ) : (
+                          `${ong.cidade}, ${ong.estado}`
+                        )}
+                      </span>
+                    </div>
+                    <div className="flex flex-wrap gap-1 mt-2">
+                      {(Array.isArray(ong.tipo) ? ong.tipo : [ong.tipo]).map((tipo, index) => (
+                        <Badge key={index} variant="secondary" className="text-xs bg-primary/10 text-primary">
+                          {tipo}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                </div>
               </Card>
-            </div>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-8">
+            <Search className="h-12 w-12 text-gray-300 mx-auto mb-3" />
+            <p className="text-sm text-gray-500">Nenhuma ONG encontrada</p>
+          </div>
+        )}
+      </div>
+    </CardContent>
+  </Card>
+</div>
           </div>
         </div>
       </div>
