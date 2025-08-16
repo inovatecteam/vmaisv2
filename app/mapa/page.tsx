@@ -376,7 +376,7 @@ export default function MapaPage() {
                         <SelectItem value="all">Presencial e Online</SelectItem>
                         <SelectItem value="presencial">Presencial</SelectItem>
                         <SelectItem value="online">Online</SelectItem>
-                  </SelectContent>
+                      </SelectContent>
                     </Select>
 
                     <Button
@@ -653,8 +653,6 @@ export default function MapaPage() {
                 {/* Endereço Online (renomeado para Links) */}
                 {selectedOng.endereco_online && selectedOng.endereco_online.length > 0 && (
                   <div>
-                    <h3 className="font-semibold text-lg mb-3">
-                      {selectedOng.endereco_online.length === 1 ? 'Endereço Online' : 'Endereços Online'}
                     <h3 className="font-semibold text-lg mb-3">
                       {selectedOng.endereco_online.length === 1 ? 'Link Online' : 'Links'}
                     </h3>
