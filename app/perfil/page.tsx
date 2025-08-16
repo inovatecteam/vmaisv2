@@ -43,14 +43,15 @@ const ongSchema = z.object({
   cidade: z.string().optional(),
   estado: z.string().optional(),
   endereco_online: z.string().optional(),
+  endereco_fisico: z.string().optional(),
   whatsapp: z.string().optional(),
   necessidades: z.string().optional(),
   horarios_funcionamento: z.string().optional(),
+  doacoes: z.string().optional(),
   lat: z.number().optional(),
   lng: z.number().optional(),
   how_to_help: z.string().optional(),
   thumbnail_url: z.string().optional(),
-  doacoes: z.string().optional(),
 }).refine((data) => {
   if (data.localizacao_tipo === 'presencial') {
     return data.cidade && data.estado && data.lat && data.lng
@@ -175,12 +176,13 @@ export default function PerfilPage() {
           cidade: data.cidade || '',
           estado: data.estado || '',
           endereco_online: data.endereco_online ? data.endereco_online.join(', ') : '',
+          endereco_fisico: data.endereco_fisico || '',
           whatsapp: data.whatsapp || '',
           necessidades: data.necessidades?.join(', ') || '',
           thumbnail_url: data.thumbnail_url || '',
+          doacoes: data.doacoes || '',
           lat: data.lat || undefined,
           lng: data.lng || undefined,
-          doacoes: data.doacoes || '',
         })
       } else {
         // Se não há dados da ONG, manter valores vazios
@@ -197,12 +199,13 @@ export default function PerfilPage() {
           cidade: '',
           estado: '',
           endereco_online: '',
+          endereco_fisico: '',
           whatsapp: '',
           necessidades: '',
           thumbnail_url: '',
+          doacoes: '',
           lat: undefined,
           lng: undefined,
-          doacoes: '',
         })
       }
     } catch (error) {
@@ -434,12 +437,13 @@ export default function PerfilPage() {
         cidade: '',
         estado: '',
         endereco_online: '',
+        endereco_fisico: '',
         whatsapp: '',
         necessidades: '',
         thumbnail_url: '',
+        doacoes: '',
         lat: undefined,
         lng: undefined,
-        doacoes: '',
       })
     }
     setSelectedThumbnailFile(null)
