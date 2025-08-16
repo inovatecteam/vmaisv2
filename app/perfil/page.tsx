@@ -862,7 +862,7 @@ export default function PerfilPage() {
 
                       {(ongForm.watch('localizacao_tipo') === 'online' || ongForm.watch('localizacao_tipo') === 'ambos') && (
                         <div className="space-y-2">
-                          <Label htmlFor="ong-endereco-online">Links</Label>
+                          <Label htmlFor="ong-endereco-online">Endereços Online</Label>
                           <Input
                             id="ong-endereco-online"
                             placeholder="https://site.com, https://instagram.com/perfil, https://facebook.com/pagina"
