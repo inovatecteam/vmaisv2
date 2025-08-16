@@ -22,7 +22,6 @@ export type ONG = {
   descricao: string
   short_description?: string | null
   how_to_help?: string | null
-  additional_categories?: string[] | null
   cidade?: string | null
   estado?: string | null
   localizacao_tipo?: 'presencial' | 'online' | 'ambos' | null
@@ -30,6 +29,7 @@ export type ONG = {
   necessidades?: string[] | null
   whatsapp?: string | null
   endereco_fisico?: string | null
+  doacoes?: string | null
   thumbnail_url?: string | null
   lat?: number | null
   lng?: number | null

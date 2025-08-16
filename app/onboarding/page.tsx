@@ -204,6 +204,7 @@ export default function OnboardingPage() {
         descricao: data.descricao,
         short_description: data.short_description || null,
         how_to_help: data.how_to_help || null,
+        doacoes: data.doacoes || null,
         localizacao_tipo: data.localizacao_tipo,
         cidade: data.cidade,
         estado: data.estado,

@@ -46,6 +46,7 @@ const ongSchema = z.object({
   whatsapp: z.string().optional(),
   necessidades: z.string().optional(),
   horarios_funcionamento: z.string().optional(),
+  doacoes: z.string().optional(),
   lat: z.number().optional(),
   lng: z.number().optional(),
   how_to_help: z.string().optional(),
