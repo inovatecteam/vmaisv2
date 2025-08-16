@@ -629,6 +629,13 @@ export default function MapaPage() {
                   </div>
                 )}
 
+                {selectedOng.doacoes && (
+                  <div>
+                    <h3 className="font-semibold text-lg mb-2">Doações necessárias</h3>
+                    <p className="text-gray-600 leading-relaxed whitespace-pre-wrap">{selectedOng.doacoes}</p>
+                  </div>
+                )}
+
                 {selectedOng.endereco_online && selectedOng.endereco_online.length > 0 && (
                   <div>
                     <h3 className="font-semibold text-lg mb-3">

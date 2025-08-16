@@ -50,6 +50,7 @@ const ongSchema = z.object({
   lng: z.number().optional(),
   how_to_help: z.string().optional(),
   thumbnail_url: z.string().optional(),
+  doacoes: z.string().optional(),
 }).refine((data) => {
   if (data.localizacao_tipo === 'presencial') {
     return data.cidade && data.estado && data.lat && data.lng
@@ -118,6 +119,7 @@ export default function PerfilPage() {
       whatsapp: '',
       necessidades: '',
       thumbnail_url: '',
+      doacoes: '',
     }
   })
 
@@ -178,6 +180,7 @@ export default function PerfilPage() {
           thumbnail_url: data.thumbnail_url || '',
           lat: data.lat || undefined,
           lng: data.lng || undefined,
+          doacoes: data.doacoes || '',
         })
       } else {
         // Se não há dados da ONG, manter valores vazios
@@ -199,6 +202,7 @@ export default function PerfilPage() {
           thumbnail_url: '',
           lat: undefined,
           lng: undefined,
+          doacoes: '',
         })
       }
     } catch (error) {
@@ -414,6 +418,7 @@ export default function PerfilPage() {
         thumbnail_url: ongData.thumbnail_url || '',
         lat: ongData.lat || undefined,
         lng: ongData.lng || undefined,
+        doacoes: ongData.doacoes || '',
       })
     } else {
       setSelectedTipos([])
@@ -425,7 +430,6 @@ export default function PerfilPage() {
         descricao: '',
         short_description: '',
         how_to_help: '',
-        doacoes: '',
         localizacao_tipo: 'presencial',
         cidade: '',
         estado: '',
@@ -435,6 +439,7 @@ export default function PerfilPage() {
         thumbnail_url: '',
         lat: undefined,
         lng: undefined,
+        doacoes: '',
       })
     }
     setSelectedThumbnailFile(null)
@@ -918,6 +923,20 @@ export default function PerfilPage() {
                           rows={4}
                           {...ongForm.register('how_to_help')}
                         />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="ong-doacoes">Doações necessárias</Label>
+                        <Textarea
+                          id="ong-doacoes"
+                          placeholder="Descreva que tipo de doações sua organização precisa (alimentos, roupas, materiais, etc.)..."
+                          className="rounded-xl resize-none"
+                          rows={4}
+                          {...ongForm.register('doacoes')}
+                        />
+                        <p className="text-xs text-gray-500">
+                          Informe sobre doações que sua organização necessita
+                        </p>
                       </div>
 
                       <div className="space-y-2">
