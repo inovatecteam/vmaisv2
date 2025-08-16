@@ -416,12 +416,13 @@ export default function PerfilPage() {
         cidade: ongData.cidade || '',
         estado: ongData.estado || '',
         endereco_online: ongData.endereco_online ? ongData.endereco_online.join(', ') : '',
+        endereco_fisico: ongData.endereco_fisico || '',
         whatsapp: ongData.whatsapp || '',
         necessidades: ongData.necessidades?.join(', ') || '',
         thumbnail_url: ongData.thumbnail_url || '',
+        doacoes: ongData.doacoes || '',
         lat: ongData.lat || undefined,
         lng: ongData.lng || undefined,
-        doacoes: ongData.doacoes || '',
       })
     } else {
       setSelectedTipos([])
