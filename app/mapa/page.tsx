@@ -329,6 +329,7 @@ export default function MapaPage() {
       <Navbar />
       
       <div className="pt-32 pb-8 px-4 sm:px-6">
+      <div className="pt-32 pb-20 px-4 sm:px-6">
         <div className="max-w-7xl mx-auto">
           {/* Header */}
           <div className="text-center mb-6 sm:mb-8">
@@ -345,7 +346,7 @@ export default function MapaPage() {
             <div className="lg:col-span-1 order-1 lg:order-1 space-y-4 flex flex-col h-auto md:h-96 lg:h-[600px]">
               {/* Filtros */}
               <Card className="rounded-2xl shadow-xl shadow-gray-200/50 flex-shrink-0">
-                <CardContent className="p-3 sm:p-4">
+                <CardContent className="p-4 sm:p-6">
                   <div className="space-y-3">
                     <div className="relative">
                       <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
@@ -405,8 +406,8 @@ export default function MapaPage() {
                     ONGs Encontradas ({filteredOngs.length})
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="p-0 flex-1 overflow-hidden">
-                  <div className="h-full overflow-y-auto px-4 pb-4">
+                <CardContent className="p-4 sm:p-6 flex-1 overflow-hidden">
+                  <div className="h-full overflow-y-auto">
                     {filteredOngs.length > 0 ? (
                       <div className="space-y-3">
                         {filteredOngs.map((ong) => (
@@ -486,8 +487,8 @@ export default function MapaPage() {
                     ONGs Encontradas ({filteredOngs.length})
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="p-0 flex-1 overflow-hidden">
-                  <div className="h-full overflow-y-auto px-4 pb-4">
+                <CardContent className="p-4 sm:p-6 flex-1 overflow-hidden">
+                  <div className="h-full overflow-y-auto">
                     {filteredOngs.length > 0 ? (
                       <div className="space-y-3">
                         {filteredOngs.map((ong) => (
@@ -542,11 +543,11 @@ export default function MapaPage() {
 
       {/* Modal de Detalhes */}
       <Dialog open={!!selectedOng} onOpenChange={() => setSelectedOng(null)}>
-        <DialogContent className="max-w-4xl rounded-2xl max-h-[90vh] overflow-y-auto p-0 mx-4">
+        <DialogContent className="max-w-4xl rounded-2xl max-h-[90vh] overflow-y-auto p-4 sm:p-6 mx-4">
           {selectedOng && (
             <>
               {/* Top section: Image + Name/Type/Location + Short Description */}
-              <div className="p-4 sm:p-6 pb-0">
+              <div className="pb-0">
                 <div className="flex flex-col lg:flex-row gap-4 sm:gap-6 mb-4 sm:mb-6">
                   {/* Image on left */}
                   <div className="flex-shrink-0 w-full lg:w-64 h-40 sm:h-48 bg-gradient-to-br from-primary/10 to-primary/5 rounded-xl overflow-hidden">
@@ -601,7 +602,7 @@ export default function MapaPage() {
               </div>
 
               {/* Remaining content (full info, extra fields, buttons) */}
-              <div className="space-y-4 sm:space-y-6 p-4 sm:p-6 pt-0 border-t border-gray-100">
+              <div className="space-y-4 sm:space-y-6 pt-0 border-t border-gray-100">
                 {selectedOng.short_description && (
                   <div>
                     <h3 className="font-semibold text-base sm:text-lg mb-2">Descrição completa</h3>
