@@ -97,7 +97,7 @@ const faqs = [
             <span className="text-sm sm:text-base md:text-lg text-primary font-medium">Conectando corações e causas</span>
           </div>
           
-          <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-bold mb-6 sm:mb-8 bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 bg-clip-text text-transparent leading-tight px-2">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-6 sm:mb-8 bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 bg-clip-text text-transparent leading-tight px-2">
             Transforme vidas através do{' '}
             <span className="text-primary">voluntariado</span>
           </h1>
