@@ -215,6 +215,7 @@ export default function OnboardingPage() {
         necessidades: data.necessidades ? data.necessidades.split(',').map(n => n.trim()).filter(Boolean) : null,
         lat: selectedLat,
         lng: selectedLng,
+        admin_approved: false,
       }
 
       const { error: ongError } = await supabase

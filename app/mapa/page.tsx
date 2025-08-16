@@ -67,6 +67,7 @@ export default function MapaPage() {
       const { data, error } = await supabase
         .from('ongs')
         .select('*')
+        .eq('admin_approved', true)
         .not('lat', 'is', null)
         .not('lng', 'is', null)
         .order('created_at', { ascending: false })

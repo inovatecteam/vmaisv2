@@ -65,9 +65,10 @@ export default function DashboardPage() {
         .from('interacoes')
         .select(`
           *,
-          ongs (nome, cidade, estado, tipo)
+          ongs!inner (nome, cidade, estado, tipo, admin_approved)
         `)
         .eq('user_id', user.id)
+        .eq('ongs.admin_approved', true)
         .order('timestamp', { ascending: false })
 
       if (interacoesError) throw interacoesError

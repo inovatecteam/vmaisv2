@@ -345,6 +345,7 @@ export default function PerfilPage() {
         updated_at: new Date().toISOString(),
         lat: selectedLat,
         lng: selectedLng,
+        admin_approved: false,
       }
 
       if (ongData) {

@@ -31,6 +31,7 @@ export type ONG = {
   endereco_fisico?: string | null
   doacoes?: string | null
   thumbnail_url?: string | null
+  admin_approved: boolean
   lat?: number | null
   lng?: number | null
   horarios_funcionamento?: string | null

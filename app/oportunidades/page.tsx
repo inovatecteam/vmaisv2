@@ -47,6 +47,7 @@ export default function CatalogoPage() {
       const { data, error } = await supabase
         .from('ongs')
         .select('*')
+        .eq('admin_approved', true)
         .order('created_at', { ascending: false })
 
       if (error) throw error
