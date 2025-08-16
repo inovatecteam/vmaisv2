@@ -94,7 +94,6 @@ const faqs = [
         <div className="max-w-6xl mx-auto text-center">
           <div className="inline-flex items-center bg-primary/10 rounded-full px-3 py-1.5 sm:px-4 sm:py-2 md:px-6 md:py-2 mb-6 sm:mb-8">
             <Heart className="h-4 w-4 sm:h-5 sm:w-5 text-primary mr-2 fill-current" />
-            <Heart className="h-4 w-4 sm:h-5 sm:w-5 text-primary mr-2 fill-current" />
             <span className="text-sm sm:text-base md:text-lg text-primary font-medium">Conectando corações e causas</span>
           </div>
           
