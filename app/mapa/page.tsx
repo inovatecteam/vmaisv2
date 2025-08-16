@@ -632,7 +632,7 @@ export default function MapaPage() {
                 {selectedOng.endereco_online && selectedOng.endereco_online.length > 0 && (
                   <div>
                     <h3 className="font-semibold text-lg mb-3">
-                      {selectedOng.endereco_online.length === 1 ? 'Endereço Online' : 'Endereços Online'}
+                      {selectedOng.endereco_online.length === 1 ? 'Link' : 'Links'}
                     </h3>
                     <div className="space-y-2">
                       {selectedOng.endereco_online.map((endereco, index) => (
@@ -648,6 +648,23 @@ export default function MapaPage() {
                           </a>
                         </div>
                       ))}
+                    </div>
+                  </div>
+                )}
+
+                {selectedOng.endereco_fisico && (
+                  <div>
+                    <h3 className="font-semibold text-lg mb-3">Endereço</h3>
+                    <div className="flex items-center space-x-2">
+                      <MapPin className="h-4 w-4 text-primary flex-shrink-0" />
+                      <a 
+                        href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(selectedOng.endereco_fisico)}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-primary hover:underline break-words"
+                      >
+                        {selectedOng.endereco_fisico}
+                      </a>
                     </div>
                   </div>
                 )}

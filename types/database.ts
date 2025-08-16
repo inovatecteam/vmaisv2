@@ -63,6 +63,7 @@ export interface Database {
           endereco_online: string[] | null
           necessidades: string[] | null
           whatsapp: string | null
+          endereco_fisico: string | null
           thumbnail_url: string | null
           lat: number | null
           lng: number | null
@@ -85,6 +86,7 @@ export interface Database {
           endereco_online?: string[] | null
           necessidades?: string[] | null
           whatsapp?: string | null
+          endereco_fisico?: string | null
           thumbnail_url?: string | null
           lat?: number | null
           lng?: number | null
@@ -107,6 +109,7 @@ export interface Database {
           endereco_online?: string[] | null
           necessidades?: string[] | null
           whatsapp?: string | null
+          endereco_fisico?: string | null
           thumbnail_url?: string | null
           lat?: number | null
           lng?: number | null

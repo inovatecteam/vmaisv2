@@ -830,6 +830,21 @@ export default function PerfilPage() {
                       </div>
 
 
+                    {(ongForm.watch('localizacao_tipo') === 'presencial' || ongForm.watch('localizacao_tipo') === 'ambos') && (
+                      <div className="space-y-2">
+                        <Label htmlFor="ong-endereco-fisico">Endereço físico</Label>
+                        <Input
+                          id="ong-endereco-fisico"
+                          placeholder="Rua, número, bairro, cidade - estado"
+                          className="rounded-xl"
+                          {...ongForm.register('endereco_fisico')}
+                        />
+                        <p className="text-xs text-gray-500">
+                          Endereço completo da organização (aparecerá como link para Google Maps)
+                        </p>
+                      </div>
+                    )}
+
                       {(ongForm.watch('localizacao_tipo') === 'presencial' || ongForm.watch('localizacao_tipo') === 'ambos') && (
                         <div className="grid md:grid-cols-2 gap-6">
                           <div className="space-y-2">
