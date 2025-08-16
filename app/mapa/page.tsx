@@ -629,10 +629,34 @@ export default function MapaPage() {
                   </div>
                 )}
 
+                {/* Endereço Físico */}
+                {(selectedOng.localizacao_tipo === 'presencial' || selectedOng.localizacao_tipo === 'ambos') &&
+                 selectedOng.cidade && selectedOng.estado && selectedOng.lat && selectedOng.lng && (
+                  <div>
+                    <h3 className="font-semibold text-lg mb-3">Endereço Físico</h3>
+                    <div className="space-y-2">
+                      <div className="flex items-center space-x-2">
+                        <div className="w-2 h-2 bg-primary rounded-full mr-3 flex-shrink-0" />
+                        <a 
+                          href={`https://www.google.com/maps/search/?api=1&query=${selectedOng.lat},${selectedOng.lng}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-primary hover:underline break-all"
+                        >
+                          {selectedOng.cidade}, {selectedOng.estado}
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Endereço Online (renomeado para Links) */}
                 {selectedOng.endereco_online && selectedOng.endereco_online.length > 0 && (
                   <div>
                     <h3 className="font-semibold text-lg mb-3">
                       {selectedOng.endereco_online.length === 1 ? 'Endereço Online' : 'Endereços Online'}
+                    <h3 className="font-semibold text-lg mb-3">
+                      {selectedOng.endereco_online.length === 1 ? 'Link Online' : 'Links'}
                     </h3>
                     <div className="space-y-2">
                       {selectedOng.endereco_online.map((endereco, index) => (

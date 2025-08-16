@@ -560,7 +560,7 @@ export default function OnboardingPage() {
 
               {(ongForm.watch('localizacao_tipo') === 'online' || ongForm.watch('localizacao_tipo') === 'ambos') && (
                 <div className="space-y-2">
-                  <Label htmlFor="endereco_online">Endereços Online</Label>
+                  <Label htmlFor="endereco_online">Links</Label>
                   <Input
                     id="endereco_online"
                     placeholder="https://site.com, https://instagram.com/perfil, https://facebook.com/pagina"
