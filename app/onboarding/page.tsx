@@ -56,9 +56,11 @@ const ongSchema = z.object({
   cidade: z.string().optional(),
   estado: z.string().optional(),
   endereco_online: z.string().optional(),
+  endereco_fisico: z.string().optional(),
   whatsapp: z.string().optional(),
   necessidades: z.string().optional(),
   horarios_funcionamento: z.string().optional(),
+  doacoes: z.string().optional(),
 }).refine((data) => {
   if (data.localizacao_tipo === 'presencial') {
     return data.cidade && data.estado && data.lat && data.lng
