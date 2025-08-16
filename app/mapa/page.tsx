@@ -314,10 +314,10 @@ export default function MapaPage() {
     return (
       <div className="min-h-screen bg-gradient-to-br from-white via-yellow-50/30 to-orange-50/30">
         <Navbar />
-        <div className="pt-32 flex items-center justify-center">
+        <div className="pt-32 flex items-center justify-center px-4">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-            <p className="text-gray-600">Carregando mapa...</p>
+            <p className="text-gray-600 text-sm sm:text-base">Carregando mapa...</p>
           </div>
         </div>
       </div>
@@ -328,24 +328,24 @@ export default function MapaPage() {
     <div className="min-h-screen bg-gradient-to-br from-white via-yellow-50/30 to-orange-50/30">
       <Navbar />
       
-      <div className="pt-32 pb-8 px-4">
+      <div className="pt-32 pb-8 px-4 sm:px-6">
         <div className="max-w-7xl mx-auto">
           {/* Header */}
-          <div className="text-center mb-8">
-            <h1 className="text-4xl md:text-5xl font-bold mb-4">
+          <div className="text-center mb-6 sm:mb-8">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 sm:mb-4">
               Mapa de <span className="text-primary">ONGs</span>
             </h1>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            <p className="text-lg sm:text-xl text-gray-600 max-w-3xl mx-auto px-2">
               Explore visualmente as ONGs próximas de você e descubra oportunidades de voluntariado na sua região.
             </p>
           </div>
 
-          <div className="grid lg:grid-cols-3 gap-6">
+          <div className="grid lg:grid-cols-3 gap-4 sm:gap-6">
             {/* Left side - Filters and ONGs list (1/3 width) */}
             <div className="lg:col-span-1 order-1 lg:order-1 space-y-4 flex flex-col h-auto md:h-96 lg:h-[600px]">
               {/* Filtros */}
               <Card className="rounded-2xl shadow-xl shadow-gray-200/50 flex-shrink-0">
-                <CardContent className="p-4">
+                <CardContent className="p-3 sm:p-4">
                   <div className="space-y-3">
                     <div className="relative">
                       <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
@@ -458,7 +458,7 @@ export default function MapaPage() {
 
             {/* Right side - Map (2/3 width) */}
             <div className="lg:col-span-2 order-2 lg:order-2">
-              <Card className="h-96 lg:h-[600px] rounded-2xl shadow-xl shadow-gray-200/50 overflow-hidden">
+              <Card className="h-80 sm:h-96 lg:h-[600px] rounded-2xl shadow-xl shadow-gray-200/50 overflow-hidden">
                 <CardContent className="p-0 h-full">
                   <div className="relative w-full h-full">
                     <div 
@@ -479,78 +479,77 @@ export default function MapaPage() {
             </div>
 
             {/* Mobile-only ONGs list - appears below map on mobile */}
-            {/* Mobile-only ONGs list - appears below map on mobile */}
-<div className="lg:hidden order-3">
-  <Card className="rounded-2xl shadow-xl shadow-gray-200/50 h-80 flex flex-col">
-    <CardHeader className="pb-3 flex-shrink-0">
-      <CardTitle className="text-lg">
-        ONGs Encontradas ({filteredOngs.length})
-      </CardTitle>
-    </CardHeader>
-    <CardContent className="p-0 flex-1 overflow-hidden">
-      <div className="h-full overflow-y-auto px-4 pb-4">
-        {filteredOngs.length > 0 ? (
-          <div className="space-y-3">
-            {filteredOngs.map((ong) => (
-              <Card 
-                key={ong.id}
-                className="cursor-pointer hover:shadow-md transition-all duration-200 rounded-xl p-3"
-                onClick={() => handleOngClick(ong)}
-              >
-                <div className="flex items-start space-x-3">
-                  <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <Heart className="h-5 w-5 text-primary fill-current" />
+            <div className="lg:hidden order-3">
+              <Card className="rounded-2xl shadow-xl shadow-gray-200/50 h-72 sm:h-80 flex flex-col">
+                <CardHeader className="pb-3 flex-shrink-0">
+                  <CardTitle className="text-lg">
+                    ONGs Encontradas ({filteredOngs.length})
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="p-0 flex-1 overflow-hidden">
+                  <div className="h-full overflow-y-auto px-4 pb-4">
+                    {filteredOngs.length > 0 ? (
+                      <div className="space-y-3">
+                        {filteredOngs.map((ong) => (
+                          <Card 
+                            key={ong.id}
+                            className="cursor-pointer hover:shadow-md transition-all duration-200 rounded-xl p-3"
+                            onClick={() => handleOngClick(ong)}
+                          >
+                            <div className="flex items-start space-x-3">
+                              <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                                <Heart className="h-5 w-5 text-primary fill-current" />
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <h3 className="font-medium text-sm truncate">{ong.nome}</h3>
+                                <div className="flex items-center text-xs text-gray-500 mt-1">
+                                  <MapPin className="h-3 w-3 mr-1" />
+                                  <span className="text-sm truncate">
+                                    {ong.localizacao_tipo === 'online' ? (
+                                      'Online'
+                                    ) : ong.localizacao_tipo === 'ambos' ? (
+                                      'Online e Presencial'
+                                    ) : (
+                                      `${ong.cidade}, ${ong.estado}`
+                                    )}
+                                  </span>
+                                </div>
+                                <div className="flex flex-wrap gap-1 mt-2">
+                                  {(Array.isArray(ong.tipo) ? ong.tipo : [ong.tipo]).map((tipo, index) => (
+                                    <Badge key={index} variant="secondary" className="text-xs bg-primary/10 text-primary">
+                                      {tipo}
+                                    </Badge>
+                                  ))}
+                                </div>
+                              </div>
+                            </div>
+                          </Card>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="text-center py-8">
+                        <Search className="h-12 w-12 text-gray-300 mx-auto mb-3" />
+                        <p className="text-sm text-gray-500">Nenhuma ONG encontrada</p>
+                      </div>
+                    )}
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <h3 className="font-medium text-sm truncate">{ong.nome}</h3>
-                    <div className="flex items-center text-xs text-gray-500 mt-1">
-                      <MapPin className="h-3 w-3 mr-1" />
-                      <span className="text-sm truncate">
-                        {ong.localizacao_tipo === 'online' ? (
-                          'Online'
-                        ) : ong.localizacao_tipo === 'ambos' ? (
-                          'Online e Presencial'
-                        ) : (
-                          `${ong.cidade}, ${ong.estado}`
-                        )}
-                      </span>
-                    </div>
-                    <div className="flex flex-wrap gap-1 mt-2">
-                      {(Array.isArray(ong.tipo) ? ong.tipo : [ong.tipo]).map((tipo, index) => (
-                        <Badge key={index} variant="secondary" className="text-xs bg-primary/10 text-primary">
-                          {tipo}
-                        </Badge>
-                      ))}
-                    </div>
-                  </div>
-                </div>
+                </CardContent>
               </Card>
-            ))}
-          </div>
-        ) : (
-          <div className="text-center py-8">
-            <Search className="h-12 w-12 text-gray-300 mx-auto mb-3" />
-            <p className="text-sm text-gray-500">Nenhuma ONG encontrada</p>
-          </div>
-        )}
-      </div>
-    </CardContent>
-  </Card>
-</div>
+            </div>
           </div>
         </div>
       </div>
 
       {/* Modal de Detalhes */}
       <Dialog open={!!selectedOng} onOpenChange={() => setSelectedOng(null)}>
-        <DialogContent className="max-w-4xl rounded-2xl max-h-[90vh] overflow-y-auto p-0">
+        <DialogContent className="max-w-4xl rounded-2xl max-h-[90vh] overflow-y-auto p-0 mx-4">
           {selectedOng && (
             <>
               {/* Top section: Image + Name/Type/Location + Short Description */}
-              <div className="p-6 pb-0">
-                <div className="flex flex-col lg:flex-row gap-6 mb-6">
+              <div className="p-4 sm:p-6 pb-0">
+                <div className="flex flex-col lg:flex-row gap-4 sm:gap-6 mb-4 sm:mb-6">
                   {/* Image on left */}
-                  <div className="flex-shrink-0 w-full lg:w-64 h-48 bg-gradient-to-br from-primary/10 to-primary/5 rounded-xl overflow-hidden">
+                  <div className="flex-shrink-0 w-full lg:w-64 h-40 sm:h-48 bg-gradient-to-br from-primary/10 to-primary/5 rounded-xl overflow-hidden">
                     {selectedOng.thumbnail_url ? (
                       <img 
                         src={selectedOng.thumbnail_url} 
@@ -559,18 +558,18 @@ export default function MapaPage() {
                       />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center">
-                        <Heart className="h-16 w-16 text-primary/30 fill-current" />
+                        <Heart className="h-12 w-12 sm:h-16 sm:w-16 text-primary/30 fill-current" />
                       </div>
                     )}
                   </div>
 
                   {/* Text content on right */}
                   <div className="flex-1 space-y-3">
-                    <div className="flex items-start justify-between">
-                      <DialogTitle className="text-2xl font-bold">{selectedOng.nome}</DialogTitle>
-                      <div className="flex flex-wrap gap-2 ml-4">
+                    <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+                      <DialogTitle className="text-xl sm:text-2xl font-bold">{selectedOng.nome}</DialogTitle>
+                      <div className="flex flex-wrap gap-2">
                         {(Array.isArray(selectedOng.tipo) ? selectedOng.tipo : [selectedOng.tipo]).map((tipo, index) => (
-                          <Badge key={index} className="bg-primary/10 text-primary">
+                          <Badge key={index} className="bg-primary/10 text-primary text-xs">
                             {tipo}
                           </Badge>
                         ))}
@@ -579,7 +578,7 @@ export default function MapaPage() {
                     
                     <div className="flex items-center text-gray-500 mt-2">
                       <MapPin className="h-4 w-4 mr-2 flex-shrink-0" />
-                      <span>
+                      <span className="text-sm sm:text-base">
                         {selectedOng.localizacao_tipo === 'online' ? (
                           'Online'
                         ) : selectedOng.localizacao_tipo === 'ambos' ? (
@@ -591,8 +590,8 @@ export default function MapaPage() {
                     </div>
                     
                     {/* Short description */}
-                    <div className="bg-gray-50 p-4 rounded-lg">
-                      <h4 className="font-semibold text-gray-900 mb-2">Sobre a organização</h4>
+                    <div className="bg-gray-50 p-3 sm:p-4 rounded-lg">
+                      <h4 className="font-semibold text-gray-900 mb-2 text-sm sm:text-base">Sobre a organização</h4>
                       <p className="text-gray-600 leading-relaxed text-sm line-clamp-4 whitespace-pre-wrap">
                         {selectedOng.short_description || selectedOng.descricao}
                       </p>
@@ -602,31 +601,31 @@ export default function MapaPage() {
               </div>
 
               {/* Remaining content (full info, extra fields, buttons) */}
-              <div className="space-y-6 p-6 pt-0 border-t border-gray-100">
+              <div className="space-y-4 sm:space-y-6 p-4 sm:p-6 pt-0 border-t border-gray-100">
                 {selectedOng.short_description && (
                   <div>
-                    <h3 className="font-semibold text-lg mb-2">Descrição completa</h3>
-                    <p className="text-gray-600 leading-relaxed whitespace-pre-wrap">{selectedOng.descricao}</p>
+                    <h3 className="font-semibold text-base sm:text-lg mb-2">Descrição completa</h3>
+                    <p className="text-gray-600 leading-relaxed text-sm sm:text-base whitespace-pre-wrap">{selectedOng.descricao}</p>
                   </div>
                 )}
 
                 {selectedOng.how_to_help && (
                   <div>
-                    <h3 className="font-semibold text-lg mb-2">Como você pode ajudar</h3>
-                    <p className="text-gray-600 leading-relaxed whitespace-pre-wrap">{selectedOng.how_to_help}</p>
+                    <h3 className="font-semibold text-base sm:text-lg mb-2">Como você pode ajudar</h3>
+                    <p className="text-gray-600 leading-relaxed text-sm sm:text-base whitespace-pre-wrap">{selectedOng.how_to_help}</p>
                   </div>
                 )}
 
                 {selectedOng.doacoes && (
                   <div>
-                    <h3 className="font-semibold text-lg mb-2">Doações necessárias</h3>
-                    <p className="text-gray-600 leading-relaxed whitespace-pre-wrap">{selectedOng.doacoes}</p>
+                    <h3 className="font-semibold text-base sm:text-lg mb-2">Doações necessárias</h3>
+                    <p className="text-gray-600 leading-relaxed text-sm sm:text-base whitespace-pre-wrap">{selectedOng.doacoes}</p>
                   </div>
                 )}
 
                 {selectedOng.endereco_online && selectedOng.endereco_online.length > 0 && (
                   <div>
-                    <h3 className="font-semibold text-lg mb-3">
+                    <h3 className="font-semibold text-base sm:text-lg mb-3">
                       {selectedOng.endereco_online.length === 1 ? 'Link' : 'Links'}
                     </h3>
                     <div className="space-y-2">
@@ -637,7 +636,7 @@ export default function MapaPage() {
                             href={endereco.startsWith('http') ? endereco : `https://${endereco}`}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-primary hover:underline break-all"
+                            className="text-primary hover:underline break-all text-sm sm:text-base"
                           >
                             {endereco}
                           </a>
@@ -649,14 +648,14 @@ export default function MapaPage() {
 
                 {selectedOng.endereco_fisico && (
                   <div>
-                    <h3 className="font-semibold text-lg mb-3">Endereço</h3>
+                    <h3 className="font-semibold text-base sm:text-lg mb-3">Endereço</h3>
                     <div className="flex items-center space-x-2">
                       <MapPin className="h-4 w-4 text-primary flex-shrink-0" />
                       <a 
                         href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(selectedOng.endereco_fisico)}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-primary hover:underline break-words"
+                        className="text-primary hover:underline break-words text-sm sm:text-base"
                       >
                         {selectedOng.endereco_fisico}
                       </a>
@@ -666,14 +665,14 @@ export default function MapaPage() {
 
                 {selectedOng.horarios_funcionamento && (
                   <div>
-                    <h3 className="font-semibold text-lg mb-2">Horários de funcionamento</h3>
-                    <p className="text-gray-600 leading-relaxed whitespace-pre-wrap">{selectedOng.horarios_funcionamento}</p>
+                    <h3 className="font-semibold text-base sm:text-lg mb-2">Horários de funcionamento</h3>
+                    <p className="text-gray-600 leading-relaxed text-sm sm:text-base whitespace-pre-wrap">{selectedOng.horarios_funcionamento}</p>
                   </div>
                 )}
 
                 {selectedOng.necessidades && selectedOng.necessidades.length > 0 && (
                   <div>
-                    <h3 className="font-semibold text-lg mb-3">Tipos de ajuda</h3>
+                    <h3 className="font-semibold text-base sm:text-lg mb-3">Tipos de ajuda</h3>
                     <div className="flex flex-wrap gap-2">
                       {selectedOng.necessidades.map((necessidade, index) => (
                         <Badge key={index} variant="outline" className="text-xs">
@@ -684,7 +683,7 @@ export default function MapaPage() {
                   </div>
                 )}
 
-                <div className="flex flex-col sm:flex-row gap-3 pt-6 border-t border-gray-100">
+                <div className="flex flex-col sm:flex-row gap-3 pt-4 sm:pt-6 border-t border-gray-100">
                   {selectedOng.whatsapp && (
                     <Button 
                       onClick={() => handleWhatsAppClick(selectedOng)}
