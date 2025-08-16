@@ -488,8 +488,6 @@ export default function CatalogoPage() {
                 {selectedOng.endereco_online && selectedOng.endereco_online.length > 0 && (
                   <div>
                     <h3 className="font-semibold text-lg mb-3">
-                      {selectedOng.endereco_online.length === 1 ? 'Endereço Online' : 'Endereços Online'}
-                    <h3 className="font-semibold text-lg mb-3">
                       {selectedOng.endereco_online.length === 1 ? 'Link Online' : 'Links'}
                     </h3>
                     <div className="space-y-2">
