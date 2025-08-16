@@ -329,7 +329,6 @@ export default function MapaPage() {
       <Navbar />
       
       <div className="pt-32 pb-8 px-4 sm:px-6">
-      <div className="pt-32 pb-20 px-4 sm:px-6">
         <div className="max-w-7xl mx-auto">
           {/* Header */}
           <div className="text-center mb-6 sm:mb-8">
@@ -378,7 +377,7 @@ export default function MapaPage() {
                         <SelectItem value="all">Presencial e Online</SelectItem>
                         <SelectItem value="presencial">Presencial</SelectItem>
                         <SelectItem value="online">Online</SelectItem>
-                  </SelectContent>
+                      </SelectContent>
                     </Select>
 
                     <Button
