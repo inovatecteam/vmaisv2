@@ -4,6 +4,7 @@ import { Inter } from 'next/font/google'
 import { Toaster } from "@/components/ui/sonner"
 import { AuthProvider } from '@/components/providers/auth-provider'
 import { Analytics } from '@vercel/analytics/react'
+import Script from 'next/script'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -76,6 +77,22 @@ export default function RootLayout({
 }) {
   return (
     <html lang="pt-BR">
+      <head>
+        {/* Google tag (gtag.js) */}
+        <Script
+          async
+          src="https://www.googletagmanager.com/gtag/js?id=AW-17507836658"
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'AW-17507836658');
+          `}
+        </Script>
+      </head>
       <body className={`${inter.className} bg-white text-gray-900`}>
         <AuthProvider>
           {children}
