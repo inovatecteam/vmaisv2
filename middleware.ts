@@ -45,7 +45,7 @@ export async function middleware(request: NextRequest) {
     
     // Se já fez onboarding e está tentando acessar /onboarding
     if (!needsOnboarding && request.nextUrl.pathname.startsWith('/onboarding')) {
-      return NextResponse.redirect(new URL('/dashboard', request.url))
+      return NextResponse.redirect(new URL('/perfil', request.url))
     }
   }
 
@@ -68,6 +68,8 @@ export const config = {
      * - privacidade (página de privacidade)
      * - termos (página de termos)
      * - ajuda (página de ajuda)
+     * 
+     * Nota: /onboarding é tratado pelo middleware para usuários autenticados
      */
     '/((?!api|_next/static|_next/image|favicon.ico|entrar|cadastrar|esqueci-senha|404|sobre|privacidade|termos|ajuda).*)',
   ]

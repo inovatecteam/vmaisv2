@@ -56,8 +56,6 @@ export interface Database {
           descricao: string
           short_description: string | null
           how_to_help: string | null
-          cidade: string | null
-          estado: string | null
           localizacao_tipo: 'presencial' | 'online' | 'ambos' | 'itinerante' | null
           endereco_online: string[] | null
           necessidades: string[] | null
@@ -68,7 +66,6 @@ export interface Database {
           admin_approved: boolean
           lat: number | null
           lng: number | null
-          horarios_funcionamento: string | null
           created_at: string
           updated_at: string
         }
@@ -80,8 +77,6 @@ export interface Database {
           descricao: string
           short_description?: string | null
           how_to_help?: string | null
-          cidade?: string | null
-          estado?: string | null
           localizacao_tipo?: 'presencial' | 'online' | 'ambos' | 'itinerante' | null
           endereco_online?: string[] | null
           necessidades?: string[] | null
@@ -92,7 +87,6 @@ export interface Database {
           admin_approved?: boolean
           lat?: number | null
           lng?: number | null
-          horarios_funcionamento?: string | null
           created_at?: string
           updated_at?: string
         }
@@ -104,8 +98,6 @@ export interface Database {
           descricao?: string
           short_description?: string | null
           how_to_help?: string | null
-          cidade?: string | null
-          estado?: string | null
           localizacao_tipo?: 'presencial' | 'online' | 'ambos' | 'itinerante' | null
           endereco_online?: string[] | null
           necessidades?: string[] | null
@@ -115,7 +107,6 @@ export interface Database {
           thumbnail_url?: string | null
           lat?: number | null
           lng?: number | null
-          horarios_funcionamento?: string | null
           updated_at?: string
         }
       }

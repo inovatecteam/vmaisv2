@@ -65,7 +65,7 @@ export default function DashboardPage() {
         .from('interacoes')
         .select(`
           *,
-          ongs!inner (nome, cidade, estado, tipo, admin_approved)
+          ongs!inner (nome, tipo, admin_approved)
         `)
         .eq('user_id', user.id)
         .eq('ongs.admin_approved', true)
@@ -234,7 +234,7 @@ export default function DashboardPage() {
                             <h3 className="font-medium">{interacao.ongs?.nome}</h3>
                             <div className="flex items-center text-sm text-gray-500 mt-1">
                               <MapPin className="h-3 w-3 mr-1" />
-                              <span>{interacao.ongs?.cidade}, {interacao.ongs?.estado}</span>
+                              <span>Localização não disponível</span>
                               <Badge variant="secondary" className="ml-2 text-xs">
                                 {interacao.ongs?.tipo}
                               </Badge>

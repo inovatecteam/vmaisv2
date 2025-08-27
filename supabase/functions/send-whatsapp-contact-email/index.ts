@@ -106,8 +106,7 @@ Bio: ${user.bio || 'Não informada'}
     const ongInfo = `
 Nome da ONG: ${ong.nome}
 Tipo: ${Array.isArray(ong.tipo) ? ong.tipo.join(', ') : ong.tipo}
-Cidade: ${ong.cidade || 'Não informada'}
-Estado: ${ong.estado || 'Não informado'}
+
     `.trim()
 
     const observationText = observation_message 

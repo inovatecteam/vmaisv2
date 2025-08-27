@@ -29,7 +29,7 @@ export default function CatalogoPage() {
   const [ongToConfirmWhatsapp, setOngToConfirmWhatsapp] = useState<ONG | null>(null)
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
-  const [selectedEstado, setSelectedEstado] = useState<string>('all')
+
   const [selectedTipo, setSelectedTipo] = useState<string>('all')
   const [selectedLocalizacaoTipo, setSelectedLocalizacaoTipo] = useState<string>('all')
   const { user } = useAuth()
@@ -40,7 +40,7 @@ export default function CatalogoPage() {
 
   useEffect(() => {
     filterOngs()
-  }, [ongs, searchTerm, selectedEstado, selectedTipo, selectedLocalizacaoTipo])
+  }, [ongs, searchTerm, selectedTipo, selectedLocalizacaoTipo])
 
   const loadOngs = async () => {
     try {
@@ -66,13 +66,8 @@ export default function CatalogoPage() {
     if (searchTerm) {
       filtered = filtered.filter(ong =>
         ong.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        ong.descricao.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (ong.cidade || '').toLowerCase().includes(searchTerm.toLowerCase())
+        ong.descricao.toLowerCase().includes(searchTerm.toLowerCase())
       )
-    }
-
-    if (selectedEstado && selectedEstado !== 'all') {
-      filtered = filtered.filter(ong => ong.estado === selectedEstado)
     }
 
     if (selectedTipo && selectedTipo !== 'all') {
@@ -167,7 +162,7 @@ export default function CatalogoPage() {
       setOngToOpenAfterAuth(null)
     }
   }
-  const estados = [...new Set(ongs.map(ong => ong.estado).filter(Boolean))].sort()
+  
   const tipos = [...new Set(ongs.flatMap(ong => 
     Array.isArray(ong.tipo) ? ong.tipo : [ong.tipo]
   ).filter(Boolean))].sort()
@@ -254,7 +249,7 @@ export default function CatalogoPage() {
           variant="outline"
           onClick={() => {
             setSearchTerm('');
-            setSelectedEstado('all');
+    
             setSelectedTipo('all');
             setSelectedLocalizacaoTipo('all');
           }}
@@ -314,7 +309,7 @@ export default function CatalogoPage() {
                             ) : ong.localizacao_tipo === 'itinerante' ? (
                               'Itinerante'
                             ) : (
-                              `${ong.cidade}, ${ong.estado}`
+                              `Localização não disponível`
                             )}
                           </span>
                         </div>
@@ -339,12 +334,7 @@ export default function CatalogoPage() {
                       {ong.descricao}
                     </CardDescription>
                     
-                    {ong.horarios_funcionamento && (
-                      <div className="mt-3 p-2 bg-gray-50 rounded-lg">
-                        <p className="text-xs text-gray-500 mb-1">Horários</p>
-                        <p className="text-sm text-gray-700 line-clamp-2">{ong.horarios_funcionamento}</p>
-                      </div>
-                    )}
+
                     
                     {ong.necessidades && ong.necessidades.length > 0 && (
                       <div className="mt-4">
@@ -426,7 +416,7 @@ export default function CatalogoPage() {
                         ) : selectedOng.localizacao_tipo === 'itinerante' ? (
                           'Itinerante'
                         ) : (
-                          `${selectedOng.cidade}, ${selectedOng.estado}`
+                          `Localização não disponível`
                         )}
                       </span>
                     </div>
@@ -505,12 +495,7 @@ export default function CatalogoPage() {
                   </div>
                 )}
 
-                {selectedOng.horarios_funcionamento && (
-                  <div>
-                    <h3 className="font-semibold text-lg mb-2">Horários de funcionamento</h3>
-                    <p className="text-gray-600 leading-relaxed whitespace-pre-wrap">{selectedOng.horarios_funcionamento}</p>
-                  </div>
-                )}
+
 
                 {selectedOng.necessidades && selectedOng.necessidades.length > 0 && (
                   <div>

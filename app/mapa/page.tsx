@@ -30,7 +30,7 @@ export default function MapaPage() {
   const [loading, setLoading] = useState(true)
   const [mapLoading, setMapLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
-  const [selectedEstado, setSelectedEstado] = useState<string>('all')
+
   const [selectedTipo, setSelectedTipo] = useState<string>('all')
   const [selectedLocalizacaoTipo, setSelectedLocalizacaoTipo] = useState<string>('all')
   const { user } = useAuth()
@@ -51,7 +51,7 @@ export default function MapaPage() {
 
   useEffect(() => {
     filterOngs()
-  }, [ongs, searchTerm, selectedEstado, selectedTipo, selectedLocalizacaoTipo])
+  }, [ongs, searchTerm, selectedTipo, selectedLocalizacaoTipo])
 
   useEffect(() => {
     // Este efeito garante que os marcadores sejam atualizados sempre que:
@@ -211,13 +211,8 @@ export default function MapaPage() {
     if (searchTerm) {
       filtered = filtered.filter(ong =>
         ong.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        ong.descricao.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (ong.cidade || '').toLowerCase().includes(searchTerm.toLowerCase())
+        ong.descricao.toLowerCase().includes(searchTerm.toLowerCase())
       )
-    }
-
-    if (selectedEstado && selectedEstado !== 'all') {
-      filtered = filtered.filter(ong => ong.estado === selectedEstado)
     }
 
     if (selectedTipo && selectedTipo !== 'all') {
@@ -309,7 +304,7 @@ export default function MapaPage() {
       setOngToOpenAfterAuth(null)
     }
   }
-  const estados = [...new Set(ongs.map(ong => ong.estado).filter(Boolean))].sort()
+  
   const tipos = [...new Set(ongs.flatMap(ong => ong.tipo).filter(Boolean))].sort()
 
   if (loading) {
@@ -387,7 +382,7 @@ export default function MapaPage() {
                       variant="outline"
                       onClick={() => {
                         setSearchTerm('')
-                        setSelectedEstado('all')
+                        
                         setSelectedTipo('all')
                         setSelectedLocalizacaoTipo('all')
                       }}
@@ -434,7 +429,7 @@ export default function MapaPage() {
                                     ) : ong.localizacao_tipo === 'itinerante' ? (
                                       'Itinerante'
                                     ) : (
-                                      `${ong.cidade}, ${ong.estado}`
+                                      'Localização não disponível'
                                     )}
                                   </span>
                                 </div>
@@ -517,7 +512,7 @@ export default function MapaPage() {
                                     ) : ong.localizacao_tipo === 'itinerante' ? (
                                       'Itinerante'
                                     ) : (
-                                      `${ong.cidade}, ${ong.estado}`
+                                      'Localização não disponível'
                                     )}
                                   </span>
                                 </div>
@@ -593,7 +588,7 @@ export default function MapaPage() {
                         ) : selectedOng.localizacao_tipo === 'itinerante' ? (
                           'Itinerante'
                         ) : (
-                          `${selectedOng.cidade}, ${selectedOng.estado}`
+                          'Localização não disponível'
                         )}
                       </span>
                     </div>
@@ -672,12 +667,7 @@ export default function MapaPage() {
                   </div>
                 )}
 
-                {selectedOng.horarios_funcionamento && (
-                  <div>
-                    <h3 className="font-semibold text-base sm:text-lg mb-2">Horários de funcionamento</h3>
-                    <p className="text-gray-600 leading-relaxed text-sm sm:text-base whitespace-pre-wrap">{selectedOng.horarios_funcionamento}</p>
-                  </div>
-                )}
+
 
                 {selectedOng.necessidades && selectedOng.necessidades.length > 0 && (
                   <div>

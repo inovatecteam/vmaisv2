@@ -40,13 +40,12 @@ const ongSchema = z.object({
   localizacao_tipo: z.enum(['presencial', 'online', 'ambos', 'itinerante'], {
     message: 'Selecione o tipo de localização'
   }),
-  cidade: z.string().optional(),
-  estado: z.string().optional(),
+
   endereco_online: z.string().optional(),
   endereco_fisico: z.string().optional(),
   whatsapp: z.string().optional(),
   necessidades: z.string().optional(),
-  horarios_funcionamento: z.string().optional(),
+
   doacoes: z.string().optional(),
   lat: z.number().optional(),
   lng: z.number().optional(),
@@ -54,7 +53,7 @@ const ongSchema = z.object({
   thumbnail_url: z.string().optional(),
 }).refine((data) => {
   if (data.localizacao_tipo === 'presencial' || data.localizacao_tipo === 'ambos') {
-    return data.cidade && data.estado && data.lat && data.lng
+    return data.lat && data.lng
   }
   if (data.localizacao_tipo === 'online') {
     return data.endereco_online
@@ -112,8 +111,7 @@ export default function PerfilPage() {
       short_description: '',
       how_to_help: '',
       localizacao_tipo: 'presencial',
-      cidade: '',
-      estado: '',
+
       endereco_online: '',
       whatsapp: '',
       necessidades: '',
@@ -171,8 +169,7 @@ export default function PerfilPage() {
           short_description: data.short_description || '',
           how_to_help: data.how_to_help || '',
           localizacao_tipo: data.localizacao_tipo || 'presencial',
-          cidade: data.cidade || '',
-          estado: data.estado || '',
+          
           endereco_online: data.endereco_online ? data.endereco_online.join(', ') : '',
           endereco_fisico: data.endereco_fisico || '',
           whatsapp: data.whatsapp || '',
@@ -194,8 +191,7 @@ export default function PerfilPage() {
           short_description: '',
           how_to_help: '',
           localizacao_tipo: 'presencial',
-          cidade: '',
-          estado: '',
+          
           endereco_online: '',
           endereco_fisico: '',
           whatsapp: '',
@@ -335,8 +331,7 @@ export default function PerfilPage() {
         short_description: data.short_description || null,
         additional_categories: data.additional_categories ? data.additional_categories.split(',').map(c => c.trim()).filter(Boolean) : null,
         localizacao_tipo: data.localizacao_tipo,
-        cidade: data.cidade || null,
-        estado: data.estado || null,
+
         endereco_online: data.endereco_online ? data.endereco_online.split(',').map(e => e.trim()).filter(Boolean) : null,
         whatsapp: data.whatsapp || null,
         thumbnail_url: thumbnailUrl || null,
@@ -412,8 +407,7 @@ export default function PerfilPage() {
         short_description: ongData.short_description || '',
         how_to_help: ongData.how_to_help || '',
         localizacao_tipo: ongData.localizacao_tipo || 'presencial',
-        cidade: ongData.cidade || '',
-        estado: ongData.estado || '',
+
         endereco_online: ongData.endereco_online ? ongData.endereco_online.join(', ') : '',
         endereco_fisico: ongData.endereco_fisico || '',
         whatsapp: ongData.whatsapp || '',
@@ -434,8 +428,7 @@ export default function PerfilPage() {
         short_description: '',
         how_to_help: '',
         localizacao_tipo: 'presencial',
-        cidade: '',
-        estado: '',
+
         endereco_online: '',
         endereco_fisico: '',
         whatsapp: '',
@@ -583,7 +576,7 @@ export default function PerfilPage() {
                       <Label htmlFor="localizacao">Localização</Label>
                       <Input
                         id="localizacao"
-                        placeholder="Cidade, Estado"
+                        placeholder="Localização"
                         className="rounded-xl"
                         {...profileForm.register('localizacao')}
                       />
@@ -846,7 +839,7 @@ export default function PerfilPage() {
                         <Label htmlFor="ong-endereco-fisico">Endereço físico</Label>
                         <Input
                           id="ong-endereco-fisico"
-                          placeholder="Rua, número, bairro, cidade - estado"
+                          placeholder="Rua, número, bairro"
                           className="rounded-xl"
                           {...ongForm.register('endereco_fisico')}
                         />
@@ -858,31 +851,7 @@ export default function PerfilPage() {
 
                       {(ongForm.watch('localizacao_tipo') === 'presencial' || ongForm.watch('localizacao_tipo') === 'ambos') && ongForm.watch('localizacao_tipo') !== 'itinerante' && (
                         <div className="grid md:grid-cols-2 gap-6">
-                          <div className="space-y-2">
-                            <Label htmlFor="ong-cidade">Cidade</Label>
-                            <Input
-                              id="ong-cidade"
-                              placeholder="Cidade onde atua"
-                              className="rounded-xl"
-                              {...ongForm.register('cidade')}
-                            />
-                            {ongForm.formState.errors.cidade && (
-                              <p className="text-sm text-red-500">{ongForm.formState.errors.cidade.message}</p>
-                            )}
-                          </div>
-
-                          <div className="space-y-2">
-                            <Label htmlFor="ong-estado">Estado</Label>
-                            <Input
-                              id="ong-estado"
-                              placeholder="Estado"
-                              className="rounded-xl"
-                              {...ongForm.register('estado')}
-                            />
-                            {ongForm.formState.errors.estado && (
-                              <p className="text-sm text-red-500">{ongForm.formState.errors.estado.message}</p>
-                            )}
-                          </div>
+                          
                         </div>
                       )}
 

@@ -42,10 +42,10 @@ const voluntarioSchema = z.object({
 
 // Schema para ONGs
 const ongSchema = z.object({
-  nome: z.string().min(2, 'Nome da ONG deve ter pelo menos 2 caracteres'),
+  nome: z.string().min(3, 'Nome da ONG deve ter pelo menos 3 caracteres'),
   tipo: z.string().min(1, 'Selecione pelo menos um tipo de organização'),
-  descricao: z.string().min(10, 'Descrição deve ter pelo menos 10 caracteres'),
-  short_description: z.string().max(200, 'Descrição curta deve ter no máximo 200 caracteres').optional(),
+  descricao: z.string().min(10, 'Descrição deve ter pelo menos 10 caracteres').max(1000, 'Descrição deve ter no máximo 1000 caracteres'),
+  short_description: z.string().min(10, 'Descrição curta deve ter pelo menos 10 caracteres').max(200, 'Descrição curta deve ter no máximo 200 caracteres'),
   how_to_help: z.string().optional(),
   additional_categories: z.string().optional(),
   localizacao_tipo: z.enum(['presencial', 'online', 'ambos', 'itinerante'], {
@@ -53,20 +53,20 @@ const ongSchema = z.object({
   }),
   lat: z.number().optional(),
   lng: z.number().optional(),
-  cidade: z.string().optional(),
-  estado: z.string().optional(),
   endereco_online: z.string().optional(),
   endereco_fisico: z.string().optional(),
-  whatsapp: z.string().optional(),
+  whatsapp: z.string().min(1, 'WhatsApp é obrigatório'),
   necessidades: z.string().optional(),
-  horarios_funcionamento: z.string().optional(),
   doacoes: z.string().optional(),
 }).refine((data) => {
-  if (data.localizacao_tipo === 'presencial' || data.localizacao_tipo === 'ambos') {
-    return data.cidade && data.estado && data.lat && data.lng
+  if (data.localizacao_tipo === 'presencial') {
+    return data.lat && data.lng && data.endereco_fisico
   }
   if (data.localizacao_tipo === 'online') {
     return data.endereco_online
+  }
+  if (data.localizacao_tipo === 'ambos') {
+    return data.lat && data.lng && data.endereco_fisico && data.endereco_online
   }
   // ONGs itinerantes não precisam de localização fixa
   return true
@@ -159,6 +159,14 @@ export default function OnboardingPage() {
   const handleVoluntarioSubmit = async (data: VoluntarioData) => {
     setLoading(true)
     try {
+      // Validate all required fields before submission
+      const isValid = await voluntarioForm.trigger()
+      if (!isValid) {
+        toast.error('Por favor, preencha todos os campos obrigatórios')
+        setLoading(false)
+        return
+      }
+
       const { error } = await supabase
         .from('users')
         .update({
@@ -174,7 +182,7 @@ export default function OnboardingPage() {
 
       await refreshUser()
       toast.success('Perfil configurado com sucesso!')
-      router.push('/dashboard')
+      router.push('/perfil')
     } catch (error: any) {
       toast.error(error.message || 'Erro ao salvar perfil')
     } finally {
@@ -185,6 +193,14 @@ export default function OnboardingPage() {
   const handleOngSubmit = async (data: ONGData) => {
     setLoading(true)
     try {
+      // Validate all required fields before submission
+      const isValid = await ongForm.trigger()
+      if (!isValid) {
+        toast.error('Por favor, preencha todos os campos obrigatórios')
+        setLoading(false)
+        return
+      }
+
       // Atualizar dados do usuário
       const { error: userError } = await supabase
         .from('users')
@@ -206,8 +222,7 @@ export default function OnboardingPage() {
         how_to_help: data.how_to_help || null,
         doacoes: data.doacoes || null,
         localizacao_tipo: data.localizacao_tipo,
-        cidade: data.cidade,
-        estado: data.estado,
+        endereco_fisico: data.endereco_fisico || null,
         endereco_online: data.endereco_online ? data.endereco_online.split(',').map(e => e.trim()).filter(Boolean) : null,
         whatsapp: data.whatsapp || null,
         necessidades: data.necessidades ? data.necessidades.split(',').map(n => n.trim()).filter(Boolean) : null,
@@ -224,7 +239,7 @@ export default function OnboardingPage() {
 
       await refreshUser()
       toast.success('Organização cadastrada com sucesso!')
-      router.push('/dashboard')
+      router.push('/perfil')
     } catch (error: any) {
       toast.error(error.message || 'Erro ao cadastrar organização')
     } finally {
@@ -239,8 +254,76 @@ export default function OnboardingPage() {
     ongForm.setValue('lng', lng, { shouldDirty: true })
   }
 
-  const nextStep = () => {
+  const nextStep = async () => {
     if (currentStep < totalSteps) {
+      // Validate current step before proceeding
+      if (isVoluntario) {
+        if (currentStep === 1) {
+          // Step 1: Check if interests are selected
+          if (selectedInteresses.length === 0) {
+            toast.error('Selecione pelo menos uma área de interesse')
+            return
+          }
+        }
+      } else {
+        // ONG validation
+        if (currentStep === 1) {
+          // Step 1: Validate basic information using react-hook-form validation
+          const isValid = await ongForm.trigger(['nome', 'descricao', 'short_description'])
+          
+          if (!isValid) {
+            return // Form validation will show errors automatically
+          }
+          
+          if (selectedTipos.length === 0) {
+            toast.error('Selecione pelo menos um tipo de organização')
+            return
+          }
+        } else if (currentStep === 2) {
+          // Step 2: Validate location and contact
+          const localizacaoTipo = ongForm.getValues('localizacao_tipo')
+          
+          if (!localizacaoTipo) {
+            toast.error('Selecione o tipo de atuação')
+            return
+          }
+          
+          // Validate WhatsApp (required for all)
+          if (!ongForm.getValues('whatsapp') || (ongForm.getValues('whatsapp') || '').trim().length === 0) {
+            toast.error('WhatsApp é obrigatório')
+            return
+          }
+          
+          if (localizacaoTipo === 'presencial' || localizacaoTipo === 'ambos') {
+            if (!selectedLat || !selectedLng) {
+              toast.error('Selecione a localização no mapa')
+              return
+            }
+            
+            if (!ongForm.getValues('endereco_fisico') || (ongForm.getValues('endereco_fisico') || '').trim().length === 0) {
+              toast.error('Endereço físico é obrigatório para organizações presenciais')
+              return
+            }
+          }
+          
+          if (localizacaoTipo === 'online') {
+            const enderecoOnline = ongForm.getValues('endereco_online')
+            if (!enderecoOnline || (ongForm.getValues('endereco_online') || '').trim().length === 0) {
+              toast.error('Informe pelo menos um endereço online')
+              return
+            }
+          }
+          
+          if (localizacaoTipo === 'ambos') {
+            const enderecoOnline = ongForm.getValues('endereco_online')
+            if (!enderecoOnline || (ongForm.getValues('endereco_online') || '').trim().length === 0) {
+              toast.error('Informe pelo menos um endereço online')
+              return
+            }
+          }
+        }
+      }
+      
       setCurrentStep(currentStep + 1)
     }
   }
@@ -268,6 +351,7 @@ export default function OnboardingPage() {
                   key={interesse}
                   type="button"
                   onClick={() => handleInteresseToggle(interesse)}
+                  disabled={loading}
                   className={`p-3 rounded-xl border-2 transition-all text-sm font-medium ${
                     selectedInteresses.includes(interesse)
                       ? 'border-primary bg-primary/10 text-primary'
@@ -293,8 +377,8 @@ export default function OnboardingPage() {
             )}
             <div className="flex justify-end">
               <Button
-                onClick={nextStep}
-                disabled={selectedInteresses.length === 0}
+                onClick={() => nextStep()}
+                disabled={loading || selectedInteresses.length === 0}
                 className="bg-primary hover:bg-primary/90 rounded-xl"
               >
                 Continuar
@@ -318,7 +402,11 @@ export default function OnboardingPage() {
                 <Label htmlFor="disponibilidade">Quando você está disponível?</Label>
                 <Select
                   value={voluntarioForm.watch('disponibilidade') || ''}
-                  onValueChange={(value) => voluntarioForm.setValue('disponibilidade', value)}
+                  onValueChange={(value) => {
+                    voluntarioForm.setValue('disponibilidade', value)
+                    voluntarioForm.trigger('disponibilidade')
+                  }}
+                  disabled={loading}
                 >
                   <SelectTrigger className="rounded-xl">
                     <SelectValue placeholder="Selecione sua disponibilidade" />
@@ -343,7 +431,10 @@ export default function OnboardingPage() {
                   id="localizacao"
                   placeholder="Ex: Porto Alegre, RS"
                   className="rounded-xl"
-                  {...voluntarioForm.register('localizacao')}
+                  disabled={loading}
+                  {...voluntarioForm.register('localizacao', {
+                    onBlur: () => voluntarioForm.trigger('localizacao')
+                  })}
                 />
                 {voluntarioForm.formState.errors.localizacao && (
                   <p className="text-sm text-red-500">{voluntarioForm.formState.errors.localizacao.message}</p>
@@ -356,6 +447,7 @@ export default function OnboardingPage() {
                 type="button"
                 variant="outline"
                 onClick={prevStep}
+                disabled={loading}
                 className="rounded-xl"
               >
                 <ArrowLeft className="h-4 w-4 mr-2" />
@@ -363,7 +455,12 @@ export default function OnboardingPage() {
               </Button>
               <Button
                 type="submit"
-                disabled={loading}
+                disabled={
+                  loading ||
+                  !voluntarioForm.getValues('disponibilidade') ||
+                  !voluntarioForm.getValues('localizacao') ||
+                  voluntarioForm.getValues('localizacao').length < 2
+                }
                 className="bg-primary hover:bg-primary/90 rounded-xl"
               >
                 {loading ? (
@@ -405,7 +502,10 @@ export default function OnboardingPage() {
                   id="nome"
                   placeholder="Nome da sua ONG"
                   className="rounded-xl"
-                  {...ongForm.register('nome')}
+                  disabled={loading}
+                  {...ongForm.register('nome', {
+                    onBlur: () => ongForm.trigger('nome')
+                  })}
                 />
                 {ongForm.formState.errors.nome && (
                   <p className="text-sm text-red-500">{ongForm.formState.errors.nome.message}</p>
@@ -422,6 +522,7 @@ export default function OnboardingPage() {
                       key={tipo}
                       type="button"
                       onClick={() => handleTipoToggle(tipo)}
+                      disabled={loading}
                       className={`p-3 rounded-xl border-2 transition-all text-sm font-medium ${
                         selectedTipos.includes(tipo)
                           ? 'border-primary bg-primary/10 text-primary'
@@ -452,28 +553,40 @@ export default function OnboardingPage() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="descricao">Descrição</Label>
+                <Label htmlFor="descricao">Descrição Completa (máx. 1000 caracteres)</Label>
                 <Textarea
                   id="descricao"
                   placeholder="Descreva os objetivos e atividades da sua organização..."
                   className="rounded-xl resize-none"
                   rows={4}
-                  {...ongForm.register('descricao')}
+                  maxLength={1000}
+                  disabled={loading}
+                  {...ongForm.register('descricao', {
+                    onBlur: () => ongForm.trigger('descricao')
+                  })}
                 />
-                {ongForm.formState.errors.descricao && (
-                  <p className="text-sm text-red-500">{ongForm.formState.errors.descricao.message}</p>
-                )}
+                <div className="flex justify-between text-xs text-gray-500">
+                  <span>
+                    {ongForm.formState.errors.descricao && (
+                      <span className="text-red-500">{ongForm.formState.errors.descricao.message}</span>
+                    )}
+                  </span>
+                  <span>{(ongForm.watch('descricao') || '').length}/1000</span>
+                </div>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="short_description">Descrição curta (máx. 200 caracteres)</Label>
+                <Label htmlFor="short_description">Descrição curta (mín. 10, máx. 200 caracteres)</Label>
                 <Textarea
                   id="short_description"
                   placeholder="Resumo breve da organização..."
                   className="rounded-xl resize-none"
                   rows={2}
                   maxLength={200}
-                  {...ongForm.register('short_description')}
+                  disabled={loading}
+                  {...ongForm.register('short_description', {
+                    onBlur: () => ongForm.trigger('short_description')
+                  })}
                 />
                 <div className="flex justify-between text-xs text-gray-500">
                   <span>
@@ -489,8 +602,19 @@ export default function OnboardingPage() {
 
             <div className="flex justify-end">
               <Button
-                onClick={nextStep}
-                disabled={selectedTipos.length === 0}
+                onClick={() => nextStep()}
+                disabled={
+                  loading ||
+                  selectedTipos.length === 0 ||
+                  !ongForm.getValues('nome') ||
+                  ongForm.getValues('nome').length < 3 ||
+                  !ongForm.getValues('descricao') ||
+                  ongForm.getValues('descricao').length < 10 ||
+                  ongForm.getValues('descricao').length > 1000 ||
+                  !ongForm.getValues('short_description') ||
+                  ongForm.getValues('short_description').length < 10 ||
+                  ongForm.getValues('short_description').length > 200
+                }
                 className="bg-primary hover:bg-primary/90 rounded-xl"
               >
                 Continuar
@@ -514,7 +638,11 @@ export default function OnboardingPage() {
                 <Label htmlFor="localizacao_tipo">Tipo de atuação</Label>
                 <Select
                   value={ongForm.watch('localizacao_tipo') || ''}
-                  onValueChange={(value) => ongForm.setValue('localizacao_tipo', value as 'presencial' | 'online' | 'ambos')}
+                  onValueChange={(value) => {
+                    ongForm.setValue('localizacao_tipo', value as 'presencial' | 'online' | 'ambos')
+                    ongForm.trigger('localizacao_tipo')
+                  }}
+                  disabled={loading}
                 >
                   <SelectTrigger className="rounded-xl">
                     <SelectValue placeholder="Como sua organização atua?" />
@@ -531,44 +659,45 @@ export default function OnboardingPage() {
                 )}
               </div>
 
-              {(ongForm.watch('localizacao_tipo') === 'presencial' || ongForm.watch('localizacao_tipo') === 'ambos') && ongForm.watch('localizacao_tipo') !== 'itinerante' && (
-                <div className="grid md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="cidade">Cidade</Label>
-                    <Input
-                      id="cidade"
-                      placeholder="Cidade onde atua"
-                      className="rounded-xl"
-                      {...ongForm.register('cidade')}
-                    />
-                    {ongForm.formState.errors.cidade && (
-                      <p className="text-sm text-red-500">{ongForm.formState.errors.cidade.message}</p>
-                    )}
-                  </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="estado">Estado</Label>
-                    <Input
-                      id="estado"
-                      placeholder="Estado"
-                      className="rounded-xl"
-                      {...ongForm.register('estado')}
-                    />
-                    {ongForm.formState.errors.estado && (
-                      <p className="text-sm text-red-500">{ongForm.formState.errors.estado.message}</p>
-                    )}
-                  </div>
+
+              {/* Endereço Físico - Required for presencial and ambos */}
+              {(ongForm.watch('localizacao_tipo') === 'presencial' || ongForm.watch('localizacao_tipo') === 'ambos') && (
+                <div className="space-y-2">
+                  <Label htmlFor="endereco_fisico">Endereço Físico *</Label>
+                  <Input
+                    id="endereco_fisico"
+                    placeholder="Rua, número, bairro, cidade - estado"
+                    className="rounded-xl"
+                    disabled={loading}
+                    {...ongForm.register('endereco_fisico', {
+                      onBlur: () => ongForm.trigger('endereco_fisico')
+                    })}
+                  />
+                  <p className="text-xs text-gray-500">
+                    Endereço completo da sede da organização
+                  </p>
+                  {ongForm.formState.errors.endereco_fisico && (
+                    <p className="text-sm text-red-500">{ongForm.formState.errors.endereco_fisico.message}</p>
+                  )}
                 </div>
               )}
 
-              {(ongForm.watch('localizacao_tipo') === 'online' || ongForm.watch('localizacao_tipo') === 'ambos') && ongForm.watch('localizacao_tipo') !== 'itinerante' && (
+              {/* Endereços Online - Required for online and ambos, optional for itinerante */}
+              {(ongForm.watch('localizacao_tipo') === 'online' || ongForm.watch('localizacao_tipo') === 'ambos' || ongForm.watch('localizacao_tipo') === 'itinerante') && (
                 <div className="space-y-2">
-                  <Label htmlFor="endereco_online">Endereços Online</Label>
+                  <Label htmlFor="endereco_online">
+                    Endereços Online
+                    {(ongForm.watch('localizacao_tipo') === 'online' || ongForm.watch('localizacao_tipo') === 'ambos') && ' *'}
+                  </Label>
                   <Input
                     id="endereco_online"
                     placeholder="https://site.com, https://instagram.com/perfil, https://facebook.com/pagina"
                     className="rounded-xl"
-                    {...ongForm.register('endereco_online')}
+                    disabled={loading}
+                    {...ongForm.register('endereco_online', {
+                      onBlur: () => ongForm.trigger('endereco_online')
+                    })}
                   />
                   <p className="text-xs text-gray-500">
                     Adicione múltiplos links separados por vírgula (site, Instagram, Facebook, etc.)
@@ -580,18 +709,24 @@ export default function OnboardingPage() {
               )}
 
               <div className="space-y-2">
-                <Label htmlFor="whatsapp">WhatsApp para contato (opcional)</Label>
+                <Label htmlFor="whatsapp">WhatsApp para contato *</Label>
                 <Input
                   id="whatsapp"
                   placeholder="(11) 99999-9999"
                   className="rounded-xl"
-                  value={ongForm.watch('whatsapp') || ''}
-                  onChange={(e) => {
-                    const formatted = formatPhone(e.target.value)
-                    ongForm.setValue('whatsapp', formatted, { shouldDirty: true })
-                  }}
                   maxLength={15}
+                  disabled={loading}
+                  {...ongForm.register('whatsapp', {
+                    onChange: (e) => {
+                      const formatted = formatPhone(e.target.value)
+                      ongForm.setValue('whatsapp', formatted, { shouldDirty: true })
+                    },
+                    onBlur: () => ongForm.trigger('whatsapp')
+                  })}
                 />
+                {ongForm.formState.errors.whatsapp && (
+                  <p className="text-sm text-red-500">{ongForm.formState.errors.whatsapp.message}</p>
+                )}
               </div>
 
               {/* Mapa de localização para ONGs presenciais e ambos (não itinerantes) */}
@@ -621,9 +756,17 @@ export default function OnboardingPage() {
                 Voltar
               </Button>
               <Button
-                onClick={nextStep}
+                onClick={() => nextStep()}
                 className="bg-primary hover:bg-primary/90 rounded-xl"
-                disabled={false}
+                disabled={
+                  loading ||
+                  !ongForm.getValues('localizacao_tipo') ||
+                  !ongForm.getValues('whatsapp') ||
+                  (ongForm.getValues('whatsapp') || '').trim().length === 0 ||
+                  (ongForm.getValues('localizacao_tipo') === 'presencial' || ongForm.getValues('localizacao_tipo') === 'ambos') && (!selectedLat || !selectedLng || !ongForm.getValues('endereco_fisico') || (ongForm.getValues('endereco_fisico') || '').trim().length === 0) ||
+                  (ongForm.getValues('localizacao_tipo') === 'online') && (!ongForm.getValues('endereco_online') || (ongForm.getValues('endereco_online') || '').trim().length === 0) ||
+                  (ongForm.getValues('localizacao_tipo') === 'ambos') && (!ongForm.getValues('endereco_online') || (ongForm.getValues('endereco_online') || '').trim().length === 0)
+                }
               >
                 Continuar
                 <ArrowRight className="h-4 w-4 ml-2" />
@@ -649,6 +792,7 @@ export default function OnboardingPage() {
                   placeholder="Ex: Aulas de reforço, Arrecadação de doações, Eventos (separados por vírgula)"
                   className="rounded-xl resize-none"
                   rows={3}
+                  disabled={loading}
                   {...ongForm.register('necessidades')}
                 />
                 <p className="text-xs text-gray-500">
@@ -663,6 +807,7 @@ export default function OnboardingPage() {
                   placeholder="Descreva como voluntários podem contribuir, que tipo de doações são necessárias, etc..."
                   className="rounded-xl resize-none"
                   rows={4}
+                  disabled={loading}
                   {...ongForm.register('how_to_help')}
                 />
               </div>
@@ -674,6 +819,7 @@ export default function OnboardingPage() {
                 type="button"
                 variant="outline"
                 onClick={prevStep}
+                disabled={loading}
                 className="rounded-xl"
               >
                 <ArrowLeft className="h-4 w-4 mr-2" />
