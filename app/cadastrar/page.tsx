@@ -321,7 +321,7 @@ export default function CadastrarPage() {
             <div className="bg-yellow-50 border border-yellow-200 p-3 rounded-lg">
               <p className="text-xs text-yellow-800 break-words">
                 <strong>Importante:</strong> Você só conseguirá fazer login após confirmar seu email. 
-                O link de confirmação expira em 24 horas.
+                O link de confirmação expira em 30 minutos.
               </p>
             </div>
             
