@@ -37,7 +37,7 @@ const ongSchema = z.object({
   descricao: z.string().min(10, 'Descrição deve ter pelo menos 10 caracteres'),
   short_description: z.string().max(200, 'Descrição curta deve ter no máximo 200 caracteres').optional(),
   additional_categories: z.string().optional(),
-  localizacao_tipo: z.enum(['presencial', 'online', 'ambos'], {
+  localizacao_tipo: z.enum(['presencial', 'online', 'ambos', 'itinerante'], {
     message: 'Selecione o tipo de localização'
   }),
   cidade: z.string().optional(),
@@ -53,18 +53,16 @@ const ongSchema = z.object({
   how_to_help: z.string().optional(),
   thumbnail_url: z.string().optional(),
 }).refine((data) => {
-  if (data.localizacao_tipo === 'presencial') {
+  if (data.localizacao_tipo === 'presencial' || data.localizacao_tipo === 'ambos') {
     return data.cidade && data.estado && data.lat && data.lng
   }
   if (data.localizacao_tipo === 'online') {
     return data.endereco_online
   }
-  if (data.localizacao_tipo === 'ambos') {
-    return ((data.cidade && data.estado && data.lat && data.lng) || data.endereco_online)
-  }
+  // ONGs itinerantes não precisam de localização fixa
   return true
 }, {
-  message: "Preencha os campos obrigatórios para o tipo de localização selecionado, incluindo a localização no mapa",
+  message: "Preencha os campos obrigatórios para o tipo de localização selecionado",
   path: ["localizacao_tipo"]
 })
 
@@ -730,6 +728,7 @@ export default function PerfilPage() {
                               <SelectItem value="presencial">Presencial</SelectItem>
                               <SelectItem value="online">Online</SelectItem>
                               <SelectItem value="ambos">Presencial e Online</SelectItem>
+                             <SelectItem value="itinerante">Itinerante (sem sede fixa)</SelectItem>
                             </SelectContent>
                           </Select>
                           {ongForm.formState.errors.localizacao_tipo && (
@@ -792,8 +791,8 @@ export default function PerfilPage() {
                         </div>
                       </div>
 
-                      {/* Mapa de localização para ONGs presenciais */}
-                      {(ongForm.watch('localizacao_tipo') === 'presencial' || ongForm.watch('localizacao_tipo') === 'ambos') && (
+                      {/* Mapa de localização para ONGs presenciais e ambos (não itinerantes) */}
+                      {(ongForm.watch('localizacao_tipo') === 'presencial' || ongForm.watch('localizacao_tipo') === 'ambos') && ongForm.watch('localizacao_tipo') !== 'itinerante' && (
                         <div className="space-y-2">
                           <Label>Localização no Mapa</Label>
                           <p className="text-sm text-gray-600 mb-3">
@@ -842,7 +841,7 @@ export default function PerfilPage() {
                       </div>
 
 
-                    {(ongForm.watch('localizacao_tipo') === 'presencial' || ongForm.watch('localizacao_tipo') === 'ambos') && (
+                    {(ongForm.watch('localizacao_tipo') === 'presencial' || ongForm.watch('localizacao_tipo') === 'ambos') && ongForm.watch('localizacao_tipo') !== 'itinerante' && (
                       <div className="space-y-2">
                         <Label htmlFor="ong-endereco-fisico">Endereço físico</Label>
                         <Input
@@ -857,7 +856,7 @@ export default function PerfilPage() {
                       </div>
                     )}
 
-                      {(ongForm.watch('localizacao_tipo') === 'presencial' || ongForm.watch('localizacao_tipo') === 'ambos') && (
+                      {(ongForm.watch('localizacao_tipo') === 'presencial' || ongForm.watch('localizacao_tipo') === 'ambos') && ongForm.watch('localizacao_tipo') !== 'itinerante' && (
                         <div className="grid md:grid-cols-2 gap-6">
                           <div className="space-y-2">
                             <Label htmlFor="ong-cidade">Cidade</Label>

@@ -48,7 +48,7 @@ const ongSchema = z.object({
   short_description: z.string().max(200, 'Descrição curta deve ter no máximo 200 caracteres').optional(),
   how_to_help: z.string().optional(),
   additional_categories: z.string().optional(),
-  localizacao_tipo: z.enum(['presencial', 'online', 'ambos'], {
+  localizacao_tipo: z.enum(['presencial', 'online', 'ambos', 'itinerante'], {
     message: 'Selecione o tipo de localização'
   }),
   lat: z.number().optional(),
@@ -62,18 +62,16 @@ const ongSchema = z.object({
   horarios_funcionamento: z.string().optional(),
   doacoes: z.string().optional(),
 }).refine((data) => {
-  if (data.localizacao_tipo === 'presencial') {
+  if (data.localizacao_tipo === 'presencial' || data.localizacao_tipo === 'ambos') {
     return data.cidade && data.estado && data.lat && data.lng
   }
   if (data.localizacao_tipo === 'online') {
     return data.endereco_online
   }
-  if (data.localizacao_tipo === 'ambos') {
-    return ((data.cidade && data.estado && data.lat && data.lng) || data.endereco_online)
-  }
+  // ONGs itinerantes não precisam de localização fixa
   return true
 }, {
-  message: "Preencha os campos obrigatórios para o tipo de localização selecionado, incluindo a localização no mapa",
+  message: "Preencha os campos obrigatórios para o tipo de localização selecionado",
   path: ["localizacao_tipo"]
 })
 
@@ -525,6 +523,7 @@ export default function OnboardingPage() {
                     <SelectItem value="presencial">Presencial</SelectItem>
                     <SelectItem value="online">Online</SelectItem>
                     <SelectItem value="ambos">Presencial e Online</SelectItem>
+                    <SelectItem value="itinerante">Itinerante (sem sede fixa)</SelectItem>
                   </SelectContent>
                 </Select>
                 {ongForm.formState.errors.localizacao_tipo && (
@@ -532,7 +531,7 @@ export default function OnboardingPage() {
                 )}
               </div>
 
-              {(ongForm.watch('localizacao_tipo') === 'presencial' || ongForm.watch('localizacao_tipo') === 'ambos') && (
+              {(ongForm.watch('localizacao_tipo') === 'presencial' || ongForm.watch('localizacao_tipo') === 'ambos') && ongForm.watch('localizacao_tipo') !== 'itinerante' && (
                 <div className="grid md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="cidade">Cidade</Label>
@@ -562,7 +561,7 @@ export default function OnboardingPage() {
                 </div>
               )}
 
-              {(ongForm.watch('localizacao_tipo') === 'online' || ongForm.watch('localizacao_tipo') === 'ambos') && (
+              {(ongForm.watch('localizacao_tipo') === 'online' || ongForm.watch('localizacao_tipo') === 'ambos') && ongForm.watch('localizacao_tipo') !== 'itinerante' && (
                 <div className="space-y-2">
                   <Label htmlFor="endereco_online">Endereços Online</Label>
                   <Input
@@ -595,8 +594,8 @@ export default function OnboardingPage() {
                 />
               </div>
 
-              {/* Mapa de localização para ONGs presenciais */}
-              {(ongForm.watch('localizacao_tipo') === 'presencial' || ongForm.watch('localizacao_tipo') === 'ambos') && (
+              {/* Mapa de localização para ONGs presenciais e ambos (não itinerantes) */}
+              {(ongForm.watch('localizacao_tipo') === 'presencial' || ongForm.watch('localizacao_tipo') === 'ambos') && ongForm.watch('localizacao_tipo') !== 'itinerante' && (
                 <div className="space-y-2">
                   <Label>Localização no Mapa</Label>
                   <p className="text-sm text-gray-600 mb-3">
@@ -624,10 +623,7 @@ export default function OnboardingPage() {
               <Button
                 onClick={nextStep}
                 className="bg-primary hover:bg-primary/90 rounded-xl"
-                disabled={
-                  (ongForm.watch('localizacao_tipo') === 'presencial' || ongForm.watch('localizacao_tipo') === 'ambos') && 
-                  (!selectedLat || !selectedLng)
-                }
+                disabled={false}
               >
                 Continuar
                 <ArrowRight className="h-4 w-4 ml-2" />
