@@ -106,38 +106,20 @@ export default function SobrePage() {
   <div className="max-w-4xl mx-auto">
     <Card className="rounded-2xl shadow-lg">
       <CardContent className="p-8">
-        {/* Fotos lado a lado */}
-        <div className="grid md:grid-cols-2 gap-8 mb-8">
-          <div className="relative w-full h-64 bg-gray-100 rounded-xl overflow-hidden group">
-            <img
-              src="/images/team/inovatec-team-1.jpg"
-              alt="Equipe InovaTec - Foto 1"
-              className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-              onError={(e) => {
-                e.currentTarget.classList.add('hidden');
-                const placeholder = e.currentTarget.nextElementSibling;
-                if (placeholder) placeholder.classList.remove('hidden');
-              }}
-            />
-            <div className="hidden w-full h-full bg-primary/10 rounded-xl flex items-center justify-center">
-              {/* Placeholder */}
-            </div>
-          </div>
-
-          <div className="relative w-full h-64 bg-gray-100 rounded-xl overflow-hidden group">
-            <img
-              src="/images/team/inovatec-team-2.jpg"
-              alt="Equipe InovaTec - Foto 2"
-              className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-              onError={(e) => {
-                e.currentTarget.classList.add('hidden');
-                const placeholder = e.currentTarget.nextElementSibling;
-                if (placeholder) placeholder.classList.remove('hidden');
-              }}
-            />
-            <div className="hidden w-full h-full bg-primary/10 rounded-xl flex items-center justify-center">
-              {/* Placeholder */}
-            </div>
+        {/* Foto única */}
+        <div className="relative w-full h-80 sm:h-96 bg-gray-100 rounded-xl overflow-hidden group mb-8">
+          <img
+            src="/images/team/inovatec-team-single.jpg"
+            alt="Equipe InovaTec"
+            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+            onError={(e) => {
+              e.currentTarget.classList.add('hidden');
+              const placeholder = e.currentTarget.nextElementSibling;
+              if (placeholder) placeholder.classList.remove('hidden');
+            }}
+          />
+          <div className="hidden w-full h-full bg-primary/10 rounded-xl flex items-center justify-center">
+            {/* Placeholder */}
           </div>
         </div>
 
