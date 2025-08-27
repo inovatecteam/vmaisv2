@@ -231,6 +231,8 @@ export default function MapaPage() {
         filtered = filtered.filter(ong => ong.localizacao_tipo === 'online' || ong.localizacao_tipo === 'ambos')
       } else if (selectedLocalizacaoTipo === 'ambos') {
         filtered = filtered.filter(ong => ong.localizacao_tipo === 'ambos')
+      } else if (selectedLocalizacaoTipo === 'itinerante') {
+        filtered = filtered.filter(ong => ong.localizacao_tipo === 'itinerante')
       }
     }
 
@@ -377,6 +379,7 @@ export default function MapaPage() {
                         <SelectItem value="all">Presencial e Online</SelectItem>
                         <SelectItem value="presencial">Presencial</SelectItem>
                         <SelectItem value="online">Online</SelectItem>
+                        <SelectItem value="itinerante">Itinerante</SelectItem>
                       </SelectContent>
                     </Select>
 
@@ -428,6 +431,8 @@ export default function MapaPage() {
                                       'Online'
                                     ) : ong.localizacao_tipo === 'ambos' ? (
                                       'Online e Presencial'
+                                    ) : ong.localizacao_tipo === 'itinerante' ? (
+                                      'Itinerante'
                                     ) : (
                                       `${ong.cidade}, ${ong.estado}`
                                     )}
@@ -509,6 +514,8 @@ export default function MapaPage() {
                                       'Online'
                                     ) : ong.localizacao_tipo === 'ambos' ? (
                                       'Online e Presencial'
+                                    ) : ong.localizacao_tipo === 'itinerante' ? (
+                                      'Itinerante'
                                     ) : (
                                       `${ong.cidade}, ${ong.estado}`
                                     )}
@@ -583,6 +590,8 @@ export default function MapaPage() {
                           'Online'
                         ) : selectedOng.localizacao_tipo === 'ambos' ? (
                           'Online e Presencial'
+                        ) : selectedOng.localizacao_tipo === 'itinerante' ? (
+                          'Itinerante'
                         ) : (
                           `${selectedOng.cidade}, ${selectedOng.estado}`
                         )}
