@@ -109,7 +109,7 @@ export default function SobrePage() {
         {/* Foto única */}
         <div className="relative w-full h-80 sm:h-96 bg-gray-100 rounded-xl overflow-hidden group mb-8">
           <img
-            src="/images/team/inovatec-team-single.jpg"
+            src="/images/team/inovatec-team-single.png"
             alt="Equipe InovaTec"
             className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
             onError={(e) => {
