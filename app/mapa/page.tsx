@@ -84,7 +84,6 @@ export default function MapaPage() {
   }
 
   const initializeGoogleMaps = async () => {
-    console.log('🗺️ initializeGoogleMaps: Iniciando...')
     try {
       const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
       
@@ -94,17 +93,13 @@ export default function MapaPage() {
         return
       }
 
-      console.log('🔑 initializeGoogleMaps: API Key encontrada. Carregando Google Maps script...')
       // Carregar a API do Google Maps
       await loadGoogleMaps(apiKey)
-      console.log('✅ initializeGoogleMaps: Google Maps script carregado.')
       
       if (!mapRef.current) {
-        console.error('❌ initializeGoogleMaps: mapRef.current é null. Não foi possível inicializar o mapa.')
         showMapPlaceholder()
         return
       }
-      console.log('📍 initializeGoogleMaps: mapRef.current está disponível:', mapRef.current)
 
       // Inicializar o mapa
       const map = new window.google.maps.Map(mapRef.current, {
@@ -121,7 +116,6 @@ export default function MapaPage() {
 
       mapInstanceRef.current = map
       setMapLoading(false)
-      console.log('🎉 initializeGoogleMaps: Mapa inicializado com sucesso.')
       
     } catch (error) {
       console.error('Erro ao carregar Google Maps:', error)

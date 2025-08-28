@@ -57,7 +57,6 @@ export const signIn = async (email: string, password: string) => {
 
       // Se o perfil não existir (profile é null), criar um perfil básico
       if (!profile && !profileError) {
-        console.log('🔧 Perfil não encontrado, criando perfil básico...')
         
         // Usar dados do user_metadata se disponíveis, senão usar dados básicos
         const userMetadata = data.user.user_metadata || {}
@@ -81,7 +80,6 @@ export const signIn = async (email: string, password: string) => {
           throw new Error('Erro ao criar perfil do usuário')
         }
         
-        console.log('✅ Perfil básico criado com sucesso')
       } else if (profileError) {
         console.error('❌ Erro ao buscar perfil:', profileError)
         throw profileError

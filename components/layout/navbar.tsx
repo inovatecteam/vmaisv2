@@ -20,13 +20,7 @@ export function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const pathname = usePathname()
   
-  // Debug logs
-  console.log('🔍 Navbar: user recebido do useAuth:', user)
-  console.log('🔍 Navbar: user existe?', !!user)
-  if (user) {
-    console.log('🔍 Navbar: nome do usuário:', user.nome)
-    console.log('🔍 Navbar: tipo do usuário:', user.tipo)
-  }
+
   
   const router = useRouter()
   const [isScrolled, setIsScrolled] = useState(false)
