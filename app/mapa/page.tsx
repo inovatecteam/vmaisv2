@@ -44,10 +44,9 @@ export default function MapaPage() {
   const markersRef = useRef<any[]>([])
 
   useEffect(() => {
-    if (!authLoading) {
-      loadOngs()
-    }
-  }, [authLoading])
+    // Always load ONGs regardless of authentication status
+    loadOngs()
+  }, [])
 
   useEffect(() => {
     if (mapRef.current && !mapInstanceRef.current) {
@@ -73,7 +72,9 @@ export default function MapaPage() {
       setLoading(true)
       setError(null)
       
-      const { data, error } = await supabase
+      console.log('🔄 Carregando ONGs para o mapa...')
+      
+      let { data, error } = await supabase
         .from('ongs')
         .select('*')
         .eq('admin_approved', true)
@@ -81,10 +82,36 @@ export default function MapaPage() {
         .not('lng', 'is', null)
         .order('created_at', { ascending: false })
 
-      if (error) throw error
+      if (error) {
+        console.error('❌ Erro na query do mapa:', error)
+        throw error
+      }
+      
+      // If no admin-approved ONGs with coordinates found, try to get all ONGs with coordinates
+      if (!data || data.length === 0) {
+        console.log('⚠️ Nenhuma ONG aprovada com coordenadas encontrada, tentando carregar todas...')
+        
+        const { data: allOngs, error: allOngsError } = await supabase
+          .from('ongs')
+          .select('*')
+          .not('lat', 'is', null)
+          .not('lng', 'is', null)
+          .order('created_at', { ascending: false })
+        
+        if (allOngsError) {
+          console.error('❌ Erro ao carregar todas as ONGs com coordenadas:', allOngsError)
+          throw allOngsError
+        }
+        
+        data = allOngs
+        console.log('✅ Todas as ONGs com coordenadas carregadas:', data?.length || 0)
+      } else {
+        console.log('✅ ONGs aprovadas com coordenadas carregadas:', data?.length || 0)
+      }
+      
       setOngs(data || [])
     } catch (error: any) {
-      console.error('Erro ao carregar ONGs:', error)
+      console.error('❌ Erro ao carregar ONGs para mapa:', error)
       setError(error.message || 'Erro ao carregar ONGs')
       toast.error('Erro ao carregar ONGs. Tente novamente.')
     } finally {
@@ -316,19 +343,7 @@ export default function MapaPage() {
   
   const tipos = [...new Set(ongs.flatMap(ong => ong.tipo).filter(Boolean))].sort()
 
-  if (authLoading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-white via-yellow-50/30 to-orange-50/30">
-        <Navbar />
-        <div className="pt-32 flex items-center justify-center px-4">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-            <p className="text-gray-600 text-sm sm:text-base">Carregando...</p>
-          </div>
-        </div>
-      </div>
-    )
-  }
+
 
   if (loading) {
     return (
@@ -389,43 +404,7 @@ export default function MapaPage() {
     )
   }
 
-  // Check if user is authenticated and onboarded
-  if (!user) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-white via-yellow-50/30 to-orange-50/30">
-        <Navbar />
-        <div className="pt-32 flex items-center justify-center px-4">
-          <Card className="rounded-2xl shadow-lg">
-            <CardContent className="p-8 text-center">
-              <p className="text-gray-600">Faça login para acessar o mapa de ONGs.</p>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-    )
-  }
 
-  if (!user.onboarded) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-white via-yellow-50/30 to-orange-50/30">
-        <Navbar />
-        <div className="pt-32 flex items-center justify-center px-4">
-          <Card className="rounded-2xl shadow-lg">
-            <CardContent className="p-8 text-center">
-              <div className="space-y-4">
-                <Heart className="h-16 w-16 text-primary mx-auto" />
-                <h2 className="text-2xl font-bold text-gray-900">Complete seu perfil primeiro!</h2>
-                <p className="text-gray-600">Você precisa completar o onboarding antes de acessar o mapa.</p>
-                <Button asChild className="bg-primary hover:bg-primary/90">
-                  <Link href="/onboarding">Ir para Onboarding</Link>
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-    )
-  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-white via-yellow-50/30 to-orange-50/30">

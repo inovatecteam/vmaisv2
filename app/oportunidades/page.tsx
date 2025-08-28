@@ -39,10 +39,9 @@ export default function CatalogoPage() {
   const { user, loading: authLoading } = useAuth()
 
   useEffect(() => {
-    if (!authLoading) {
-      loadOngs()
-    }
-  }, [authLoading])
+    // Always load ONGs regardless of authentication status
+    loadOngs()
+  }, [])
 
   useEffect(() => {
     filterOngs()
@@ -53,16 +52,53 @@ export default function CatalogoPage() {
       setLoading(true)
       setError(null)
       
-      const { data, error } = await supabase
-        .from('ongs')
-        .select('*')
-        .eq('admin_approved', true)
-        .order('created_at', { ascending: false })
+      console.log('🔄 Carregando ONGs...')
+      
+      // Add timeout to prevent infinite loading
+      const timeoutPromise = new Promise((_, reject) => {
+        setTimeout(() => reject(new Error('Timeout: A requisição demorou muito para responder')), 10000)
+      })
+      
+      const queryPromise = (async () => {
+        let { data, error } = await supabase
+          .from('ongs')
+          .select('*')
+          .eq('admin_approved', true)
+          .order('created_at', { ascending: false })
 
-      if (error) throw error
+        if (error) {
+          console.error('❌ Erro na query:', error)
+          throw error
+        }
+        
+        // If no admin-approved ONGs found, try to get all ONGs
+        if (!data || data.length === 0) {
+          console.log('⚠️ Nenhuma ONG aprovada encontrada, tentando carregar todas...')
+          
+          const { data: allOngs, error: allOngsError } = await supabase
+            .from('ongs')
+            .select('*')
+            .order('created_at', { ascending: false })
+          
+          if (allOngsError) {
+            console.error('❌ Erro ao carregar todas as ONGs:', allOngsError)
+            throw allOngsError
+          }
+          
+          data = allOngs
+          console.log('✅ Todas as ONGs carregadas:', data?.length || 0)
+        } else {
+          console.log('✅ ONGs aprovadas carregadas:', data?.length || 0)
+        }
+        
+        return data
+      })()
+      
+      const data = await Promise.race([queryPromise, timeoutPromise]) as ONG[]
       setOngs(data || [])
+      
     } catch (error: any) {
-      console.error('Erro ao carregar ONGs:', error)
+      console.error('❌ Erro ao carregar ONGs:', error)
       setError(error.message || 'Erro ao carregar ONGs')
       toast.error('Erro ao carregar ONGs. Tente novamente.')
     } finally {
@@ -182,20 +218,6 @@ export default function CatalogoPage() {
     Array.isArray(ong.tipo) ? ong.tipo : [ong.tipo]
   ).filter(Boolean))].sort()
  
-  if (authLoading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-white via-yellow-50/30 to-orange-50/30">
-        <Navbar />
-        <div className="pt-32 flex items-center justify-center">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-            <p className="text-gray-600">Carregando...</p>
-          </div>
-        </div>
-      </div>
-    )
-  }
-
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-white via-yellow-50/30 to-orange-50/30">
@@ -251,44 +273,6 @@ export default function CatalogoPage() {
           </div>
         </div>
         <Footer />
-      </div>
-    )
-  }
-
-  // Check if user is authenticated and onboarded
-  if (!user) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-white via-yellow-50/30 to-orange-50/30">
-        <Navbar />
-        <div className="pt-32 flex items-center justify-center">
-          <Card className="rounded-2xl shadow-lg">
-            <CardContent className="p-8 text-center">
-              <p className="text-gray-600">Faça login para acessar as oportunidades de voluntariado.</p>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-    )
-  }
-
-  if (!user.onboarded) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-white via-yellow-50/30 to-orange-50/30">
-        <Navbar />
-        <div className="pt-32 flex items-center justify-center">
-          <Card className="rounded-2xl shadow-lg">
-            <CardContent className="p-8 text-center">
-              <div className="space-y-4">
-                <Heart className="h-16 w-16 text-primary mx-auto" />
-                <h2 className="text-2xl font-bold text-gray-900">Complete seu perfil primeiro!</h2>
-                <p className="text-gray-600">Você precisa completar o onboarding antes de acessar as oportunidades.</p>
-                <Button asChild className="bg-primary hover:bg-primary/90">
-                  <Link href="/onboarding">Ir para Onboarding</Link>
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
       </div>
     )
   }
