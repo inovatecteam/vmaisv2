@@ -107,11 +107,11 @@ export default function SobrePage() {
     <Card className="rounded-2xl shadow-lg">
       <CardContent className="p-8">
         {/* Foto única */}
-        <div className="relative w-full h-80 sm:h-96 bg-gray-100 rounded-xl overflow-hidden group mb-8">
+        <div className="relative w-full bg-gray-100 rounded-xl overflow-hidden group mb-8">
           <img
             src="/images/team/inovatec-team-single.png"
             alt="Equipe InovaTec"
-            className="w-full h-full object-contain sm:object-cover transition-transform duration-300 group-hover:scale-105"
+            className="w-full h-auto max-h-80 sm:h-96 sm:max-h-none object-contain sm:object-cover transition-transform duration-300 group-hover:scale-105"
             onError={(e) => {
               e.currentTarget.classList.add('hidden');
               const placeholder = e.currentTarget.nextElementSibling;
