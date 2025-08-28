@@ -109,9 +109,9 @@ export default function SobrePage() {
         {/* Foto única */}
         <div className="relative w-full h-80 sm:h-96 bg-gray-100 rounded-xl overflow-hidden group mb-8">
           <img
-            src="/images/team/inovatec-team-single.png"
+            src="/images/team/inovatec-team-1.jpg"
             alt="Equipe InovaTec"
-            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+            className="w-full h-full object-contain sm:object-cover transition-transform duration-300 group-hover:scale-105"
             onError={(e) => {
               e.currentTarget.classList.add('hidden');
               const placeholder = e.currentTarget.nextElementSibling;
