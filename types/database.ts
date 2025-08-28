@@ -56,7 +56,7 @@ export interface Database {
           descricao: string
           short_description: string | null
           how_to_help: string | null
-          localizacao_tipo: 'presencial' | 'online' | 'ambos' | 'itinerante' | null
+          localizacao_tipo: 'presencial' | 'online' | 'ambos' | 'sem_local' | null
           endereco_online: string[] | null
           necessidades: string[] | null
           whatsapp: string | null
@@ -77,7 +77,7 @@ export interface Database {
           descricao: string
           short_description?: string | null
           how_to_help?: string | null
-          localizacao_tipo?: 'presencial' | 'online' | 'ambos' | 'itinerante' | null
+          localizacao_tipo?: 'presencial' | 'online' | 'ambos' | 'sem_local' | null
           endereco_online?: string[] | null
           necessidades?: string[] | null
           whatsapp?: string | null
@@ -98,7 +98,7 @@ export interface Database {
           descricao?: string
           short_description?: string | null
           how_to_help?: string | null
-          localizacao_tipo?: 'presencial' | 'online' | 'ambos' | 'itinerante' | null
+          localizacao_tipo?: 'presencial' | 'online' | 'ambos' | 'sem_local' | null
           endereco_online?: string[] | null
           necessidades?: string[] | null
           whatsapp?: string | null

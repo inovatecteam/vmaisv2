@@ -10,7 +10,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { User, Building, MapPin, Phone, Mail, Save, X, Camera, Image, Upload } from 'lucide-react'
+import { User, Building, MapPin, Phone, Mail, Save, X, Camera, Image, Upload, Heart } from 'lucide-react'
 import { useAuth } from '@/components/providers/auth-provider'
 import { supabase } from '@/lib/supabase'
 import { toast } from 'sonner'
@@ -20,6 +20,7 @@ import { z } from 'zod'
 import { formatPhone } from '@/lib/utils'
 import { LocationPickerMap } from '@/components/map/location-picker-map'
 import Footer from '@/components/layout/footer'
+import Link from 'next/link'
 
 const profileSchema = z.object({
   nome: z.string().min(2, 'Nome deve ter pelo menos 2 caracteres'),
@@ -37,7 +38,7 @@ const ongSchema = z.object({
   descricao: z.string().min(10, 'Descrição deve ter pelo menos 10 caracteres'),
   short_description: z.string().max(200, 'Descrição curta deve ter no máximo 200 caracteres').optional(),
   additional_categories: z.string().optional(),
-  localizacao_tipo: z.enum(['presencial', 'online', 'ambos', 'itinerante'], {
+  localizacao_tipo: z.enum(['presencial', 'online', 'ambos', 'sem_local'], {
     message: 'Selecione o tipo de localização'
   }),
 
@@ -58,7 +59,7 @@ const ongSchema = z.object({
   if (data.localizacao_tipo === 'online') {
     return data.endereco_online
   }
-  // ONGs itinerantes não precisam de localização fixa
+  // ONGs sem local fixo não precisam de localização fixa
   return true
 }, {
   message: "Preencha os campos obrigatórios para o tipo de localização selecionado",
@@ -457,6 +458,29 @@ export default function PerfilPage() {
     )
   }
 
+  // Redirect to onboarding if user is not onboarded
+  if (!user.onboarded) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-white via-yellow-50/30 to-orange-50/30">
+        <Navbar />
+        <div className="pt-32 flex items-center justify-center">
+          <Card className="rounded-2xl shadow-lg">
+            <CardContent className="p-8 text-center">
+              <div className="space-y-4">
+                <Heart className="h-16 w-16 text-primary mx-auto" />
+                <h2 className="text-2xl font-bold text-gray-900">Complete seu perfil primeiro!</h2>
+                <p className="text-gray-600">Você precisa completar o onboarding antes de acessar o perfil.</p>
+                <Button asChild className="bg-primary hover:bg-primary/90">
+                  <Link href="/onboarding">Ir para Onboarding</Link>
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-white via-yellow-50/30 to-orange-50/30">
       <Navbar />
@@ -721,7 +745,7 @@ export default function PerfilPage() {
                               <SelectItem value="presencial">Presencial</SelectItem>
                               <SelectItem value="online">Online</SelectItem>
                               <SelectItem value="ambos">Presencial e Online</SelectItem>
-                             <SelectItem value="itinerante">Itinerante (sem sede fixa)</SelectItem>
+                             <SelectItem value="sem_local">Sem local (sem sede fixa)</SelectItem>
                             </SelectContent>
                           </Select>
                           {ongForm.formState.errors.localizacao_tipo && (
@@ -784,8 +808,8 @@ export default function PerfilPage() {
                         </div>
                       </div>
 
-                      {/* Mapa de localização para ONGs presenciais e ambos (não itinerantes) */}
-                      {(ongForm.watch('localizacao_tipo') === 'presencial' || ongForm.watch('localizacao_tipo') === 'ambos') && ongForm.watch('localizacao_tipo') !== 'itinerante' && (
+                                    {/* Mapa de localização para ONGs presenciais e ambos (não sem_local) */}
+              {(ongForm.watch('localizacao_tipo') === 'presencial' || ongForm.watch('localizacao_tipo') === 'ambos') && ongForm.watch('localizacao_tipo') !== 'sem_local' && (
                         <div className="space-y-2">
                           <Label>Localização no Mapa</Label>
                           <p className="text-sm text-gray-600 mb-3">
@@ -834,7 +858,7 @@ export default function PerfilPage() {
                       </div>
 
 
-                    {(ongForm.watch('localizacao_tipo') === 'presencial' || ongForm.watch('localizacao_tipo') === 'ambos') && ongForm.watch('localizacao_tipo') !== 'itinerante' && (
+                                          {(ongForm.watch('localizacao_tipo') === 'presencial' || ongForm.watch('localizacao_tipo') === 'ambos') && ongForm.watch('localizacao_tipo') !== 'sem_local' && (
                       <div className="space-y-2">
                         <Label htmlFor="ong-endereco-fisico">Endereço físico</Label>
                         <Input
@@ -849,7 +873,7 @@ export default function PerfilPage() {
                       </div>
                     )}
 
-                      {(ongForm.watch('localizacao_tipo') === 'presencial' || ongForm.watch('localizacao_tipo') === 'ambos') && ongForm.watch('localizacao_tipo') !== 'itinerante' && (
+                      {(ongForm.watch('localizacao_tipo') === 'presencial' || ongForm.watch('localizacao_tipo') === 'ambos') && ongForm.watch('localizacao_tipo') !== 'sem_local' && (
                         <div className="grid md:grid-cols-2 gap-6">
                           
                         </div>

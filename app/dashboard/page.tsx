@@ -56,6 +56,29 @@ export default function DashboardPage() {
     )
   }
 
+  // Redirect to onboarding if user is not onboarded
+  if (!user.onboarded) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-white via-yellow-50/30 to-orange-50/30">
+        <Navbar />
+        <div className="pt-32 flex items-center justify-center">
+          <Card className="rounded-2xl shadow-lg">
+            <CardContent className="p-8 text-center">
+              <div className="space-y-4">
+                <Heart className="h-16 w-16 text-primary mx-auto" />
+                <h2 className="text-2xl font-bold text-gray-900">Complete seu perfil primeiro!</h2>
+                <p className="text-gray-600">Você precisa completar o onboarding antes de acessar o dashboard.</p>
+                <Button asChild className="bg-primary hover:bg-primary/90">
+                  <Link href="/onboarding">Ir para Onboarding</Link>
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    )
+  }
+
   const loadDashboardData = async () => {
     if (!user) return
 

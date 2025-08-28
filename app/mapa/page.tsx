@@ -9,6 +9,7 @@ import { Badge } from '@/components/ui/badge'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Search, MapPin, Phone, Filter, Heart, Loader2, ExternalLink } from 'lucide-react'
+import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
 import { ONG } from '@/types'
 import { toast } from 'sonner'
@@ -226,8 +227,8 @@ export default function MapaPage() {
         filtered = filtered.filter(ong => ong.localizacao_tipo === 'online' || ong.localizacao_tipo === 'ambos')
       } else if (selectedLocalizacaoTipo === 'ambos') {
         filtered = filtered.filter(ong => ong.localizacao_tipo === 'ambos')
-      } else if (selectedLocalizacaoTipo === 'itinerante') {
-        filtered = filtered.filter(ong => ong.localizacao_tipo === 'itinerante')
+        } else if (selectedLocalizacaoTipo === 'sem_local') {
+    filtered = filtered.filter(ong => ong.localizacao_tipo === 'sem_local')
       }
     }
 
@@ -321,6 +322,44 @@ export default function MapaPage() {
     )
   }
 
+  // Check if user is authenticated and onboarded
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-white via-yellow-50/30 to-orange-50/30">
+        <Navbar />
+        <div className="pt-32 flex items-center justify-center px-4">
+          <Card className="rounded-2xl shadow-lg">
+            <CardContent className="p-8 text-center">
+              <p className="text-gray-600">Faça login para acessar o mapa de ONGs.</p>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    )
+  }
+
+  if (!user.onboarded) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-white via-yellow-50/30 to-orange-50/30">
+        <Navbar />
+        <div className="pt-32 flex items-center justify-center px-4">
+          <Card className="rounded-2xl shadow-lg">
+            <CardContent className="p-8 text-center">
+              <div className="space-y-4">
+                <Heart className="h-16 w-16 text-primary mx-auto" />
+                <h2 className="text-2xl font-bold text-gray-900">Complete seu perfil primeiro!</h2>
+                <p className="text-gray-600">Você precisa completar o onboarding antes de acessar o mapa.</p>
+                <Button asChild className="bg-primary hover:bg-primary/90">
+                  <Link href="/onboarding">Ir para Onboarding</Link>
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-white via-yellow-50/30 to-orange-50/30">
       <Navbar />
@@ -374,7 +413,7 @@ export default function MapaPage() {
                         <SelectItem value="all">Presencial e Online</SelectItem>
                         <SelectItem value="presencial">Presencial</SelectItem>
                         <SelectItem value="online">Online</SelectItem>
-                        <SelectItem value="itinerante">Itinerante</SelectItem>
+                        <SelectItem value="sem_local">Sem local</SelectItem>
                       </SelectContent>
                     </Select>
 
@@ -426,8 +465,8 @@ export default function MapaPage() {
                                       'Online'
                                     ) : ong.localizacao_tipo === 'ambos' ? (
                                       'Online e Presencial'
-                                    ) : ong.localizacao_tipo === 'itinerante' ? (
-                                      'Itinerante'
+                                    ) : ong.localizacao_tipo === 'sem_local' ? (
+                                      'Sem local'
                                     ) : (
                                       'Localização não disponível'
                                     )}
@@ -509,8 +548,8 @@ export default function MapaPage() {
                                       'Online'
                                     ) : ong.localizacao_tipo === 'ambos' ? (
                                       'Online e Presencial'
-                                    ) : ong.localizacao_tipo === 'itinerante' ? (
-                                      'Itinerante'
+                                    ) : ong.localizacao_tipo === 'sem_local' ? (
+                                      'Sem local'
                                     ) : (
                                       'Localização não disponível'
                                     )}
@@ -585,8 +624,8 @@ export default function MapaPage() {
                           'Online'
                         ) : selectedOng.localizacao_tipo === 'ambos' ? (
                           'Online e Presencial'
-                        ) : selectedOng.localizacao_tipo === 'itinerante' ? (
-                          'Itinerante'
+                        ) : selectedOng.localizacao_tipo === 'sem_local' ? (
+                          'Sem local'
                         ) : (
                           'Localização não disponível'
                         )}

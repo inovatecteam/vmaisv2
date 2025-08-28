@@ -48,7 +48,7 @@ const ongSchema = z.object({
   short_description: z.string().min(10, 'Descrição curta deve ter pelo menos 10 caracteres').max(200, 'Descrição curta deve ter no máximo 200 caracteres'),
   how_to_help: z.string().optional(),
   additional_categories: z.string().optional(),
-  localizacao_tipo: z.enum(['presencial', 'online', 'ambos', 'itinerante'], {
+  localizacao_tipo: z.enum(['presencial', 'online', 'ambos', 'sem_local'], {
     message: 'Selecione o tipo de localização'
   }),
   lat: z.number().optional(),
@@ -68,7 +68,7 @@ const ongSchema = z.object({
   if (data.localizacao_tipo === 'ambos') {
     return data.lat && data.lng && data.endereco_fisico && data.endereco_online
   }
-  // ONGs itinerantes não precisam de localização fixa
+  // ONGs sem local fixo não precisam de localização fixa
   return true
 }, {
   message: "Preencha os campos obrigatórios para o tipo de localização selecionado",
@@ -651,7 +651,7 @@ export default function OnboardingPage() {
                     <SelectItem value="presencial">Presencial</SelectItem>
                     <SelectItem value="online">Online</SelectItem>
                     <SelectItem value="ambos">Presencial e Online</SelectItem>
-                    <SelectItem value="itinerante">Itinerante (sem sede fixa)</SelectItem>
+                    <SelectItem value="sem_local">Sem local (sem sede fixa)</SelectItem>
                   </SelectContent>
                 </Select>
                 {ongForm.formState.errors.localizacao_tipo && (
@@ -683,8 +683,8 @@ export default function OnboardingPage() {
                 </div>
               )}
 
-              {/* Endereços Online - Required for online and ambos, optional for itinerante */}
-              {(ongForm.watch('localizacao_tipo') === 'online' || ongForm.watch('localizacao_tipo') === 'ambos' || ongForm.watch('localizacao_tipo') === 'itinerante') && (
+              {/* Endereços Online - Required for online and ambos, optional for sem_local */}
+              {(ongForm.watch('localizacao_tipo') === 'online' || ongForm.watch('localizacao_tipo') === 'ambos' || ongForm.watch('localizacao_tipo') === 'sem_local') && (
                 <div className="space-y-2">
                   <Label htmlFor="endereco_online">
                     Endereços Online
@@ -729,8 +729,8 @@ export default function OnboardingPage() {
                 )}
               </div>
 
-              {/* Mapa de localização para ONGs presenciais e ambos (não itinerantes) */}
-              {(ongForm.watch('localizacao_tipo') === 'presencial' || ongForm.watch('localizacao_tipo') === 'ambos') && ongForm.watch('localizacao_tipo') !== 'itinerante' && (
+              {/* Mapa de localização para ONGs presenciais e ambos (não sem_local) */}
+              {(ongForm.watch('localizacao_tipo') === 'presencial' || ongForm.watch('localizacao_tipo') === 'ambos') && ongForm.watch('localizacao_tipo') !== 'sem_local' && (
                 <div className="space-y-2">
                   <Label>Localização no Mapa</Label>
                   <p className="text-sm text-gray-600 mb-3">
