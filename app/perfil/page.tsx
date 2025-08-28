@@ -37,8 +37,7 @@ const ongSchema = z.object({
   tipo: z.string().min(1, 'Selecione pelo menos um tipo'),
   descricao: z.string().min(10, 'Descrição deve ter pelo menos 10 caracteres'),
   short_description: z.string().max(200, 'Descrição curta deve ter no máximo 200 caracteres').optional(),
-  additional_categories: z.string().optional(),
-  localizacao_tipo: z.enum(['presencial', 'online', 'ambos', 'sem_local'], {
+  localizacao_tipo: z.enum(['presencial', 'online', 'ambos', 'itinerante'], {
     message: 'Selecione o tipo de localização'
   }),
 
@@ -330,7 +329,6 @@ export default function PerfilPage() {
         ...data,
         tipo: selectedTipos,
         short_description: data.short_description || null,
-        additional_categories: data.additional_categories ? data.additional_categories.split(',').map(c => c.trim()).filter(Boolean) : null,
         localizacao_tipo: data.localizacao_tipo,
 
         endereco_online: data.endereco_online ? data.endereco_online.split(',').map(e => e.trim()).filter(Boolean) : null,
@@ -745,7 +743,7 @@ export default function PerfilPage() {
                               <SelectItem value="presencial">Presencial</SelectItem>
                               <SelectItem value="online">Online</SelectItem>
                               <SelectItem value="ambos">Presencial e Online</SelectItem>
-                             <SelectItem value="sem_local">Sem local (sem sede fixa)</SelectItem>
+                             <SelectItem value="itinerante">Sem local (sem sede fixa)</SelectItem>
                             </SelectContent>
                           </Select>
                           {ongForm.formState.errors.localizacao_tipo && (
@@ -808,8 +806,8 @@ export default function PerfilPage() {
                         </div>
                       </div>
 
-                                    {/* Mapa de localização para ONGs presenciais e ambos (não sem_local) */}
-              {(ongForm.watch('localizacao_tipo') === 'presencial' || ongForm.watch('localizacao_tipo') === 'ambos') && ongForm.watch('localizacao_tipo') !== 'sem_local' && (
+                                    {/* Mapa de localização para ONGs presenciais e ambos (não itinerante) */}
+              {(ongForm.watch('localizacao_tipo') === 'presencial' || ongForm.watch('localizacao_tipo') === 'ambos') && ongForm.watch('localizacao_tipo') !== 'itinerante' && (
                         <div className="space-y-2">
                           <Label>Localização no Mapa</Label>
                           <p className="text-sm text-gray-600 mb-3">
@@ -858,7 +856,7 @@ export default function PerfilPage() {
                       </div>
 
 
-                                          {(ongForm.watch('localizacao_tipo') === 'presencial' || ongForm.watch('localizacao_tipo') === 'ambos') && ongForm.watch('localizacao_tipo') !== 'sem_local' && (
+                                          {(ongForm.watch('localizacao_tipo') === 'presencial' || ongForm.watch('localizacao_tipo') === 'ambos') && ongForm.watch('localizacao_tipo') !== 'itinerante' && (
                       <div className="space-y-2">
                         <Label htmlFor="ong-endereco-fisico">Endereço físico</Label>
                         <Input
@@ -873,7 +871,7 @@ export default function PerfilPage() {
                       </div>
                     )}
 
-                      {(ongForm.watch('localizacao_tipo') === 'presencial' || ongForm.watch('localizacao_tipo') === 'ambos') && ongForm.watch('localizacao_tipo') !== 'sem_local' && (
+                      {(ongForm.watch('localizacao_tipo') === 'presencial' || ongForm.watch('localizacao_tipo') === 'ambos') && ongForm.watch('localizacao_tipo') !== 'itinerante' && (
                         <div className="grid md:grid-cols-2 gap-6">
                           
                         </div>
@@ -950,6 +948,8 @@ export default function PerfilPage() {
                           Tags rápidas para categorizar tipos de ajuda (separadas por vírgula)
                         </p>
                       </div>
+
+
 
 
                       {/* Botões condicionais */}

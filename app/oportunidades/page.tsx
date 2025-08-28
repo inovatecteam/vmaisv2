@@ -19,6 +19,7 @@ import { WhatsAppConfirmModal } from '@/components/whatsapp-confirm-modal'
 import { sendContactEmail } from '@/lib/api'
 import Footer from '@/components/layout/footer'
 import { UcergsFundraisingCard } from '@/components/ucergs-fundraising-card'
+import { BrowserRecovery } from '@/components/ui/browser-recovery'
 
 export default function CatalogoPage() {
   const [ongs, setOngs] = useState<ONG[]>([])
@@ -29,15 +30,19 @@ export default function CatalogoPage() {
   const [showWhatsappConfirmModal, setShowWhatsappConfirmModal] = useState(false)
   const [ongToConfirmWhatsapp, setOngToConfirmWhatsapp] = useState<ONG | null>(null)
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [retryCount, setRetryCount] = useState(0)
   const [searchTerm, setSearchTerm] = useState('')
 
   const [selectedTipo, setSelectedTipo] = useState<string>('all')
   const [selectedLocalizacaoTipo, setSelectedLocalizacaoTipo] = useState<string>('all')
-  const { user } = useAuth()
+  const { user, loading: authLoading } = useAuth()
 
   useEffect(() => {
-    loadOngs()
-  }, [])
+    if (!authLoading) {
+      loadOngs()
+    }
+  }, [authLoading])
 
   useEffect(() => {
     filterOngs()
@@ -45,6 +50,9 @@ export default function CatalogoPage() {
 
   const loadOngs = async () => {
     try {
+      setLoading(true)
+      setError(null)
+      
       const { data, error } = await supabase
         .from('ongs')
         .select('*')
@@ -53,12 +61,18 @@ export default function CatalogoPage() {
 
       if (error) throw error
       setOngs(data || [])
-    } catch (error) {
+    } catch (error: any) {
       console.error('Erro ao carregar ONGs:', error)
-      toast.error('Erro ao carregar ONGs')
+      setError(error.message || 'Erro ao carregar ONGs')
+      toast.error('Erro ao carregar ONGs. Tente novamente.')
     } finally {
       setLoading(false)
     }
+  }
+
+  const handleRetry = () => {
+    setRetryCount(prev => prev + 1)
+    loadOngs()
   }
 
   const filterOngs = () => {
@@ -85,8 +99,8 @@ export default function CatalogoPage() {
         filtered = filtered.filter(ong => ong.localizacao_tipo === 'online' || ong.localizacao_tipo === 'ambos')
       } else if (selectedLocalizacaoTipo === 'ambos') {
         filtered = filtered.filter(ong => ong.localizacao_tipo === 'ambos')
-        } else if (selectedLocalizacaoTipo === 'sem_local') {
-    filtered = filtered.filter(ong => ong.localizacao_tipo === 'sem_local')
+                } else if (selectedLocalizacaoTipo === 'itinerante') {
+          filtered = filtered.filter(ong => ong.localizacao_tipo === 'itinerante')
       }
     }
 
@@ -168,16 +182,75 @@ export default function CatalogoPage() {
     Array.isArray(ong.tipo) ? ong.tipo : [ong.tipo]
   ).filter(Boolean))].sort()
  
-  if (loading) {
+  if (authLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-white via-yellow-50/30 to-orange-50/30">
         <Navbar />
         <div className="pt-32 flex items-center justify-center">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-            <p className="text-gray-600">Carregando ONGs...</p>
+            <p className="text-gray-600">Carregando...</p>
           </div>
         </div>
+      </div>
+    )
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-white via-yellow-50/30 to-orange-50/30">
+        <Navbar />
+        <div className="pt-32 pb-20 px-4">
+          <div className="max-w-7xl mx-auto">
+            <div className="text-center mb-12">
+              <h1 className="text-4xl md:text-5xl font-bold mb-4">
+                <span className="text-primary">Oportunidades</span> de Voluntariado
+              </h1>
+              <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+                Descubra oportunidades incríveis de voluntariado na sua região e conecte-se com causas que fazem sentido para você.
+              </p>
+            </div>
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+              <p className="text-gray-600">Carregando ONGs...</p>
+            </div>
+          </div>
+        </div>
+        <Footer />
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-white via-yellow-50/30 to-orange-50/30">
+        <Navbar />
+        <div className="pt-32 pb-20 px-4">
+          <div className="max-w-7xl mx-auto">
+            <div className="text-center mb-12">
+              <h1 className="text-4xl md:text-5xl font-bold mb-4">
+                <span className="text-primary">Oportunidades</span> de Voluntariado
+              </h1>
+            </div>
+            <div className="text-center">
+              <div className="mb-6">
+                <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <span className="text-2xl">⚠️</span>
+                </div>
+                <h2 className="text-xl font-semibold text-gray-900 mb-2">Erro ao carregar dados</h2>
+                <p className="text-gray-600 mb-4">{error}</p>
+                <div className="space-y-3">
+                  <Button onClick={handleRetry} className="bg-primary hover:bg-primary/90">
+                    Tentar novamente
+                  </Button>
+                  <div className="text-sm text-gray-500">ou</div>
+                  <BrowserRecovery onRecoveryComplete={handleRetry} />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <Footer />
       </div>
     )
   }
@@ -280,7 +353,7 @@ export default function CatalogoPage() {
             <SelectItem value="all">Presencial e Online</SelectItem>
             <SelectItem value="presencial">Presencial</SelectItem>
             <SelectItem value="online">Online</SelectItem>
-                                <SelectItem value="sem_local">Sem local</SelectItem>
+                                <SelectItem value="itinerante">Sem local</SelectItem>
           </SelectContent>
         </Select>
 
@@ -345,7 +418,7 @@ export default function CatalogoPage() {
                               'Online'
                             ) : ong.localizacao_tipo === 'ambos' ? (
                               'Online e Presencial'
-                                              ) : ong.localizacao_tipo === 'sem_local' ? (
+                                              ) : ong.localizacao_tipo === 'itinerante' ? (
                     'Sem local'
                   ) : (
                               `Localização não disponível`
@@ -452,7 +525,7 @@ export default function CatalogoPage() {
                           'Online'
                         ) : selectedOng.localizacao_tipo === 'ambos' ? (
                           'Online e Presencial'
-                        ) : selectedOng.localizacao_tipo === 'sem_local' ? (
+                        ) : selectedOng.localizacao_tipo === 'itinerante' ? (
                           'Sem local'
                         ) : (
                           `Localização não disponível`

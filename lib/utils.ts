@@ -1,31 +1,57 @@
-import { clsx, type ClassValue } from 'clsx';
-import { twMerge } from 'tailwind-merge';
+import { type ClassValue, clsx } from "clsx"
+import { twMerge } from "tailwind-merge"
 
 export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs));
+  return twMerge(clsx(inputs))
 }
 
-// Função para formatar telefone
-export const formatPhone = (value: string) => {
-  // Remove tudo que não é número
+export function formatPhone(value: string): string {
+  // Remove all non-numeric characters
   const numbers = value.replace(/\D/g, '')
   
-  // Aplica a máscara baseada no tamanho
-  if (numbers.length <= 10) {
-    // Formato: (11) 9999-9999
-    return numbers.replace(/(\d{2})(\d{4})(\d{0,4})/, (match, p1, p2, p3) => {
-      if (p3) return `(${p1}) ${p2}-${p3}`
-      if (p2) return `(${p1}) ${p2}`
-      if (p1) return `(${p1}`
-      return numbers
-    })
+  // Apply Brazilian phone format: (XX) XXXXX-XXXX
+  if (numbers.length <= 2) {
+    return `(${numbers}`
+  } else if (numbers.length <= 7) {
+    return `(${numbers.slice(0, 2)}) ${numbers.slice(2)}`
+  } else if (numbers.length <= 11) {
+    return `(${numbers.slice(0, 2)}) ${numbers.slice(2, 7)}-${numbers.slice(7)}`
   } else {
-    // Formato: (11) 99999-9999
-    return numbers.replace(/(\d{2})(\d{5})(\d{0,4})/, (match, p1, p2, p3) => {
-      if (p3) return `(${p1}) ${p2}-${p3}`
-      if (p2) return `(${p1}) ${p2}`
-      if (p1) return `(${p1}`
-      return numbers
+    return `(${numbers.slice(0, 2)}) ${numbers.slice(2, 7)}-${numbers.slice(7, 11)}`
+  }
+}
+
+// Utility function to clear browser storage and force fresh authentication
+export function clearBrowserStorage() {
+  try {
+    // Clear localStorage
+    localStorage.clear()
+    // Clear sessionStorage
+    sessionStorage.clear()
+    // Clear cookies (if any)
+    document.cookie.split(";").forEach(function(c) { 
+      document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"); 
     })
+  } catch (error) {
+    console.warn('Could not clear browser storage:', error)
+  }
+}
+
+// Utility function to detect browser switching issues
+export function detectBrowserIssues(): boolean {
+  try {
+    // Check if we can access localStorage
+    const testKey = '__browser_test__'
+    localStorage.setItem(testKey, 'test')
+    const result = localStorage.getItem(testKey)
+    localStorage.removeItem(testKey)
+    
+    if (result !== 'test') {
+      return true // Browser storage is not working properly
+    }
+    
+    return false
+  } catch (error) {
+    return true // Browser storage is not accessible
   }
 }

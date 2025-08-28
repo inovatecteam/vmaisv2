@@ -19,6 +19,7 @@ import { WhatsAppConfirmModal } from '@/components/whatsapp-confirm-modal'
 import { sendContactEmail } from '@/lib/api'
 import Footer from '@/components/layout/footer'
 import { loadGoogleMaps } from '@/lib/google-maps-loader'
+import { BrowserRecovery } from '@/components/ui/browser-recovery'
 
 export default function MapaPage() {
   const [ongs, setOngs] = useState<ONG[]>([])
@@ -29,20 +30,24 @@ export default function MapaPage() {
   const [showWhatsappConfirmModal, setShowWhatsappConfirmModal] = useState(false)
   const [ongToConfirmWhatsapp, setOngToConfirmWhatsapp] = useState<ONG | null>(null)
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [retryCount, setRetryCount] = useState(0)
   const [mapLoading, setMapLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
 
   const [selectedTipo, setSelectedTipo] = useState<string>('all')
   const [selectedLocalizacaoTipo, setSelectedLocalizacaoTipo] = useState<string>('all')
-  const { user } = useAuth()
+  const { user, loading: authLoading } = useAuth()
 
   const mapRef = useRef<HTMLDivElement>(null)
   const mapInstanceRef = useRef<any>(null)
   const markersRef = useRef<any[]>([])
 
   useEffect(() => {
-    loadOngs()
-  }, [])
+    if (!authLoading) {
+      loadOngs()
+    }
+  }, [authLoading])
 
   useEffect(() => {
     if (mapRef.current && !mapInstanceRef.current) {
@@ -65,6 +70,9 @@ export default function MapaPage() {
 
   const loadOngs = async () => {
     try {
+      setLoading(true)
+      setError(null)
+      
       const { data, error } = await supabase
         .from('ongs')
         .select('*')
@@ -75,12 +83,18 @@ export default function MapaPage() {
 
       if (error) throw error
       setOngs(data || [])
-    } catch (error) {
+    } catch (error: any) {
       console.error('Erro ao carregar ONGs:', error)
-      toast.error('Erro ao carregar ONGs')
+      setError(error.message || 'Erro ao carregar ONGs')
+      toast.error('Erro ao carregar ONGs. Tente novamente.')
     } finally {
       setLoading(false)
     }
+  }
+
+  const handleRetry = () => {
+    setRetryCount(prev => prev + 1)
+    loadOngs()
   }
 
   const initializeGoogleMaps = async () => {
@@ -221,8 +235,8 @@ export default function MapaPage() {
         filtered = filtered.filter(ong => ong.localizacao_tipo === 'online' || ong.localizacao_tipo === 'ambos')
       } else if (selectedLocalizacaoTipo === 'ambos') {
         filtered = filtered.filter(ong => ong.localizacao_tipo === 'ambos')
-        } else if (selectedLocalizacaoTipo === 'sem_local') {
-    filtered = filtered.filter(ong => ong.localizacao_tipo === 'sem_local')
+        } else if (selectedLocalizacaoTipo === 'itinerante') {
+    filtered = filtered.filter(ong => ong.localizacao_tipo === 'itinerante')
       }
     }
 
@@ -302,16 +316,75 @@ export default function MapaPage() {
   
   const tipos = [...new Set(ongs.flatMap(ong => ong.tipo).filter(Boolean))].sort()
 
-  if (loading) {
+  if (authLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-white via-yellow-50/30 to-orange-50/30">
         <Navbar />
         <div className="pt-32 flex items-center justify-center px-4">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-            <p className="text-gray-600 text-sm sm:text-base">Carregando mapa...</p>
+            <p className="text-gray-600 text-sm sm:text-base">Carregando...</p>
           </div>
         </div>
+      </div>
+    )
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-white via-yellow-50/30 to-orange-50/30">
+        <Navbar />
+        <div className="pt-32 pb-8 px-4 sm:px-6">
+          <div className="max-w-7xl mx-auto">
+            <div className="text-center mb-6 sm:mb-8">
+              <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 sm:mb-4">
+                Mapa de <span className="text-primary">ONGs</span>
+              </h1>
+              <p className="text-lg sm:text-xl text-gray-600 max-w-3xl mx-auto px-2">
+                Explore visualmente as ONGs próximas de você e descubra oportunidades de voluntariado na sua região.
+              </p>
+            </div>
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+              <p className="text-gray-600">Carregando ONGs...</p>
+            </div>
+          </div>
+        </div>
+        <Footer />
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-white via-yellow-50/30 to-orange-50/30">
+        <Navbar />
+        <div className="pt-32 pb-8 px-4 sm:px-6">
+          <div className="max-w-7xl mx-auto">
+            <div className="text-center mb-6 sm:mb-8">
+              <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 sm:mb-4">
+                Mapa de <span className="text-primary">ONGs</span>
+              </h1>
+            </div>
+            <div className="text-center">
+              <div className="mb-6">
+                <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <span className="text-2xl">⚠️</span>
+                </div>
+                <h2 className="text-xl font-semibold text-gray-900 mb-2">Erro ao carregar dados</h2>
+                <p className="text-gray-600 mb-4">{error}</p>
+                <div className="space-y-3">
+                  <Button onClick={handleRetry} className="bg-primary hover:bg-primary/90">
+                    Tentar novamente
+                  </Button>
+                  <div className="text-sm text-gray-500">ou</div>
+                  <BrowserRecovery onRecoveryComplete={handleRetry} />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <Footer />
       </div>
     )
   }
@@ -407,7 +480,7 @@ export default function MapaPage() {
                         <SelectItem value="all">Presencial e Online</SelectItem>
                         <SelectItem value="presencial">Presencial</SelectItem>
                         <SelectItem value="online">Online</SelectItem>
-                        <SelectItem value="sem_local">Sem local</SelectItem>
+                        <SelectItem value="itinerante">Sem local</SelectItem>
                       </SelectContent>
                     </Select>
 
@@ -459,7 +532,7 @@ export default function MapaPage() {
                                       'Online'
                                     ) : ong.localizacao_tipo === 'ambos' ? (
                                       'Online e Presencial'
-                                    ) : ong.localizacao_tipo === 'sem_local' ? (
+                                    ) : ong.localizacao_tipo === 'itinerante' ? (
                                       'Sem local'
                                     ) : (
                                       'Localização não disponível'
@@ -542,7 +615,7 @@ export default function MapaPage() {
                                       'Online'
                                     ) : ong.localizacao_tipo === 'ambos' ? (
                                       'Online e Presencial'
-                                    ) : ong.localizacao_tipo === 'sem_local' ? (
+                                    ) : ong.localizacao_tipo === 'itinerante' ? (
                                       'Sem local'
                                     ) : (
                                       'Localização não disponível'
@@ -618,7 +691,7 @@ export default function MapaPage() {
                           'Online'
                         ) : selectedOng.localizacao_tipo === 'ambos' ? (
                           'Online e Presencial'
-                        ) : selectedOng.localizacao_tipo === 'sem_local' ? (
+                        ) : selectedOng.localizacao_tipo === 'itinerante' ? (
                           'Sem local'
                         ) : (
                           'Localização não disponível'

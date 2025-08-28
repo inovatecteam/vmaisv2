@@ -4,6 +4,7 @@ import { createContext, useContext, useEffect, useState } from 'react'
 import { User as SupabaseUser } from '@supabase/supabase-js'
 import { supabase } from '@/lib/supabase'
 import { User } from '@/types'
+import { detectBrowserIssues, clearBrowserStorage } from '@/lib/utils'
 
 type AuthContextType = {
   user: User | null
@@ -54,6 +55,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   useEffect(() => {
+    // Check for browser issues first
+    if (detectBrowserIssues()) {
+      console.warn('⚠️ Browser storage issues detected, clearing storage...')
+      clearBrowserStorage()
+    }
+    
     refreshUser()
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
