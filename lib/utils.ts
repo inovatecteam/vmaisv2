@@ -55,3 +55,152 @@ export function detectBrowserIssues(): boolean {
     return true // Browser storage is not accessible
   }
 }
+
+// Get browser information for debugging
+export function getBrowserInfo(): {
+  userAgent: string
+  browser: string
+  version: string
+  platform: string
+  cookiesEnabled: boolean
+  localStorageEnabled: boolean
+  sessionStorageEnabled: boolean
+} {
+  const userAgent = navigator.userAgent
+  let browser = 'Unknown'
+  let version = 'Unknown'
+  
+  // Detect browser
+  if (userAgent.includes('Chrome')) {
+    browser = 'Chrome'
+    version = userAgent.match(/Chrome\/(\d+)/)?.[1] || 'Unknown'
+  } else if (userAgent.includes('Firefox')) {
+    browser = 'Firefox'
+    version = userAgent.match(/Firefox\/(\d+)/)?.[1] || 'Unknown'
+  } else if (userAgent.includes('Safari')) {
+    browser = 'Safari'
+    version = userAgent.match(/Version\/(\d+)/)?.[1] || 'Unknown'
+  } else if (userAgent.includes('Edge')) {
+    browser = 'Edge'
+    version = userAgent.match(/Edge\/(\d+)/)?.[1] || 'Unknown'
+  }
+  
+  // Test storage capabilities
+  let localStorageEnabled = false
+  let sessionStorageEnabled = false
+  
+  try {
+    localStorage.setItem('test', 'test')
+    localStorage.removeItem('test')
+    localStorageEnabled = true
+  } catch (e) {
+    localStorageEnabled = false
+  }
+  
+  try {
+    sessionStorage.setItem('test', 'test')
+    sessionStorage.removeItem('test')
+    sessionStorageEnabled = true
+  } catch (e) {
+    sessionStorageEnabled = false
+  }
+  
+  return {
+    userAgent,
+    browser,
+    version,
+    platform: navigator.platform,
+    cookiesEnabled: navigator.cookieEnabled,
+    localStorageEnabled,
+    sessionStorageEnabled
+  }
+}
+
+// Retry function with exponential backoff
+export async function retryWithBackoff<T>(
+  fn: () => Promise<T>,
+  maxRetries: number = 3,
+  baseDelay: number = 1000
+): Promise<T> {
+  let lastError: any
+  
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    try {
+      return await fn()
+    } catch (error) {
+      lastError = error
+      
+      if (attempt === maxRetries) {
+        throw error
+      }
+      
+      // Calculate delay with exponential backoff
+      const delay = baseDelay * Math.pow(2, attempt)
+      console.log(`🔄 Tentativa ${attempt + 1} falhou, tentando novamente em ${delay}ms...`)
+      
+      await new Promise(resolve => setTimeout(resolve, delay))
+    }
+  }
+  
+  throw lastError
+}
+
+// Check if error is retryable
+export function isRetryableError(error: any): boolean {
+  if (!error) return false
+  
+  const message = error.message || ''
+  const code = error.code || ''
+  
+  // Network errors are usually retryable
+  if (message.includes('fetch') || message.includes('network') || message.includes('timeout')) {
+    return true
+  }
+  
+  // Supabase specific retryable errors
+  if (code === 'PGRST301' || code === 'PGRST302' || code === 'PGRST303') {
+    return true // Rate limiting, temporary errors
+  }
+  
+  // JWT errors might be retryable if they're temporary
+  if (message.includes('JWT') && !message.includes('expired')) {
+    return true
+  }
+  
+  return false
+}
+
+// Test Supabase connection to diagnose issues
+export async function testSupabaseConnection(): Promise<{
+  success: boolean
+  error?: string
+  details?: any
+}> {
+  try {
+    const startTime = Date.now()
+    
+    // Test basic connection
+    const { data, error } = await fetch('/api/supabase-health').then(res => res.json())
+    
+    const responseTime = Date.now() - startTime
+    
+    if (error) {
+      return {
+        success: false,
+        error: 'Falha na conexão com o banco de dados',
+        details: { error, responseTime }
+      }
+    }
+    
+    return {
+      success: true,
+      details: { responseTime, data }
+    }
+  } catch (fetchError) {
+    return {
+      success: false,
+      error: 'Erro de rede ou conexão',
+      details: { fetchError }
+    }
+  }
+}

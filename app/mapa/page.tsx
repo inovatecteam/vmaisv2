@@ -74,46 +74,78 @@ export default function MapaPage() {
       
       console.log('🔄 Carregando ONGs para o mapa...')
       
-      let { data, error } = await supabase
-        .from('ongs')
-        .select('*')
-        .eq('admin_approved', true)
-        .not('lat', 'is', null)
-        .not('lng', 'is', null)
-        .order('created_at', { ascending: false })
+      // Increase timeout and add better error handling
+      const timeoutPromise = new Promise((_, reject) => {
+        setTimeout(() => reject(new Error('Timeout: A requisição demorou muito para responder. Verifique sua conexão com a internet.')), 30000)
+      })
+      
+      const queryPromise = (async () => {
+        try {
+          console.log('🔄 Tentando carregar ONGs aprovadas com coordenadas...')
+          
+          let { data, error } = await supabase
+            .from('ongs')
+            .select('*')
+            .eq('admin_approved', true)
+            .not('lat', 'is', null)
+            .not('lng', 'is', null)
+            .order('created_at', { ascending: false })
 
-      if (error) {
-        console.error('❌ Erro na query do mapa:', error)
-        throw error
-      }
-      
-      // If no admin-approved ONGs with coordinates found, try to get all ONGs with coordinates
-      if (!data || data.length === 0) {
-        console.log('⚠️ Nenhuma ONG aprovada com coordenadas encontrada, tentando carregar todas...')
-        
-        const { data: allOngs, error: allOngsError } = await supabase
-          .from('ongs')
-          .select('*')
-          .not('lat', 'is', null)
-          .not('lng', 'is', null)
-          .order('created_at', { ascending: false })
-        
-        if (allOngsError) {
-          console.error('❌ Erro ao carregar todas as ONGs com coordenadas:', allOngsError)
-          throw allOngsError
+          if (error) {
+            console.error('❌ Erro na query do mapa:', error)
+            throw error
+          }
+          
+          // If no admin-approved ONGs with coordinates found, try to get all ONGs with coordinates
+          if (!data || data.length === 0) {
+            console.log('⚠️ Nenhuma ONG aprovada com coordenadas encontrada, tentando carregar todas...')
+            
+            const { data: allOngs, error: allOngsError } = await supabase
+              .from('ongs')
+              .select('*')
+              .not('lat', 'is', null)
+              .not('lng', 'is', null)
+              .order('created_at', { ascending: false })
+            
+            if (allOngsError) {
+              console.error('❌ Erro ao carregar todas as ONGs com coordenadas:', allOngsError)
+              throw allOngsError
+            }
+            
+            data = allOngs
+            console.log('✅ Todas as ONGs com coordenadas carregadas:', data?.length || 0)
+          } else {
+            console.log('✅ ONGs aprovadas com coordenadas carregadas:', data?.length || 0)
+          }
+          
+          return data
+        } catch (queryError) {
+          console.error('❌ Erro na query do mapa:', queryError)
+          throw queryError
         }
-        
-        data = allOngs
-        console.log('✅ Todas as ONGs com coordenadas carregadas:', data?.length || 0)
-      } else {
-        console.log('✅ ONGs aprovadas com coordenadas carregadas:', data?.length || 0)
-      }
+      })()
       
+      const data = await Promise.race([queryPromise, timeoutPromise]) as ONG[]
       setOngs(data || [])
+      
     } catch (error: any) {
       console.error('❌ Erro ao carregar ONGs para mapa:', error)
-      setError(error.message || 'Erro ao carregar ONGs')
-      toast.error('Erro ao carregar ONGs. Tente novamente.')
+      
+      // Better error messages based on error type
+      let errorMessage = 'Erro ao carregar ONGs. Tente novamente.'
+      
+      if (error.message?.includes('Timeout')) {
+        errorMessage = 'A requisição demorou muito para responder. Verifique sua conexão com a internet.'
+      } else if (error.message?.includes('fetch')) {
+        errorMessage = 'Erro de conexão com a internet. Verifique sua rede.'
+      } else if (error.message?.includes('JWT')) {
+        errorMessage = 'Erro de autenticação. Tente recarregar a página.'
+      } else if (error.message?.includes('RLS')) {
+        errorMessage = 'Erro de permissão. Tente recarregar a página.'
+      }
+      
+      setError(errorMessage)
+      toast.error(errorMessage)
     } finally {
       setLoading(false)
     }

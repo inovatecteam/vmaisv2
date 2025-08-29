@@ -54,44 +54,51 @@ export default function CatalogoPage() {
       
       console.log('🔄 Carregando ONGs...')
       
-      // Add timeout to prevent infinite loading
+      // Increase timeout and add better error handling
       const timeoutPromise = new Promise((_, reject) => {
-        setTimeout(() => reject(new Error('Timeout: A requisição demorou muito para responder')), 10000)
+        setTimeout(() => reject(new Error('Timeout: A requisição demorou muito para responder. Verifique sua conexão com a internet.')), 30000)
       })
       
       const queryPromise = (async () => {
-        let { data, error } = await supabase
-          .from('ongs')
-          .select('*')
-          .eq('admin_approved', true)
-          .order('created_at', { ascending: false })
-
-        if (error) {
-          console.error('❌ Erro na query:', error)
-          throw error
-        }
-        
-        // If no admin-approved ONGs found, try to get all ONGs
-        if (!data || data.length === 0) {
-          console.log('⚠️ Nenhuma ONG aprovada encontrada, tentando carregar todas...')
+        try {
+          console.log('🔄 Tentando carregar ONGs aprovadas...')
           
-          const { data: allOngs, error: allOngsError } = await supabase
+          let { data, error } = await supabase
             .from('ongs')
             .select('*')
+            .eq('admin_approved', true)
             .order('created_at', { ascending: false })
-          
-          if (allOngsError) {
-            console.error('❌ Erro ao carregar todas as ONGs:', allOngsError)
-            throw allOngsError
+
+          if (error) {
+            console.error('❌ Erro na query de ONGs aprovadas:', error)
+            throw error
           }
           
-          data = allOngs
-          console.log('✅ Todas as ONGs carregadas:', data?.length || 0)
-        } else {
-          console.log('✅ ONGs aprovadas carregadas:', data?.length || 0)
+          // If no admin-approved ONGs found, try to get all ONGs
+          if (!data || data.length === 0) {
+            console.log('⚠️ Nenhuma ONG aprovada encontrada, tentando carregar todas...')
+            
+            const { data: allOngs, error: allOngsError } = await supabase
+              .from('ongs')
+              .select('*')
+              .order('created_at', { ascending: false })
+            
+            if (allOngsError) {
+              console.error('❌ Erro ao carregar todas as ONGs:', allOngsError)
+              throw allOngsError
+            }
+            
+            data = allOngs
+            console.log('✅ Todas as ONGs carregadas:', data?.length || 0)
+          } else {
+            console.log('✅ ONGs aprovadas carregadas:', data?.length || 0)
+          }
+          
+          return data
+        } catch (queryError) {
+          console.error('❌ Erro na query:', queryError)
+          throw queryError
         }
-        
-        return data
       })()
       
       const data = await Promise.race([queryPromise, timeoutPromise]) as ONG[]
@@ -99,8 +106,22 @@ export default function CatalogoPage() {
       
     } catch (error: any) {
       console.error('❌ Erro ao carregar ONGs:', error)
-      setError(error.message || 'Erro ao carregar ONGs')
-      toast.error('Erro ao carregar ONGs. Tente novamente.')
+      
+      // Better error messages based on error type
+      let errorMessage = 'Erro ao carregar ONGs. Tente novamente.'
+      
+      if (error.message?.includes('Timeout')) {
+        errorMessage = 'A requisição demorou muito para responder. Verifique sua conexão com a internet.'
+      } else if (error.message?.includes('fetch')) {
+        errorMessage = 'Erro de conexão com a internet. Verifique sua rede.'
+      } else if (error.message?.includes('JWT')) {
+        errorMessage = 'Erro de autenticação. Tente recarregar a página.'
+      } else if (error.message?.includes('RLS')) {
+        errorMessage = 'Erro de permissão. Tente recarregar a página.'
+      }
+      
+      setError(errorMessage)
+      toast.error(errorMessage)
     } finally {
       setLoading(false)
     }

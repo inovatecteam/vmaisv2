@@ -3,8 +3,8 @@
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { RefreshCw, AlertTriangle, CheckCircle } from 'lucide-react'
-import { clearBrowserStorage, detectBrowserIssues } from '@/lib/utils'
+import { RefreshCw, AlertTriangle, CheckCircle, Info, Wifi, Database } from 'lucide-react'
+import { clearBrowserStorage, detectBrowserIssues, testSupabaseConnection, getBrowserInfo } from '@/lib/utils'
 
 interface BrowserRecoveryProps {
   onRecoveryComplete?: () => void
@@ -14,11 +14,33 @@ export function BrowserRecovery({ onRecoveryComplete }: BrowserRecoveryProps) {
   const [isRecovering, setIsRecovering] = useState(false)
   const [hasIssues, setHasIssues] = useState(false)
   const [recoveryComplete, setRecoveryComplete] = useState(false)
+  const [connectionTest, setConnectionTest] = useState<any>(null)
+  const [browserInfo, setBrowserInfo] = useState<any>(null)
+  const [showDiagnostics, setShowDiagnostics] = useState(false)
 
   const checkForIssues = () => {
     const issues = detectBrowserIssues()
     setHasIssues(issues)
     return issues
+  }
+
+  const testConnection = async () => {
+    try {
+      const result = await testSupabaseConnection()
+      setConnectionTest(result)
+    } catch (error) {
+      setConnectionTest({
+        success: false,
+        error: 'Erro ao testar conexão',
+        details: error
+      })
+    }
+  }
+
+  const getDiagnostics = () => {
+    const info = getBrowserInfo()
+    setBrowserInfo(info)
+    setShowDiagnostics(true)
   }
 
   const handleRecovery = async () => {
@@ -69,10 +91,62 @@ export function BrowserRecovery({ onRecoveryComplete }: BrowserRecoveryProps) {
             Verificar Problemas
           </Button>
           
+          <Button 
+            onClick={testConnection} 
+            variant="outline" 
+            className="w-full"
+            disabled={isRecovering}
+          >
+            <Wifi className="h-4 w-4 mr-2" />
+            Testar Conexão
+          </Button>
+          
+          <Button 
+            onClick={getDiagnostics} 
+            variant="outline" 
+            className="w-full"
+            disabled={isRecovering}
+          >
+            <Info className="h-4 w-4 mr-2" />
+            Informações do Navegador
+          </Button>
+          
           {hasIssues && (
             <div className="p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
               <p className="text-sm text-yellow-800">
                 Problemas detectados no armazenamento do navegador.
+              </p>
+            </div>
+          )}
+          
+          {connectionTest && (
+            <div className={`p-3 border rounded-lg ${
+              connectionTest.success 
+                ? 'bg-green-50 border-green-200' 
+                : 'bg-red-50 border-red-200'
+            }`}>
+              <p className={`text-sm ${
+                connectionTest.success ? 'text-green-800' : 'text-red-800'
+              }`}>
+                <strong>Conexão:</strong> {connectionTest.success ? 'OK' : 'Falha'}
+                {connectionTest.details?.responseTime && (
+                  <span className="block">Tempo de resposta: {connectionTest.details.responseTime}ms</span>
+                )}
+                {connectionTest.error && (
+                  <span className="block">Erro: {connectionTest.error}</span>
+                )}
+              </p>
+            </div>
+          )}
+          
+          {browserInfo && showDiagnostics && (
+            <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
+              <p className="text-sm text-blue-800">
+                <strong>Navegador:</strong> {browserInfo.browser} {browserInfo.version}<br/>
+                <strong>Plataforma:</strong> {browserInfo.platform}<br/>
+                <strong>Cookies:</strong> {browserInfo.cookiesEnabled ? 'Habilitados' : 'Desabilitados'}<br/>
+                <strong>LocalStorage:</strong> {browserInfo.localStorageEnabled ? 'OK' : 'Problemas'}<br/>
+                <strong>SessionStorage:</strong> {browserInfo.sessionStorageEnabled ? 'OK' : 'Problemas'}
               </p>
             </div>
           )}
@@ -113,6 +187,7 @@ export function BrowserRecovery({ onRecoveryComplete }: BrowserRecoveryProps) {
             <li>Páginas não carregam ao trocar de navegador</li>
             <li>Erros de autenticação</li>
             <li>Dados não persistem entre sessões</li>
+            <li>Timeouts de conexão</li>
           </ul>
         </div>
       </CardContent>
