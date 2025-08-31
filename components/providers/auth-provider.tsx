@@ -24,6 +24,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const refreshUser = async () => {
     try {
+      // Check if Supabase is properly configured
+      if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+        console.error('❌ AuthProvider: Configuração do Supabase não encontrada')
+        setSupabaseUser(null)
+        setUser(null)
+        setLoading(false)
+        return
+      }
+
       const { data: { session } } = await supabase.auth.getSession()
       
       if (session?.user) {
@@ -62,6 +71,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (!mounted) return
     
+    // Add timeout to prevent infinite loading
+    const timeoutId = setTimeout(() => {
+      if (loading) {
+        console.warn('⚠️ AuthProvider: Timeout atingido, definindo loading como false')
+        setLoading(false)
+      }
+    }, 10000) // 10 seconds timeout
+    
     refreshUser()
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
@@ -75,7 +92,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
     )
 
-    return () => subscription.unsubscribe()
+    return () => {
+      subscription.unsubscribe()
+      clearTimeout(timeoutId)
+    }
   }, [mounted])
 
   // Don't render anything until mounted to prevent SSR issues

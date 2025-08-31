@@ -45,6 +45,17 @@ export default function MapaPage() {
   useEffect(() => {
     // Always load ONGs regardless of authentication status
     loadOngs()
+    
+    // Add timeout to prevent infinite loading
+    const timeoutId = setTimeout(() => {
+      if (loading) {
+        console.warn('⚠️ Mapa: Timeout atingido, definindo loading como false')
+        setLoading(false)
+        setError('Tempo limite excedido. Verifique sua conexão e tente novamente.')
+      }
+    }, 15000) // 15 seconds timeout
+    
+    return () => clearTimeout(timeoutId)
   }, [])
 
   useEffect(() => {
@@ -71,6 +82,11 @@ export default function MapaPage() {
       setLoading(true)
       setError(null)
       
+      // Check if Supabase is properly configured
+      if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+        throw new Error('Configuração do Supabase não encontrada. Verifique as variáveis de ambiente.')
+      }
+      
       const { data, error } = await supabase
         .from('ongs')
         .select('*')
@@ -91,7 +107,13 @@ export default function MapaPage() {
       
     } catch (error: any) {
       console.error('Erro ao carregar ONGs para mapa:', error)
-      setError('Erro ao carregar ONGs. Tente novamente.')
+      if (error.message?.includes('Configuração do Supabase')) {
+        setError('Erro de configuração: Verifique as variáveis de ambiente do Supabase.')
+      } else if (error.message?.includes('fetch')) {
+        setError('Erro de conexão: Verifique sua conexão com a internet.')
+      } else {
+        setError('Erro ao carregar ONGs. Tente novamente.')
+      }
     } finally {
       setLoading(false)
     }
@@ -103,9 +125,9 @@ export default function MapaPage() {
     try {
       const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
       
-      if (!apiKey) {
-        console.warn('⚠️ Google Maps API key não encontrada')
-        showMapPlaceholder()
+      if (!apiKey || apiKey === 'your_google_maps_api_key_here') {
+        console.warn('⚠️ Google Maps API key não configurada')
+        showMapPlaceholder('Google Maps API não configurada')
         return
       }
 
@@ -113,7 +135,7 @@ export default function MapaPage() {
       await loadGoogleMaps(apiKey)
       
       if (!mapRef.current) {
-        showMapPlaceholder()
+        showMapPlaceholder('Erro ao inicializar mapa')
         return
       }
 
@@ -135,11 +157,11 @@ export default function MapaPage() {
       
     } catch (error) {
       console.error('Erro ao carregar Google Maps:', error)
-      showMapPlaceholder()
+      showMapPlaceholder('Erro ao carregar Google Maps')
     }
   }
 
-  const showMapPlaceholder = () => {
+  const showMapPlaceholder = (message: string = 'Google Maps não disponível') => {
     if (!mapRef.current) return
     
     mapRef.current.innerHTML = `
@@ -152,7 +174,7 @@ export default function MapaPage() {
             </svg>
           </div>
           <p class="text-gray-600 mb-2">Mapa Interativo</p>
-          <p class="text-sm text-gray-500">Configure a Google Maps API para visualizar o mapa</p>
+          <p class="text-sm text-gray-500">${message}</p>
         </div>
       </div>
     `
