@@ -179,8 +179,24 @@ export async function testSupabaseConnection(): Promise<{
   try {
     const startTime = Date.now()
     
-    // Test basic connection
-    const { data, error } = await fetch('/api/supabase-health').then(res => res.json())
+    // For static export, we can't use API routes, so we'll test directly with Supabase
+    // This function will only work in client-side code
+    if (typeof window === 'undefined') {
+      return {
+        success: false,
+        error: 'Esta função não está disponível durante o build estático',
+        details: { note: 'Use apenas no lado do cliente' }
+      }
+    }
+    
+    // Import Supabase dynamically to avoid build issues
+    const { supabase } = await import('./supabase')
+    
+    // Test basic connection with a simple query
+    const { data, error } = await supabase
+      .from('ongs')
+      .select('count')
+      .limit(1)
     
     const responseTime = Date.now() - startTime
     
@@ -194,13 +210,13 @@ export async function testSupabaseConnection(): Promise<{
     
     return {
       success: true,
-      details: { responseTime, data }
+      details: { responseTime, data: data ? 'OK' : 'No data' }
     }
-  } catch (fetchError) {
+  } catch (error: any) {
     return {
       success: false,
-      error: 'Erro de rede ou conexão',
-      details: { fetchError }
+      error: 'Erro de conexão com o banco de dados',
+      details: { error: error.message }
     }
   }
 }
