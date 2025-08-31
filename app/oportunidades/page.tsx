@@ -19,6 +19,7 @@ import { WhatsAppConfirmModal } from '@/components/whatsapp-confirm-modal'
 import { sendContactEmail } from '@/lib/api'
 import Footer from '@/components/layout/footer'
 import { UcergsFundraisingCard } from '@/components/ucergs-fundraising-card'
+import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination'
 
 
 export default function CatalogoPage() {
@@ -36,6 +37,8 @@ export default function CatalogoPage() {
   const [selectedTipo, setSelectedTipo] = useState<string>('all')
   const [selectedLocalizacaoTipo, setSelectedLocalizacaoTipo] = useState<string>('all')
   const { user, loading: authLoading } = useAuth()
+  const [currentPage, setCurrentPage] = useState(1)
+  const itemsPerPage = 9
 
   useEffect(() => {
     // Always load ONGs regardless of authentication status
@@ -107,6 +110,7 @@ export default function CatalogoPage() {
     }
 
     setFilteredOngs(filtered)
+    setCurrentPage(1)
   }
 
   const handleInteraction = async (ongId: string) => {
@@ -242,6 +246,10 @@ export default function CatalogoPage() {
     )
   }
 
+  const totalPages = Math.ceil(filteredOngs.length / itemsPerPage) || 1
+  const startIndex = (currentPage - 1) * itemsPerPage
+  const paginatedOngs = filteredOngs.slice(startIndex, startIndex + itemsPerPage)
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-white via-yellow-50/30 to-orange-50/30">
       <Navbar />
@@ -334,7 +342,7 @@ export default function CatalogoPage() {
           {/* Grid de ONGs */}
           {filteredOngs.length > 0 ? (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredOngs.map((ong) => (
+              {paginatedOngs.map((ong) => (
                 <Card 
                   key={ong.id} 
                   className="cursor-pointer hover:shadow-xl transition-all duration-300 rounded-2xl overflow-hidden group"
@@ -427,6 +435,46 @@ export default function CatalogoPage() {
                 </CardDescription>
               </CardContent>
             </Card>
+          )}
+          {filteredOngs.length > 0 && totalPages > 1 && (
+            <div className="mt-8">
+              <Pagination>
+                <PaginationContent>
+                  <PaginationItem>
+                    <PaginationPrevious
+                      href="#"
+                      onClick={(e) => {
+                        e.preventDefault()
+                        setCurrentPage((p) => Math.max(1, p - 1))
+                      }}
+                    />
+                  </PaginationItem>
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                    <PaginationItem key={page}>
+                      <PaginationLink
+                        href="#"
+                        isActive={page === currentPage}
+                        onClick={(e) => {
+                          e.preventDefault()
+                          setCurrentPage(page)
+                        }}
+                      >
+                        {page}
+                      </PaginationLink>
+                    </PaginationItem>
+                  ))}
+                  <PaginationItem>
+                    <PaginationNext
+                      href="#"
+                      onClick={(e) => {
+                        e.preventDefault()
+                        setCurrentPage((p) => Math.min(totalPages, p + 1))
+                      }}
+                    />
+                  </PaginationItem>
+                </PaginationContent>
+              </Pagination>
+            </div>
           )}
         </div>
       </div>

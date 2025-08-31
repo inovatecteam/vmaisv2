@@ -51,8 +51,6 @@ export const config = {
      */
     '/dashboard',
     '/perfil',
-    '/mapa',
-    '/oportunidades',
     '/configuracoes',
     '/onboarding'
   ]
