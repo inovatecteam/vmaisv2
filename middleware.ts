@@ -3,6 +3,14 @@ import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
 export async function middleware(request: NextRequest) {
+  // Only run middleware for protected routes
+  const protectedRoutes = ['/dashboard', '/perfil', '/configuracoes', '/onboarding']
+  const isProtectedRoute = protectedRoutes.some(route => request.nextUrl.pathname.startsWith(route))
+  
+  if (!isProtectedRoute) {
+    return NextResponse.next()
+  }
+
   const response = NextResponse.next()
   const supabase = createMiddlewareClient({ req: request, res: response })
 

@@ -43,17 +43,6 @@ export default function CatalogoPage() {
   useEffect(() => {
     // Always load ONGs regardless of authentication status
     loadOngs()
-    
-    // Add timeout to prevent infinite loading
-    const timeoutId = setTimeout(() => {
-      if (loading) {
-        console.warn('⚠️ Oportunidades: Timeout atingido, definindo loading como false')
-        setLoading(false)
-        setError('Tempo limite excedido. Verifique sua conexão e tente novamente.')
-      }
-    }, 15000) // 15 seconds timeout
-    
-    return () => clearTimeout(timeoutId)
   }, [])
 
   useEffect(() => {
@@ -64,11 +53,6 @@ export default function CatalogoPage() {
     try {
       setLoading(true)
       setError(null)
-      
-      // Check if Supabase is properly configured
-      if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
-        throw new Error('Configuração do Supabase não encontrada. Verifique as variáveis de ambiente.')
-      }
       
       const { data, error } = await supabase
         .from('ongs')
@@ -88,13 +72,7 @@ export default function CatalogoPage() {
       
     } catch (error: any) {
       console.error('Erro ao carregar ONGs:', error)
-      if (error.message?.includes('Configuração do Supabase')) {
-        setError('Erro de configuração: Verifique as variáveis de ambiente do Supabase.')
-      } else if (error.message?.includes('fetch')) {
-        setError('Erro de conexão: Verifique sua conexão com a internet.')
-      } else {
-        setError('Erro ao carregar ONGs. Tente novamente.')
-      }
+      setError('Erro ao carregar ONGs. Tente novamente.')
     } finally {
       setLoading(false)
     }
