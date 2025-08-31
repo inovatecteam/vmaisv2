@@ -20,6 +20,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [supabaseUser, setSupabaseUser] = useState<SupabaseUser | null>(null)
   const [loading, setLoading] = useState(true)
+  const [mounted, setMounted] = useState(false)
 
   const refreshUser = async () => {
     try {
@@ -55,11 +56,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   useEffect(() => {
-    // Check for browser issues first
-    if (detectBrowserIssues()) {
-      console.warn('⚠️ Browser storage issues detected, clearing storage...')
-      clearBrowserStorage()
-    }
+    setMounted(true)
+  }, [])
+
+  useEffect(() => {
+    if (!mounted) return
     
     refreshUser()
 
@@ -75,7 +76,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     )
 
     return () => subscription.unsubscribe()
-  }, [])
+  }, [mounted])
+
+  // Don't render anything until mounted to prevent SSR issues
+  if (!mounted) {
+    return null
+  }
 
   return (
     <AuthContext.Provider value={{ user, supabaseUser, loading, signOut, refreshUser }}>

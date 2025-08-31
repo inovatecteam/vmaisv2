@@ -19,7 +19,7 @@ import { WhatsAppConfirmModal } from '@/components/whatsapp-confirm-modal'
 import { sendContactEmail } from '@/lib/api'
 import Footer from '@/components/layout/footer'
 import { loadGoogleMaps } from '@/lib/google-maps-loader'
-import { BrowserRecovery } from '@/components/ui/browser-recovery'
+
 
 export default function MapaPage() {
   const [ongs, setOngs] = useState<ONG[]>([])
@@ -31,7 +31,6 @@ export default function MapaPage() {
   const [ongToConfirmWhatsapp, setOngToConfirmWhatsapp] = useState<ONG | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [retryCount, setRetryCount] = useState(0)
   const [mapLoading, setMapLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
 
@@ -72,89 +71,33 @@ export default function MapaPage() {
       setLoading(true)
       setError(null)
       
-      console.log('🔄 Carregando ONGs para o mapa...')
-      
-      // Increase timeout and add better error handling
-      const timeoutPromise = new Promise((_, reject) => {
-        setTimeout(() => reject(new Error('Timeout: A requisição demorou muito para responder. Verifique sua conexão com a internet.')), 30000)
-      })
-      
-      const queryPromise = (async () => {
-        try {
-          console.log('🔄 Tentando carregar ONGs aprovadas com coordenadas...')
-          
-          let { data, error } = await supabase
-            .from('ongs')
-            .select('*')
-            .eq('admin_approved', true)
-            .not('lat', 'is', null)
-            .not('lng', 'is', null)
-            .order('created_at', { ascending: false })
+      const { data, error } = await supabase
+        .from('ongs')
+        .select('*')
+        .eq('admin_approved', true)
+        .not('lat', 'is', null)
+        .not('lng', 'is', null)
+        .order('created_at', { ascending: false })
 
-          if (error) {
-            console.error('❌ Erro na query do mapa:', error)
-            throw error
-          }
-          
-          // If no admin-approved ONGs with coordinates found, try to get all ONGs with coordinates
-          if (!data || data.length === 0) {
-            console.log('⚠️ Nenhuma ONG aprovada com coordenadas encontrada, tentando carregar todas...')
-            
-            const { data: allOngs, error: allOngsError } = await supabase
-              .from('ongs')
-              .select('*')
-              .not('lat', 'is', null)
-              .not('lng', 'is', null)
-              .order('created_at', { ascending: false })
-            
-            if (allOngsError) {
-              console.error('❌ Erro ao carregar todas as ONGs com coordenadas:', allOngsError)
-              throw allOngsError
-            }
-            
-            data = allOngs
-            console.log('✅ Todas as ONGs com coordenadas carregadas:', data?.length || 0)
-          } else {
-            console.log('✅ ONGs aprovadas com coordenadas carregadas:', data?.length || 0)
-          }
-          
-          return data
-        } catch (queryError) {
-          console.error('❌ Erro na query do mapa:', queryError)
-          throw queryError
-        }
-      })()
-      
-      const data = await Promise.race([queryPromise, timeoutPromise]) as ONG[]
-      setOngs(data || [])
-      
-    } catch (error: any) {
-      console.error('❌ Erro ao carregar ONGs para mapa:', error)
-      
-      // Better error messages based on error type
-      let errorMessage = 'Erro ao carregar ONGs. Tente novamente.'
-      
-      if (error.message?.includes('Timeout')) {
-        errorMessage = 'A requisição demorou muito para responder. Verifique sua conexão com a internet.'
-      } else if (error.message?.includes('fetch')) {
-        errorMessage = 'Erro de conexão com a internet. Verifique sua rede.'
-      } else if (error.message?.includes('JWT')) {
-        errorMessage = 'Erro de autenticação. Tente recarregar a página.'
-      } else if (error.message?.includes('RLS')) {
-        errorMessage = 'Erro de permissão. Tente recarregar a página.'
+      if (error) {
+        throw error
       }
       
-      setError(errorMessage)
-      toast.error(errorMessage)
+      if (data) {
+        setOngs(data)
+        setFilteredOngs(data)
+        setError(null)
+      }
+      
+    } catch (error: any) {
+      console.error('Erro ao carregar ONGs para mapa:', error)
+      setError('Erro ao carregar ONGs. Tente novamente.')
     } finally {
       setLoading(false)
     }
   }
 
-  const handleRetry = () => {
-    setRetryCount(prev => prev + 1)
-    loadOngs()
-  }
+
 
   const initializeGoogleMaps = async () => {
     try {
@@ -421,11 +364,10 @@ export default function MapaPage() {
                 <h2 className="text-xl font-semibold text-gray-900 mb-2">Erro ao carregar dados</h2>
                 <p className="text-gray-600 mb-4">{error}</p>
                 <div className="space-y-3">
-                  <Button onClick={handleRetry} className="bg-primary hover:bg-primary/90">
+                  <Button onClick={() => window.location.reload()} className="bg-primary hover:bg-primary/90">
                     Tentar novamente
                   </Button>
-                  <div className="text-sm text-gray-500">ou</div>
-                  <BrowserRecovery onRecoveryComplete={handleRetry} />
+
                 </div>
               </div>
             </div>

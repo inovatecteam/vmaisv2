@@ -1,11 +1,16 @@
 import { createClient } from '@supabase/supabase-js'
 import { Database } from '@/types/database'
 
-// Lazy initialization for static export compatibility
+// Only create the client on the client side
 let supabaseClient: ReturnType<typeof createClient<Database>> | null = null
 
 const getSupabaseClient = () => {
   if (supabaseClient) return supabaseClient
+  
+  // Check if we're on the client side
+  if (typeof window === 'undefined') {
+    throw new Error('Supabase client cannot be created on the server side')
+  }
   
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
@@ -16,14 +21,11 @@ const getSupabaseClient = () => {
   
   supabaseClient = createClient<Database>(supabaseUrl, supabaseAnonKey, {
     auth: {
-      // Force fresh authentication on each session
       autoRefreshToken: true,
       persistSession: true,
       detectSessionInUrl: true,
-      // Clear any stale sessions on initialization
       flowType: 'pkce',
     },
-    // Add better error handling and retry logic
     global: {
       headers: {
         'X-Client-Info': 'vmais-v2-web',
@@ -44,5 +46,12 @@ export const supabase = new Proxy({} as ReturnType<typeof createClient<Database>
 
 // Helper para cliente do lado do servidor
 export const createServerClient = () => {
-  return getSupabaseClient()
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+  
+  if (!supabaseUrl || !supabaseAnonKey) {
+    throw new Error('Supabase environment variables are not configured')
+  }
+  
+  return createClient<Database>(supabaseUrl, supabaseAnonKey)
 }

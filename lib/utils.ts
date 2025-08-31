@@ -179,17 +179,7 @@ export async function testSupabaseConnection(): Promise<{
   try {
     const startTime = Date.now()
     
-    // For static export, we can't use API routes, so we'll test directly with Supabase
-    // This function will only work in client-side code
-    if (typeof window === 'undefined') {
-      return {
-        success: false,
-        error: 'Esta função não está disponível durante o build estático',
-        details: { note: 'Use apenas no lado do cliente' }
-      }
-    }
-    
-    // Import Supabase dynamically to avoid build issues
+    // Dynamically import Supabase to avoid build-time issues
     const { supabase } = await import('./supabase')
     
     // Test basic connection with a simple query
