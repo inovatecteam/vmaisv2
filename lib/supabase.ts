@@ -1,57 +1,31 @@
-import { createClient } from '@supabase/supabase-js'
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import { Database } from '@/types/database'
 
-// Only create the client on the client side
-let supabaseClient: ReturnType<typeof createClient<Database>> | null = null
+// Create a browser client that syncs auth state to cookies (compatible with middleware)
+let browserSupabaseClient: ReturnType<typeof createClientComponentClient<Database>> | null = null
 
-const getSupabaseClient = () => {
-  if (supabaseClient) return supabaseClient
-  
-  // Check if we're on the client side
+const getBrowserSupabaseClient = () => {
+  if (browserSupabaseClient) return browserSupabaseClient
+
+  // Ensure we only create this on the client
   if (typeof window === 'undefined') {
     throw new Error('Supabase client cannot be created on the server side')
   }
-  
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-  
-  if (!supabaseUrl || !supabaseAnonKey) {
-    throw new Error('Supabase environment variables are not configured')
-  }
-  
-  supabaseClient = createClient<Database>(supabaseUrl, supabaseAnonKey, {
-    auth: {
-      autoRefreshToken: true,
-      persistSession: true,
-      detectSessionInUrl: true,
-      flowType: 'pkce',
-    },
-    global: {
-      headers: {
-        'X-Client-Info': 'vmais-v2-web',
-      },
-    },
-  })
-  
-  return supabaseClient
+
+  browserSupabaseClient = createClientComponentClient<Database>()
+  return browserSupabaseClient
 }
 
-// Export a function that gets the client when needed
-export const supabase = new Proxy({} as ReturnType<typeof createClient<Database>>, {
-  get(target, prop) {
-    const client = getSupabaseClient()
-    return client[prop as keyof typeof client]
+// Lazy proxy to the browser client
+export const supabase = new Proxy({} as ReturnType<typeof createClientComponentClient<Database>>, {
+  get(_target, prop) {
+    const client = getBrowserSupabaseClient()
+    return (client as any)[prop]
   }
 })
 
-// Helper para cliente do lado do servidor
+// Server-side helpers should use auth-helpers directly in route handlers or middleware.
+// Keeping this export for compatibility, but it will throw to prevent misuse.
 export const createServerClient = () => {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-  
-  if (!supabaseUrl || !supabaseAnonKey) {
-    throw new Error('Supabase environment variables are not configured')
-  }
-  
-  return createClient<Database>(supabaseUrl, supabaseAnonKey)
+  throw new Error('Use @supabase/auth-helpers-nextjs server helpers in server contexts')
 }
