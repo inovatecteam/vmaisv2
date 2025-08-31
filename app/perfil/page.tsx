@@ -332,6 +332,7 @@ export default function PerfilPage() {
         localizacao_tipo: data.localizacao_tipo,
 
         endereco_online: data.endereco_online ? data.endereco_online.split(',').map(e => e.trim()).filter(Boolean) : null,
+        necessidades: data.necessidades ? data.necessidades.split(',').map(n => n.trim()).filter(Boolean) : null,
         whatsapp: data.whatsapp || null,
         thumbnail_url: thumbnailUrl || null,
         updated_at: new Date().toISOString(),
