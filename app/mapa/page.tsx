@@ -103,9 +103,9 @@ export default function MapaPage() {
     try {
       const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
       
-      if (!apiKey) {
-        console.warn('⚠️ Google Maps API key não encontrada')
-        showMapPlaceholder()
+      if (!apiKey || apiKey === 'your_google_maps_api_key_here') {
+        console.warn('⚠️ Google Maps API key não configurada')
+        showMapPlaceholder('Google Maps API não configurada')
         return
       }
 
@@ -113,7 +113,7 @@ export default function MapaPage() {
       await loadGoogleMaps(apiKey)
       
       if (!mapRef.current) {
-        showMapPlaceholder()
+        showMapPlaceholder('Erro ao inicializar mapa')
         return
       }
 
@@ -135,11 +135,11 @@ export default function MapaPage() {
       
     } catch (error) {
       console.error('Erro ao carregar Google Maps:', error)
-      showMapPlaceholder()
+      showMapPlaceholder('Erro ao carregar Google Maps')
     }
   }
 
-  const showMapPlaceholder = () => {
+  const showMapPlaceholder = (message: string = 'Google Maps não disponível') => {
     if (!mapRef.current) return
     
     mapRef.current.innerHTML = `
@@ -152,7 +152,7 @@ export default function MapaPage() {
             </svg>
           </div>
           <p class="text-gray-600 mb-2">Mapa Interativo</p>
-          <p class="text-sm text-gray-500">Configure a Google Maps API para visualizar o mapa</p>
+          <p class="text-sm text-gray-500">${message}</p>
         </div>
       </div>
     `
