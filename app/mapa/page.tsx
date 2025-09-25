@@ -47,11 +47,11 @@ export default function MapaPage() {
     loadOngs()
   }, [])
 
+  // Watch for when the map ref becomes available
   useEffect(() => {
-    // Use a more robust approach to wait for the DOM element
-    const initializeMapWhenReady = () => {
+    const checkForMapRef = () => {
       if (mapRef.current && !mapInstanceRef.current) {
-        console.log('Map ref is ready, initializing Google Maps...')
+        console.log('Map ref detected, initializing Google Maps...')
         initializeGoogleMaps()
         return true
       }
@@ -59,22 +59,22 @@ export default function MapaPage() {
     }
 
     // Try immediately
-    if (initializeMapWhenReady()) {
+    if (checkForMapRef()) {
       return
     }
 
-    // If not ready, try with increasing delays
-    const delays = [100, 300, 500, 1000, 2000]
+    // If not ready, poll with increasing intervals
+    const intervals = [100, 200, 500, 1000, 2000]
     const timers: NodeJS.Timeout[] = []
 
-    delays.forEach((delay, index) => {
+    intervals.forEach((interval, index) => {
       const timer = setTimeout(() => {
-        console.log(`Attempting map initialization (attempt ${index + 1})...`)
-        if (initializeMapWhenReady()) {
+        console.log(`Checking for map ref (attempt ${index + 1})...`)
+        if (checkForMapRef()) {
           // Clear remaining timers
           timers.forEach(t => clearTimeout(t))
         }
-      }, delay)
+      }, interval)
       timers.push(timer)
     })
 
@@ -572,18 +572,7 @@ export default function MapaPage() {
                 <CardContent className="p-0 h-full">
                   <div className="relative w-full h-full">
                     <div 
-                      ref={(el) => {
-                        if (el && !mapInstanceRef.current) {
-                          console.log('Map container mounted, scheduling initialization...')
-                          // Use requestAnimationFrame to ensure DOM is fully ready
-                          requestAnimationFrame(() => {
-                            if (mapRef.current && !mapInstanceRef.current) {
-                              console.log('Map container ready, initializing Google Maps...')
-                              initializeGoogleMaps()
-                            }
-                          })
-                        }
-                      }}
+                      ref={mapRef}
                       className="w-full h-full bg-gray-50" 
                     />
                     {mapLoading && (
