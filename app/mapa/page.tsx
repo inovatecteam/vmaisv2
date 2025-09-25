@@ -51,7 +51,7 @@ export default function MapaPage() {
     if (mapRef.current && !mapInstanceRef.current) {
       initializeGoogleMaps()
     }
-  }, [mapRef.current])
+  }, [])
 
   useEffect(() => {
     filterOngs()
@@ -64,7 +64,7 @@ export default function MapaPage() {
     if (mapInstanceRef.current) {
       updateMapMarkers()
     }
-  }, [filteredOngs, mapInstanceRef.current])
+  }, [filteredOngs])
 
   const loadOngs = async () => {
     try {
@@ -103,9 +103,9 @@ export default function MapaPage() {
     try {
       const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
       
-      if (!apiKey || apiKey === 'your_google_maps_api_key_here') {
+      if (!apiKey || apiKey === 'your_google_maps_api_key_here' || apiKey.trim() === '') {
         console.warn('⚠️ Google Maps API key não configurada')
-        showMapPlaceholder('Google Maps API não configurada')
+        showMapPlaceholder('Google Maps API não configurada. Configure NEXT_PUBLIC_GOOGLE_MAPS_API_KEY no arquivo .env.local')
         return
       }
 
@@ -113,7 +113,15 @@ export default function MapaPage() {
       await loadGoogleMaps(apiKey)
       
       if (!mapRef.current) {
-        showMapPlaceholder('Erro ao inicializar mapa')
+        console.error('mapRef.current is null')
+        showMapPlaceholder('Erro ao inicializar mapa - elemento não encontrado')
+        return
+      }
+
+      // Verificar se o Google Maps foi carregado corretamente
+      if (!window.google || !window.google.maps) {
+        console.error('Google Maps não foi carregado corretamente')
+        showMapPlaceholder('Erro ao carregar Google Maps API')
         return
       }
 
@@ -135,7 +143,7 @@ export default function MapaPage() {
       
     } catch (error) {
       console.error('Erro ao carregar Google Maps:', error)
-      showMapPlaceholder('Erro ao carregar Google Maps')
+      showMapPlaceholder(`Erro ao carregar Google Maps: ${error instanceof Error ? error.message : 'Erro desconhecido'}`)
     }
   }
 

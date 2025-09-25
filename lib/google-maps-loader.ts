@@ -13,6 +13,11 @@ export const loadGoogleMaps = async (apiKey: string): Promise<typeof google> => 
     return Promise.resolve(window.google)
   }
 
+  // Validar API key
+  if (!apiKey || apiKey.trim() === '') {
+    throw new Error('Google Maps API key não fornecida')
+  }
+
   // Carrega o Google Maps usando o Loader
   googleMapsPromise = new Loader({
     apiKey,
