@@ -48,29 +48,39 @@ export default function MapaPage() {
   }, [])
 
   useEffect(() => {
-    // Add a small delay to ensure the DOM element is ready
-    const timer = setTimeout(() => {
+    // Use a more robust approach to wait for the DOM element
+    const initializeMapWhenReady = () => {
       if (mapRef.current && !mapInstanceRef.current) {
-        console.log('Initializing Google Maps...')
+        console.log('Map ref is ready, initializing Google Maps...')
         initializeGoogleMaps()
-      } else {
-        console.log('Map ref not ready or map already initialized')
+        return true
       }
-    }, 100)
+      return false
+    }
 
-    return () => clearTimeout(timer)
-  }, [])
+    // Try immediately
+    if (initializeMapWhenReady()) {
+      return
+    }
 
-  // Add a retry mechanism for map initialization
-  useEffect(() => {
-    const retryTimer = setTimeout(() => {
-      if (!mapInstanceRef.current && mapRef.current) {
-        console.log('Retrying Google Maps initialization...')
-        initializeGoogleMaps()
-      }
-    }, 2000)
+    // If not ready, try with increasing delays
+    const delays = [100, 300, 500, 1000, 2000]
+    const timers: NodeJS.Timeout[] = []
 
-    return () => clearTimeout(retryTimer)
+    delays.forEach((delay, index) => {
+      const timer = setTimeout(() => {
+        console.log(`Attempting map initialization (attempt ${index + 1})...`)
+        if (initializeMapWhenReady()) {
+          // Clear remaining timers
+          timers.forEach(t => clearTimeout(t))
+        }
+      }, delay)
+      timers.push(timer)
+    })
+
+    return () => {
+      timers.forEach(timer => clearTimeout(timer))
+    }
   }, [])
 
   useEffect(() => {
@@ -122,6 +132,13 @@ export default function MapaPage() {
   const initializeGoogleMaps = async () => {
     try {
       console.log('🔍 Starting Google Maps initialization...')
+      
+      // Prevent multiple initializations
+      if (mapInstanceRef.current) {
+        console.log('Map already initialized, skipping...')
+        return
+      }
+      
       const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
       console.log('API Key present:', !!apiKey)
       
@@ -557,8 +574,14 @@ export default function MapaPage() {
                     <div 
                       ref={(el) => {
                         if (el && !mapInstanceRef.current) {
-                          console.log('Map container mounted, initializing...')
-                          setTimeout(() => initializeGoogleMaps(), 50)
+                          console.log('Map container mounted, scheduling initialization...')
+                          // Use requestAnimationFrame to ensure DOM is fully ready
+                          requestAnimationFrame(() => {
+                            if (mapRef.current && !mapInstanceRef.current) {
+                              console.log('Map container ready, initializing Google Maps...')
+                              initializeGoogleMaps()
+                            }
+                          })
                         }
                       }}
                       className="w-full h-full bg-gray-50" 
