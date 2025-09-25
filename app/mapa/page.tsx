@@ -48,9 +48,29 @@ export default function MapaPage() {
   }, [])
 
   useEffect(() => {
-    if (mapRef.current && !mapInstanceRef.current) {
-      initializeGoogleMaps()
-    }
+    // Add a small delay to ensure the DOM element is ready
+    const timer = setTimeout(() => {
+      if (mapRef.current && !mapInstanceRef.current) {
+        console.log('Initializing Google Maps...')
+        initializeGoogleMaps()
+      } else {
+        console.log('Map ref not ready or map already initialized')
+      }
+    }, 100)
+
+    return () => clearTimeout(timer)
+  }, [])
+
+  // Add a retry mechanism for map initialization
+  useEffect(() => {
+    const retryTimer = setTimeout(() => {
+      if (!mapInstanceRef.current && mapRef.current) {
+        console.log('Retrying Google Maps initialization...')
+        initializeGoogleMaps()
+      }
+    }, 2000)
+
+    return () => clearTimeout(retryTimer)
   }, [])
 
   useEffect(() => {
@@ -101,7 +121,9 @@ export default function MapaPage() {
 
   const initializeGoogleMaps = async () => {
     try {
+      console.log('🔍 Starting Google Maps initialization...')
       const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
+      console.log('API Key present:', !!apiKey)
       
       if (!apiKey || apiKey === 'your_google_maps_api_key_here' || apiKey.trim() === '') {
         console.warn('⚠️ Google Maps API key não configurada')
@@ -109,22 +131,25 @@ export default function MapaPage() {
         return
       }
 
+      console.log('📡 Loading Google Maps API...')
       // Carregar a API do Google Maps
       await loadGoogleMaps(apiKey)
+      console.log('✅ Google Maps API loaded successfully')
       
       if (!mapRef.current) {
-        console.error('mapRef.current is null')
+        console.error('❌ mapRef.current is null')
         showMapPlaceholder('Erro ao inicializar mapa - elemento não encontrado')
         return
       }
 
       // Verificar se o Google Maps foi carregado corretamente
       if (!window.google || !window.google.maps) {
-        console.error('Google Maps não foi carregado corretamente')
+        console.error('❌ Google Maps não foi carregado corretamente')
         showMapPlaceholder('Erro ao carregar Google Maps API')
         return
       }
 
+      console.log('🗺️ Creating Google Maps instance...')
       // Inicializar o mapa
       const map = new window.google.maps.Map(mapRef.current, {
         center: { lat: -15.7942, lng: -47.8822 }, // Centro do Brasil (Brasília)
@@ -140,9 +165,10 @@ export default function MapaPage() {
 
       mapInstanceRef.current = map
       setMapLoading(false)
+      console.log('✅ Google Maps initialized successfully')
       
     } catch (error) {
-      console.error('Erro ao carregar Google Maps:', error)
+      console.error('❌ Erro ao carregar Google Maps:', error)
       showMapPlaceholder(`Erro ao carregar Google Maps: ${error instanceof Error ? error.message : 'Erro desconhecido'}`)
     }
   }
@@ -529,7 +555,12 @@ export default function MapaPage() {
                 <CardContent className="p-0 h-full">
                   <div className="relative w-full h-full">
                     <div 
-                      ref={mapRef} 
+                      ref={(el) => {
+                        if (el && !mapInstanceRef.current) {
+                          console.log('Map container mounted, initializing...')
+                          setTimeout(() => initializeGoogleMaps(), 50)
+                        }
+                      }}
                       className="w-full h-full bg-gray-50" 
                     />
                     {mapLoading && (
