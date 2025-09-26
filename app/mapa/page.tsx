@@ -47,39 +47,124 @@ export default function MapaPage() {
     loadOngs()
   }, [])
 
-  // Watch for when the map ref becomes available
+  // Browser-agnostic map ref detection with multiple strategies
   useEffect(() => {
-    const checkForMapRef = () => {
-      if (mapRef.current && !mapInstanceRef.current) {
-        console.log('Map ref detected, initializing Google Maps...')
-        initializeGoogleMaps()
-        return true
-      }
-      return false
+    let isInitialized = false
+    let cleanupFunctions: (() => void)[] = []
+
+    const initializeMap = () => {
+      if (isInitialized || mapInstanceRef.current) return
+      if (!mapRef.current) return
+
+      console.log('✅ Map ref detected, initializing Google Maps...')
+      isInitialized = true
+      initializeGoogleMaps()
+      
+      // Clear all cleanup functions
+      cleanupFunctions.forEach(cleanup => cleanup())
+      cleanupFunctions = []
     }
 
-    // Try immediately
-    if (checkForMapRef()) {
+    // Strategy 1: Immediate check (works in most browsers)
+    if (mapRef.current) {
+      initializeMap()
       return
     }
 
-    // If not ready, poll with increasing intervals
-    const intervals = [100, 200, 500, 1000, 2000]
-    const timers: NodeJS.Timeout[] = []
+    // Strategy 2: requestAnimationFrame (browser-agnostic DOM ready)
+    const rafId = requestAnimationFrame(() => {
+      if (mapRef.current) {
+        initializeMap()
+      }
+    })
+    cleanupFunctions.push(() => cancelAnimationFrame(rafId))
 
-    intervals.forEach((interval, index) => {
-      const timer = setTimeout(() => {
-        console.log(`Checking for map ref (attempt ${index + 1})...`)
-        if (checkForMapRef()) {
-          // Clear remaining timers
-          timers.forEach(t => clearTimeout(t))
-        }
-      }, interval)
-      timers.push(timer)
+    // Strategy 3: Multiple timing approaches for different browsers
+    const timingStrategies = [
+      // Immediate microtask (Chrome, Firefox)
+      () => Promise.resolve().then(() => {
+        if (mapRef.current) initializeMap()
+      }),
+      
+      // Short delay (Safari, older browsers)
+      () => setTimeout(() => {
+        if (mapRef.current) initializeMap()
+      }, 0),
+      
+      // Progressive delays for slower browsers
+      () => setTimeout(() => {
+        if (mapRef.current) initializeMap()
+      }, 10),
+      
+      () => setTimeout(() => {
+        if (mapRef.current) initializeMap()
+      }, 50),
+      
+      () => setTimeout(() => {
+        if (mapRef.current) initializeMap()
+      }, 100),
+      
+      () => setTimeout(() => {
+        if (mapRef.current) initializeMap()
+      }, 200),
+      
+      // Fallback for very slow browsers
+      () => setTimeout(() => {
+        if (mapRef.current) initializeMap()
+      }, 500)
+    ]
+
+    // Execute all strategies
+    timingStrategies.forEach((strategy, index) => {
+      const cleanup = strategy()
+      if (cleanup && typeof cleanup === 'number') {
+        // setTimeout cleanup
+        cleanupFunctions.push(() => clearTimeout(cleanup))
+      }
+      // Promise-based strategies don't need cleanup
     })
 
+    // Strategy 4: MutationObserver for DOM changes (most reliable)
+    if (typeof MutationObserver !== 'undefined') {
+      const observer = new MutationObserver(() => {
+        if (mapRef.current) {
+          initializeMap()
+          observer.disconnect()
+        }
+      })
+      
+      // Observe the parent container
+      const parentElement = document.querySelector('[data-map-container]')
+      if (parentElement) {
+        observer.observe(parentElement, { 
+          childList: true, 
+          subtree: true 
+        })
+        cleanupFunctions.push(() => observer.disconnect())
+      }
+    }
+
+    // Strategy 5: IntersectionObserver for visibility (modern browsers)
+    if (typeof IntersectionObserver !== 'undefined') {
+      const intersectionObserver = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting && mapRef.current) {
+            initializeMap()
+            intersectionObserver.disconnect()
+          }
+        })
+      })
+      
+      // Observe when the map container becomes visible
+      const mapContainer = document.querySelector('[data-map-container]')
+      if (mapContainer) {
+        intersectionObserver.observe(mapContainer)
+        cleanupFunctions.push(() => intersectionObserver.disconnect())
+      }
+    }
+
     return () => {
-      timers.forEach(timer => clearTimeout(timer))
+      cleanupFunctions.forEach(cleanup => cleanup())
     }
   }, [])
 
@@ -132,6 +217,19 @@ export default function MapaPage() {
   const initializeGoogleMaps = async () => {
     try {
       console.log('🔍 Starting Google Maps initialization...')
+      
+      // Browser detection for debugging
+      const browserInfo = {
+        userAgent: navigator.userAgent,
+        browser: navigator.userAgent.includes('Chrome') ? 'Chrome' : 
+                navigator.userAgent.includes('Firefox') ? 'Firefox' : 
+                navigator.userAgent.includes('Safari') ? 'Safari' : 
+                navigator.userAgent.includes('Edge') ? 'Edge' : 'Unknown',
+        hasRequestAnimationFrame: typeof requestAnimationFrame !== 'undefined',
+        hasMutationObserver: typeof MutationObserver !== 'undefined',
+        hasIntersectionObserver: typeof IntersectionObserver !== 'undefined'
+      }
+      console.log('🌐 Browser info:', browserInfo)
       
       // Prevent multiple initializations
       if (mapInstanceRef.current) {
@@ -572,7 +670,27 @@ export default function MapaPage() {
                 <CardContent className="p-0 h-full">
                   <div className="relative w-full h-full">
                     <div 
-                      ref={mapRef}
+                      ref={(el) => {
+                        // Set the ref immediately
+                        if (el && !mapRef.current) {
+                          (mapRef as any).current = el
+                          console.log('🔗 Map container ref set, triggering initialization...')
+                          
+                          // Trigger initialization with multiple browser-compatible methods
+                          // Method 1: Immediate (works in most browsers)
+                          if (!mapInstanceRef.current) {
+                            setTimeout(() => initializeGoogleMaps(), 0)
+                          }
+                          
+                          // Method 2: requestAnimationFrame (browser-agnostic)
+                          requestAnimationFrame(() => {
+                            if (!mapInstanceRef.current && mapRef.current) {
+                              initializeGoogleMaps()
+                            }
+                          })
+                        }
+                      }}
+                      data-map-container
                       className="w-full h-full bg-gray-50" 
                     />
                     {mapLoading && (
