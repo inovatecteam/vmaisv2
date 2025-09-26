@@ -216,55 +216,31 @@ export default function MapaPage() {
 
   const initializeGoogleMaps = async () => {
     try {
-      console.log('🔍 Starting Google Maps initialization...')
-      
-      // Browser detection for debugging
-      const browserInfo = {
-        userAgent: navigator.userAgent,
-        browser: navigator.userAgent.includes('Chrome') ? 'Chrome' : 
-                navigator.userAgent.includes('Firefox') ? 'Firefox' : 
-                navigator.userAgent.includes('Safari') ? 'Safari' : 
-                navigator.userAgent.includes('Edge') ? 'Edge' : 'Unknown',
-        hasRequestAnimationFrame: typeof requestAnimationFrame !== 'undefined',
-        hasMutationObserver: typeof MutationObserver !== 'undefined',
-        hasIntersectionObserver: typeof IntersectionObserver !== 'undefined'
-      }
-      console.log('🌐 Browser info:', browserInfo)
-      
       // Prevent multiple initializations
       if (mapInstanceRef.current) {
-        console.log('Map already initialized, skipping...')
         return
       }
       
       const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
-      console.log('API Key present:', !!apiKey)
       
       if (!apiKey || apiKey === 'your_google_maps_api_key_here' || apiKey.trim() === '') {
-        console.warn('⚠️ Google Maps API key não configurada')
         showMapPlaceholder('Google Maps API não configurada. Configure NEXT_PUBLIC_GOOGLE_MAPS_API_KEY no arquivo .env.local')
         return
       }
 
-      console.log('📡 Loading Google Maps API...')
       // Carregar a API do Google Maps
       await loadGoogleMaps(apiKey)
-      console.log('✅ Google Maps API loaded successfully')
       
       if (!mapRef.current) {
-        console.error('❌ mapRef.current is null')
         showMapPlaceholder('Erro ao inicializar mapa - elemento não encontrado')
         return
       }
 
       // Verificar se o Google Maps foi carregado corretamente
       if (!window.google || !window.google.maps) {
-        console.error('❌ Google Maps não foi carregado corretamente')
         showMapPlaceholder('Erro ao carregar Google Maps API')
         return
       }
-
-      console.log('🗺️ Creating Google Maps instance...')
       // Inicializar o mapa
       const map = new window.google.maps.Map(mapRef.current, {
         center: { lat: -15.7942, lng: -47.8822 }, // Centro do Brasil (Brasília)
@@ -290,17 +266,14 @@ export default function MapaPage() {
 
       mapInstanceRef.current = map
       setMapLoading(false)
-      console.log('✅ Google Maps initialized successfully')
       
       // Atualizar marcadores após inicializar o mapa
       // Use a small delay to ensure the map is fully rendered
       setTimeout(() => {
-        console.log('🔄 Triggering initial marker update...')
         updateMapMarkers()
       }, 100)
       
     } catch (error) {
-      console.error('❌ Erro ao carregar Google Maps:', error)
       showMapPlaceholder(`Erro ao carregar Google Maps: ${error instanceof Error ? error.message : 'Erro desconhecido'}`)
     }
   }
@@ -327,13 +300,8 @@ export default function MapaPage() {
 
   const updateMapMarkers = () => {
     if (!mapInstanceRef.current) {
-      console.log('❌ Map instance not available for markers')
       return
     }
-
-    console.log('🗺️ Updating map markers...')
-    console.log('📊 Total ONGs:', ongs.length)
-    console.log('🔍 Filtered ONGs:', filteredOngs.length)
 
     // Limpar marcadores existentes
     markersRef.current.forEach(marker => {
@@ -349,21 +317,10 @@ export default function MapaPage() {
                        Number(ong.lat) !== 0 && 
                        Number(ong.lng) !== 0
       
-      if (!hasCoords) {
-        console.log(`⚠️ ONG "${ong.nome}" missing valid coordinates:`, { lat: ong.lat, lng: ong.lng })
-      }
-      
       return hasCoords
     })
     
-    console.log('📍 ONGs with valid coordinates:', ongsWithCoords.length)
-    
     if (ongsWithCoords.length === 0) {
-      console.log('❌ No ONGs with valid coordinates to display')
-      // Show a message to the user that no ONGs with coordinates are available
-      if (filteredOngs.length > 0) {
-        console.log('💡 Some ONGs exist but lack coordinates. Consider adding lat/lng to ONG records.')
-      }
       return
     }
 
@@ -371,8 +328,6 @@ export default function MapaPage() {
 
     ongsWithCoords.forEach((ong, index) => {
       const position = { lat: Number(ong.lat), lng: Number(ong.lng) }
-      
-      console.log(`📍 Creating marker ${index + 1}/${ongsWithCoords.length} for "${ong.nome}" at:`, position)
       
       const marker = new window.google.maps.Marker({
         position,
@@ -398,7 +353,6 @@ export default function MapaPage() {
 
       // Enhanced click listener with better feedback
       marker.addListener('click', () => {
-        console.log(`🎯 Marker clicked for ONG: ${ong.nome}`)
         handleOngClick(ong)
       })
 
@@ -429,11 +383,8 @@ export default function MapaPage() {
       bounds.extend(position)
     })
 
-    console.log('✅ All markers created successfully')
-
     // Ajustar o zoom e centro do mapa para mostrar todos os marcadores
     if (ongsWithCoords.length > 1) {
-      console.log('🔍 Fitting bounds to show all markers')
       mapInstanceRef.current.fitBounds(bounds)
       
       // Add some padding to the bounds
@@ -450,12 +401,9 @@ export default function MapaPage() {
       
       mapInstanceRef.current.fitBounds(newBounds)
     } else if (ongsWithCoords.length === 1) {
-      console.log('🎯 Centering on single marker')
       mapInstanceRef.current.setCenter({ lat: Number(ongsWithCoords[0].lat), lng: Number(ongsWithCoords[0].lng) })
       mapInstanceRef.current.setZoom(14) // Increased zoom for better visibility
     }
-
-    console.log('🗺️ Map markers update completed')
   }
 
   const filterOngs = () => {
@@ -767,7 +715,6 @@ export default function MapaPage() {
                         // Set the ref immediately
                         if (el && !mapRef.current) {
                           (mapRef as any).current = el
-                          console.log('🔗 Map container ref set, triggering initialization...')
                           
                           // Trigger initialization with multiple browser-compatible methods
                           // Method 1: Immediate (works in most browsers)
