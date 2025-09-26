@@ -269,9 +269,19 @@ export default function MapaPage() {
       const map = new window.google.maps.Map(mapRef.current, {
         center: { lat: -15.7942, lng: -47.8822 }, // Centro do Brasil (Brasília)
         zoom: 5,
+        mapTypeId: window.google.maps.MapTypeId.ROADMAP,
+        mapTypeControl: true,
+        streetViewControl: false,
+        fullscreenControl: true,
+        zoomControl: true,
         styles: [
           {
             featureType: 'poi',
+            elementType: 'labels',
+            stylers: [{ visibility: 'off' }]
+          },
+          {
+            featureType: 'transit',
             elementType: 'labels',
             stylers: [{ visibility: 'off' }]
           }
@@ -281,6 +291,13 @@ export default function MapaPage() {
       mapInstanceRef.current = map
       setMapLoading(false)
       console.log('✅ Google Maps initialized successfully')
+      
+      // Atualizar marcadores após inicializar o mapa
+      // Use a small delay to ensure the map is fully rendered
+      setTimeout(() => {
+        console.log('🔄 Triggering initial marker update...')
+        updateMapMarkers()
+      }, 100)
       
     } catch (error) {
       console.error('❌ Erro ao carregar Google Maps:', error)
@@ -309,7 +326,14 @@ export default function MapaPage() {
   }
 
   const updateMapMarkers = () => {
-    if (!mapInstanceRef.current) return
+    if (!mapInstanceRef.current) {
+      console.log('❌ Map instance not available for markers')
+      return
+    }
+
+    console.log('🗺️ Updating map markers...')
+    console.log('📊 Total ONGs:', ongs.length)
+    console.log('🔍 Filtered ONGs:', filteredOngs.length)
 
     // Limpar marcadores existentes
     markersRef.current.forEach(marker => {
@@ -318,51 +342,120 @@ export default function MapaPage() {
     markersRef.current = []
 
     // Criar novos marcadores para ONGs com coordenadas
-    const ongsWithCoords = filteredOngs.filter(ong => ong.lat && ong.lng)
+    const ongsWithCoords = filteredOngs.filter(ong => {
+      const hasCoords = ong.lat && ong.lng && 
+                       !isNaN(Number(ong.lat)) && 
+                       !isNaN(Number(ong.lng)) &&
+                       Number(ong.lat) !== 0 && 
+                       Number(ong.lng) !== 0
+      
+      if (!hasCoords) {
+        console.log(`⚠️ ONG "${ong.nome}" missing valid coordinates:`, { lat: ong.lat, lng: ong.lng })
+      }
+      
+      return hasCoords
+    })
     
-    if (ongsWithCoords.length === 0) return
+    console.log('📍 ONGs with valid coordinates:', ongsWithCoords.length)
+    
+    if (ongsWithCoords.length === 0) {
+      console.log('❌ No ONGs with valid coordinates to display')
+      // Show a message to the user that no ONGs with coordinates are available
+      if (filteredOngs.length > 0) {
+        console.log('💡 Some ONGs exist but lack coordinates. Consider adding lat/lng to ONG records.')
+      }
+      return
+    }
 
     const bounds = new window.google.maps.LatLngBounds()
 
-    ongsWithCoords.forEach(ong => {
+    ongsWithCoords.forEach((ong, index) => {
       const position = { lat: Number(ong.lat), lng: Number(ong.lng) }
+      
+      console.log(`📍 Creating marker ${index + 1}/${ongsWithCoords.length} for "${ong.nome}" at:`, position)
       
       const marker = new window.google.maps.Marker({
         position,
         map: mapInstanceRef.current,
         title: ong.nome,
         label: {
-          text: ong.nome,
-          color: '#1F2937', // Cor escura para boa visibilidade
+          text: `${index + 1}`, // Show number instead of name for better visibility
+          color: '#FFFFFF',
           fontSize: '12px',
           fontWeight: 'bold'
         },
         icon: {
           path: window.google.maps.SymbolPath.CIRCLE,
-          scale: 8,
+          scale: 12, // Increased size for better visibility
           fillColor: '#FBBF24', // Cor primária (amarelo)
-          fillOpacity: 1,
+          fillOpacity: 0.9,
           strokeColor: '#F59E0B',
-          strokeWeight: 2
-        }
+          strokeWeight: 3
+        },
+        animation: window.google.maps.Animation.DROP, // Add drop animation
+        optimized: false // Ensure markers are always rendered
       })
 
-      // Adicionar listener de clique
+      // Enhanced click listener with better feedback
       marker.addListener('click', () => {
+        console.log(`🎯 Marker clicked for ONG: ${ong.nome}`)
         handleOngClick(ong)
+      })
+
+      // Add hover effects
+      marker.addListener('mouseover', () => {
+        marker.setIcon({
+          path: window.google.maps.SymbolPath.CIRCLE,
+          scale: 16, // Larger on hover
+          fillColor: '#F59E0B',
+          fillOpacity: 1,
+          strokeColor: '#D97706',
+          strokeWeight: 4
+        })
+      })
+
+      marker.addListener('mouseout', () => {
+        marker.setIcon({
+          path: window.google.maps.SymbolPath.CIRCLE,
+          scale: 12,
+          fillColor: '#FBBF24',
+          fillOpacity: 0.9,
+          strokeColor: '#F59E0B',
+          strokeWeight: 3
+        })
       })
 
       markersRef.current.push(marker)
       bounds.extend(position)
     })
 
+    console.log('✅ All markers created successfully')
+
     // Ajustar o zoom e centro do mapa para mostrar todos os marcadores
     if (ongsWithCoords.length > 1) {
+      console.log('🔍 Fitting bounds to show all markers')
       mapInstanceRef.current.fitBounds(bounds)
+      
+      // Add some padding to the bounds
+      const padding = 0.1 // 10% padding
+      const ne = bounds.getNorthEast()
+      const sw = bounds.getSouthWest()
+      const latSpan = ne.lat() - sw.lat()
+      const lngSpan = ne.lng() - sw.lng()
+      
+      const newBounds = new window.google.maps.LatLngBounds(
+        { lat: sw.lat() - latSpan * padding, lng: sw.lng() - lngSpan * padding },
+        { lat: ne.lat() + latSpan * padding, lng: ne.lng() + lngSpan * padding }
+      )
+      
+      mapInstanceRef.current.fitBounds(newBounds)
     } else if (ongsWithCoords.length === 1) {
+      console.log('🎯 Centering on single marker')
       mapInstanceRef.current.setCenter({ lat: Number(ongsWithCoords[0].lat), lng: Number(ongsWithCoords[0].lng) })
-      mapInstanceRef.current.setZoom(12)
+      mapInstanceRef.current.setZoom(14) // Increased zoom for better visibility
     }
+
+    console.log('🗺️ Map markers update completed')
   }
 
   const filterOngs = () => {
@@ -698,6 +791,18 @@ export default function MapaPage() {
                         <div className="text-center">
                           <Loader2 className="h-8 w-8 animate-spin text-primary mx-auto mb-3" />
                           <p className="text-gray-600">Carregando mapa...</p>
+                        </div>
+                      </div>
+                    )}
+                    
+                    {/* Marker count indicator */}
+                    {!mapLoading && filteredOngs.length > 0 && (
+                      <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm rounded-lg px-3 py-2 shadow-lg">
+                        <div className="flex items-center space-x-2">
+                          <div className="w-3 h-3 bg-primary rounded-full"></div>
+                          <span className="text-sm font-medium text-gray-700">
+                            {filteredOngs.filter(ong => ong.lat && ong.lng).length} ONGs no mapa
+                          </span>
                         </div>
                       </div>
                     )}
