@@ -47,7 +47,7 @@ export function UcergsFundraisingCard() {
           
           {/* Barra de progresso visual */}
           <div className="w-full bg-gray-200 rounded-full h-2">
-            <div className="bg-gradient-to-r from-green-500 to-green-600 h-2 rounded-full" style={{width: '11.67%'}}></div>
+            <div className="bg-gradient-to-r from-green-500 to-green-600 h-2 rounded-full" style={{width: '13.33%'}}></div>
           </div>
           <p className="text-xs text-gray-500 mt-1">Campanha iniciada recentemente</p>
         </div>
