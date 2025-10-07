@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
@@ -93,36 +94,50 @@ export function BloodDonationCard() {
 
   return (
     <>
-      <Card className="border-red-200 bg-gradient-to-br from-red-50 to-white hover:shadow-lg transition-all duration-300 cursor-pointer" onClick={() => setIsOpen(true)}>
-        <CardContent className="p-6">
-          <div className="flex items-start gap-4">
-            <div className="bg-red-500 p-3 rounded-full">
-              <Droplet className="h-8 w-8 text-white" fill="white" />
+      <Card className="rounded-2xl shadow-xl border-0 bg-gradient-to-br from-red-50 to-pink-50 hover:shadow-2xl transition-all duration-300 cursor-pointer h-full flex flex-col" onClick={() => setIsOpen(true)}>
+        <CardContent className="p-6 flex-1 flex flex-col">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="p-3 bg-red-500/20 rounded-xl">
+              <Droplet className="h-6 w-6 text-red-500" fill="currentColor" />
             </div>
             <div className="flex-1">
-              <h3 className="text-2xl font-bold text-red-600 mb-2">Campanha de Doação de Sangue</h3>
-              <p className="text-gray-700 mb-4">
-                Participe da nossa campanha de doação de sangue e ajude a salvar vidas. Cada doação pode beneficiar até 4 pessoas!
-              </p>
+              <h3 className="text-2xl font-bold text-gray-900">Campanha de Doação de Sangue</h3>
+              <Badge className="bg-red-100 text-red-700 mt-1">
+                Campanha Especial
+              </Badge>
+            </div>
+          </div>
 
-              <div className="space-y-2 mb-4">
-                <div className="flex items-center gap-2 text-gray-600">
-                  <Calendar className="h-4 w-4 text-red-500" />
-                  <span className="font-medium">24 e 25 de outubro de 2025</span>
-                </div>
-                <div className="flex items-center gap-2 text-gray-600">
-                  <Clock className="h-4 w-4 text-red-500" />
-                  <span>Das 8h às 12h</span>
-                </div>
-                <div className="flex items-center gap-2 text-gray-600">
-                  <MapPin className="h-4 w-4 text-red-500" />
-                  <span>Local a ser confirmado</span>
-                </div>
+          <p className="text-gray-700 text-base leading-relaxed mb-4">
+            Participe da nossa campanha de doação de sangue e ajude a salvar vidas. Cada doação pode beneficiar até 4 pessoas!
+          </p>
+
+          <div className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm mb-4">
+            <div className="space-y-2">
+              <div className="flex items-center gap-2 text-gray-700">
+                <Calendar className="h-4 w-4 text-red-500" />
+                <span className="font-medium">24 e 25 de outubro de 2025</span>
               </div>
+              <div className="flex items-center gap-2 text-gray-600">
+                <Clock className="h-4 w-4 text-red-500" />
+                <span>Das 8h às 12h</span>
+              </div>
+              <div className="flex items-center gap-2 text-gray-600">
+                <MapPin className="h-4 w-4 text-red-500" />
+                <span>Local a ser confirmado</span>
+              </div>
+            </div>
+          </div>
 
-              <Button className="bg-red-500 hover:bg-red-600 text-white">
-                Inscreva-se Agora
-              </Button>
+          <div className="mt-auto">
+            <Button className="w-full bg-red-500 hover:bg-red-600 font-semibold rounded-xl py-4 text-lg shadow-lg hover:shadow-xl transition-all duration-300">
+              Inscreva-se Agora
+            </Button>
+
+            <div className="text-center pt-4 border-t border-gray-200 mt-4">
+              <p className="text-xs text-gray-500">
+                Salve vidas com um gesto simples • Processo rápido e seguro
+              </p>
             </div>
           </div>
         </CardContent>
