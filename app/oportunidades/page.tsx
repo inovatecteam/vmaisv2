@@ -19,6 +19,7 @@ import { WhatsAppConfirmModal } from '@/components/whatsapp-confirm-modal'
 import { sendContactEmail } from '@/lib/api'
 import Footer from '@/components/layout/footer'
 import { UcergsFundraisingCard } from '@/components/ucergs-fundraising-card'
+import { BloodDonationCard } from '@/components/blood-donation-card'
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination'
 
 
@@ -266,9 +267,14 @@ export default function CatalogoPage() {
             </p>
           </div>
 
-          {/* Card de Arrecadação UCERGS */}
-          <div className="mb-8 max-w-2xl mx-auto">
-            <UcergsFundraisingCard />
+          {/* Campanhas Especiais */}
+          <div className="mb-8 space-y-4">
+            <div className="max-w-2xl mx-auto">
+              <BloodDonationCard />
+            </div>
+            <div className="max-w-2xl mx-auto">
+              <UcergsFundraisingCard />
+            </div>
           </div>
 
            {/* Filtros */}
