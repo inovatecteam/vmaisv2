@@ -8,13 +8,21 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Droplet, Calendar, Clock, MapPin } from 'lucide-react';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Droplet, Calendar, Clock, MapPin, ArrowLeft, Download, Eye, FileText, CheckCircle, Heart, Users, Shield, Zap, FileCheck, UserPlus } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
+import JsBarcode from 'jsbarcode';
 
 export function BloodDonationCard() {
   const [isOpen, setIsOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showForm, setShowForm] = useState(false);
+  const [showConfirmation, setShowConfirmation] = useState(false);
+  const [termsAccepted, setTermsAccepted] = useState(false);
+  const [registrationId, setRegistrationId] = useState<string>('');
   const [formData, setFormData] = useState({
     nome_completo: '',
     data_nascimento: '',
@@ -64,6 +72,16 @@ export function BloodDonationCard() {
     e.preventDefault();
     setIsSubmitting(true);
 
+    // Validar data de nascimento (não permitir datas após 25/10/2009)
+    const birthDate = new Date(formData.data_nascimento);
+    const maxDate = new Date('2009-10-25');
+    
+    if (birthDate > maxDate) {
+      toast.error('A data de nascimento não pode ser posterior a 25/10/2009.');
+      setIsSubmitting(false);
+      return;
+    }
+
     try {
       const { error } = await supabase
         .from('blood_donation_registrations')
@@ -71,7 +89,27 @@ export function BloodDonationCard() {
 
       if (error) throw error;
 
+      // Gerar ID único para a inscrição
+      const newRegistrationId = `BD${Date.now()}${Math.random().toString(36).substr(2, 5).toUpperCase()}`;
+      setRegistrationId(newRegistrationId);
+
       toast.success('Inscrição realizada com sucesso!');
+      setShowForm(false);
+      setShowConfirmation(true);
+    } catch (error) {
+      console.error('Error submitting registration:', error);
+      toast.error('Erro ao realizar inscrição. Tente novamente.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleModalClose = () => {
+    setIsOpen(false);
+    setShowForm(false);
+    setShowConfirmation(false);
+    setTermsAccepted(false);
+    setRegistrationId('');
       setFormData({
         nome_completo: '',
         data_nascimento: '',
@@ -83,59 +121,303 @@ export function BloodDonationCard() {
         nome_pai: '',
         observacoes: ''
       });
-      setIsOpen(false);
+  };
+
+  const generateBarcode = (text: string): string => {
+    try {
+      const canvas = document.createElement('canvas');
+      JsBarcode(canvas, text, {
+        format: 'CODE128',
+        width: 2,
+        height: 50,
+        displayValue: false,
+        fontSize: 12,
+        margin: 10,
+        background: '#ffffff',
+        lineColor: '#000000'
+      });
+      return canvas.toDataURL('image/png');
     } catch (error) {
-      console.error('Error submitting registration:', error);
-      toast.error('Erro ao realizar inscrição. Tente novamente.');
-    } finally {
-      setIsSubmitting(false);
+      console.error('Erro ao gerar código de barras:', error);
+      // Fallback: criar um canvas simples com texto
+      const canvas = document.createElement('canvas');
+      canvas.width = 200;
+      canvas.height = 50;
+      const ctx = canvas.getContext('2d');
+      if (ctx) {
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, 200, 50);
+        ctx.fillStyle = '#000000';
+        ctx.font = '12px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText(text, 100, 30);
+      }
+      return canvas.toDataURL('image/png');
+    }
+  };
+
+  const generatePDF = async () => {
+    try {
+      const pdf = new jsPDF();
+      
+      // Header com logo
+      pdf.setFillColor(220, 38, 38); // Vermelho
+      pdf.rect(0, 0, 210, 30, 'F');
+      
+      // Logo branco
+      try {
+        const logoImg = new Image();
+        logoImg.src = '/logo-white.png';
+        
+        // Aguardar o carregamento da imagem
+        await new Promise((resolve) => {
+          if (logoImg.complete) {
+            resolve(true);
+          } else {
+            logoImg.onload = () => resolve(true);
+            logoImg.onerror = () => resolve(false);
+          }
+        });
+        
+        // Adicionar logo com dimensões apropriadas (mantendo proporção)
+        const logoWidth = 60;
+        const logoHeight = 30;
+        pdf.addImage(logoImg, 'PNG', 18, 2, logoWidth, logoHeight);
+      } catch (error) {
+        console.warn('Erro ao carregar logo, usando texto como fallback');
+        // Fallback para texto caso a imagem não carregue
+        pdf.setTextColor(255, 255, 255);
+        pdf.setFontSize(20);
+        pdf.setFont('helvetica', 'bold');
+        pdf.text('Voluntaria+', 20, 20);
+      }
+      
+      // Título do documento
+      pdf.setTextColor(0, 0, 0);
+      pdf.setFontSize(16);
+      pdf.setFont('helvetica', 'bold');
+      pdf.text('Confirmação de Inscrição — Campanha de Doação de Sangue', 20, 50);
+      
+      // Dados da inscrição
+      pdf.setFontSize(12);
+      pdf.setFont('helvetica', 'normal');
+      
+      const yStart = 70;
+      let yPos = yStart;
+      
+      pdf.text(`Nome: ${formData.nome_completo}`, 20, yPos);
+      yPos += 10;
+      pdf.text(`Data de Nascimento: ${formData.data_nascimento}`, 20, yPos);
+      yPos += 10;
+      pdf.text(`CPF: ${formData.cpf}`, 20, yPos);
+      yPos += 10;
+      pdf.text(`Endereço: ${formData.endereco}`, 20, yPos);
+      yPos += 10;
+      pdf.text(`Telefone: ${formData.telefone}`, 20, yPos);
+      yPos += 10;
+      pdf.text(`E-mail: ${formData.email}`, 20, yPos);
+      yPos += 10;
+      pdf.text(`Nome da Mãe: ${formData.nome_mae}`, 20, yPos);
+      yPos += 10;
+      pdf.text(`Nome do Pai: ${formData.nome_pai}`, 20, yPos);
+      yPos += 20;
+      
+      // Orientações (Lorem Ipsum)
+      pdf.setFontSize(14);
+      pdf.setFont('helvetica', 'bold');
+      pdf.text('Orientações Importantes:', 20, yPos);
+      yPos += 15;
+      
+      pdf.setFontSize(10);
+      pdf.setFont('helvetica', 'normal');
+      
+      const instructions = [
+        'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+        'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
+        'Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.',
+        'Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
+        'Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium.',
+        'Totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.'
+      ];
+      
+      instructions.forEach((instruction, index) => {
+        const lines = pdf.splitTextToSize(`${index + 1}. ${instruction}`, 170);
+        lines.forEach((line: string) => {
+          pdf.text(line, 20, yPos);
+          yPos += 5;
+        });
+        yPos += 5;
+      });
+      
+      yPos += 20;
+      
+      // Código de inscrição e código de barras posicionados abaixo, independente do espaço
+      pdf.setFontSize(12);
+      pdf.setFont('helvetica', 'bold');
+      pdf.text(`Código de Inscrição: ${registrationId}`, 20, 266);
+      
+      // Código de barras menor, alinhado à margem direita
+      const barcodeData = generateBarcode(registrationId);
+      const barcodeWidth = 60; // Reduzido de 80 para 60
+      const barcodeHeight = 15; // Reduzido de 20 para 15
+      const rightMargin = 210 - 20; // Margem direita de 20px
+      const barcodeX = rightMargin - barcodeWidth;
+      const barcodeY = 256; // Centralizado com o texto
+      pdf.addImage(barcodeData, 'PNG', barcodeX, barcodeY, barcodeWidth, barcodeHeight);
+      
+      yPos += 15;
+      
+      // Footer
+      const pageHeight = pdf.internal.pageSize.height;
+      pdf.setFillColor(220, 38, 38);
+      pdf.rect(0, pageHeight - 20, 210, 20, 'F');
+      
+      pdf.setTextColor(255, 255, 255);
+      pdf.setFontSize(10);
+      // Centralizar verticalmente no footer (altura do footer é 20px, então centro é pageHeight - 10)
+      pdf.text('Voluntaria+ | Conectando pessoas a causas que importam', 20, pageHeight - 8);
+      const today = new Date();
+      const day = today.getDate().toString().padStart(2, '0');
+      const month = (today.getMonth() + 1).toString().padStart(2, '0');
+      const year = today.getFullYear();
+      const formattedDate = `${day}/${month}/${year}`;
+      pdf.text(`Gerado em: ${formattedDate}`, 150, pageHeight - 8);
+      
+      return pdf;
+    } catch (error) {
+      console.error('Erro ao gerar PDF:', error);
+      throw error;
+    }
+  };
+
+  const handleDownloadPDF = async () => {
+    try {
+      const pdf = await generatePDF();
+      pdf.save(`confirmacao_doacao_sangue_${registrationId}.pdf`);
+      toast.success('PDF baixado com sucesso!');
+    } catch (error) {
+      toast.error('Erro ao gerar PDF. Tente novamente.');
+    }
+  };
+
+  const handleViewPDF = async () => {
+    try {
+      const pdf = await generatePDF();
+      const pdfBlob = pdf.output('blob');
+      const pdfUrl = URL.createObjectURL(pdfBlob);
+      window.open(pdfUrl, '_blank');
+    } catch (error) {
+      toast.error('Erro ao visualizar PDF. Tente novamente.');
     }
   };
 
   return (
     <>
-      <Card className="rounded-2xl shadow-xl border-0 bg-gradient-to-br from-red-50 to-pink-50 hover:shadow-2xl transition-all duration-300 cursor-pointer h-full flex flex-col" onClick={() => setIsOpen(true)}>
-        <CardContent className="p-6 flex-1 flex flex-col">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="p-3 bg-red-500/20 rounded-xl">
-              <Droplet className="h-6 w-6 text-red-500" fill="currentColor" />
+      <Card className="rounded-2xl shadow-xl border-0 bg-gradient-to-br from-red-50 via-red-100/50 to-pink-50 hover:shadow-2xl transition-all duration-500 cursor-pointer h-full flex flex-col group overflow-hidden" onClick={() => setIsOpen(true)}>
+        {/* Header com gradiente e padrão */}
+        <div className="relative bg-gradient-to-r from-red-500 to-red-600 p-6 text-white overflow-hidden">
+          <div className="absolute inset-0 opacity-20">
+            <div className="w-full h-full bg-white/10" style={{
+              backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Cpath d='M30 30c0-11.046-8.954-20-20-20s-20 8.954-20 20 8.954 20 20 20 20-8.954 20-20zm0 0c0 11.046 8.954 20 20 20s20-8.954 20-20-8.954-20-20-20-20 8.954-20 20z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+              backgroundRepeat: 'repeat'
+            }}></div>
+          </div>
+          
+          <div className="relative z-10 flex items-center justify-between mb-4">
+            <div className="flex items-center gap-3">
+              <div className="p-3 bg-white/20 backdrop-blur-sm rounded-xl group-hover:bg-white/30 transition-all duration-300">
+                <Droplet className="h-7 w-7 text-white" fill="currentColor" />
             </div>
-            <div className="flex-1">
-              <h3 className="text-2xl font-bold text-gray-900">Campanha de Doação de Sangue</h3>
-              <Badge className="bg-red-100 text-red-700 mt-1">
+              <div>
+                <h3 className="text-2xl font-bold text-white">Campanha de Doação de Sangue</h3>
+                <Badge className="bg-white/20 text-white border-white/30 mt-2 backdrop-blur-sm">
                 Campanha Especial
               </Badge>
             </div>
           </div>
 
-          <p className="text-gray-700 text-base leading-relaxed mb-4">
-            Participe da nossa campanha de doação de sangue e ajude a salvar vidas. Cada doação pode beneficiar até 4 pessoas!
+          </div>
+
+          <p className="text-white/90 text-lg leading-relaxed mb-6">
+            Participe da nossa campanha e ajude a salvar vidas! Cada doação pode beneficiar até 4 pessoas.
           </p>
 
-          <div className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm mb-4">
-            <div className="space-y-2">
-              <div className="flex items-center gap-2 text-gray-700">
-                <Calendar className="h-4 w-4 text-red-500" />
-                <span className="font-medium">24 e 25 de outubro de 2025</span>
+          {/* Estatísticas visuais */}
+          <div className="grid grid-cols-3 gap-4 mb-6">
+            <div className="bg-white/20 backdrop-blur-sm rounded-lg p-3 text-center">
+              <Users className="h-5 w-5 text-white mx-auto mb-1" />
+              <div className="text-sm text-white/80">Voluntários</div>
+              <div className="text-lg font-bold text-white">160</div>
+            </div>
+            <div className="bg-white/20 backdrop-blur-sm rounded-lg p-3 text-center">
+              <Shield className="h-5 w-5 text-white mx-auto mb-1" />
+              <div className="text-sm text-white/80">Seguro</div>
+              <div className="text-lg font-bold text-white">100%</div>
+            </div>
+            <div className="bg-white/20 backdrop-blur-sm rounded-lg p-3 text-center">
+              <Zap className="h-5 w-5 text-white mx-auto mb-1" />
+              <div className="text-sm text-white/80">Rápido</div>
+              <div className="text-lg font-bold text-white">15min</div>
+            </div>
+          </div>
+        </div>
+
+        <CardContent className="p-6 flex-1 flex flex-col">
+          {/* Informações do evento */}
+          <div className="bg-white/80 backdrop-blur-sm p-5 rounded-xl border border-red-200/50 shadow-sm mb-6">
+            <div className="space-y-4">
+              <div className="flex items-center gap-3 text-gray-700">
+                <div className="p-2 bg-red-100 rounded-lg">
+                  <Calendar className="h-5 w-5 text-red-500" />
+                </div>
+                <div>
+                  <div className="font-semibold text-gray-900">24 e 25 de outubro de 2025</div>
+                  <div className="text-sm text-gray-600">Dois dias de campanha</div>
+                </div>
               </div>
-              <div className="flex items-center gap-2 text-gray-600">
-                <Clock className="h-4 w-4 text-red-500" />
-                <span>Das 8h às 12h</span>
+              
+              <div className="flex items-center gap-3 text-gray-700">
+                <div className="p-2 bg-red-100 rounded-lg">
+                  <Clock className="h-5 w-5 text-red-500" />
+                </div>
+                <div>
+                  <div className="font-semibold text-gray-900">Das 8h às 12h</div>
+                  <div className="text-sm text-gray-600">Horário estendido</div>
+                </div>
               </div>
-              <div className="flex items-center gap-2 text-gray-600">
-                <MapPin className="h-4 w-4 text-red-500" />
-                <span>Local a ser confirmado</span>
+              
+              <div className="flex items-center gap-3 text-gray-700">
+                <div className="p-2 bg-red-100 rounded-lg">
+                  <MapPin className="h-5 w-5 text-red-500" />
+                </div>
+                <div>
+                  <div className="font-semibold text-gray-900">Local a ser confirmado</div>
+                  <div className="text-sm text-gray-600">Informações em breve</div>
+                </div>
+              </div>
+              
+              <div className="flex items-center gap-3 text-gray-700">
+                <div className="p-2 bg-red-100 rounded-lg">
+                  <FileCheck className="h-5 w-5 text-red-500" />
+                </div>
+                <div>
+                  <div className="font-semibold text-gray-900">Documento com foto obrigatório</div>
+                  <div className="text-sm text-gray-600">RG, CNH ou passaporte</div>
+                </div>
               </div>
             </div>
           </div>
 
+          
+
           <div className="mt-auto">
-            <Button className="w-full bg-red-500 hover:bg-red-600 font-semibold rounded-xl py-4 text-lg shadow-lg hover:shadow-xl transition-all duration-300">
+            <Button className="w-full bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 font-semibold rounded-xl py-4 text-lg shadow-lg hover:shadow-xl transition-all duration-300 group">
+              <UserPlus className="h-5 w-5 mr-2 group-hover:scale-110 transition-transform" />
               Inscreva-se Agora
             </Button>
 
-            <div className="text-center pt-4 border-t border-gray-200 mt-4">
-              <p className="text-xs text-gray-500">
+            <div className="text-center pt-4 border-t border-gray-200/50 mt-4">
+              <p className="text-xs text-gray-500 flex items-center justify-center gap-2">
                 Salve vidas com um gesto simples • Processo rápido e seguro
               </p>
             </div>
@@ -143,7 +425,7 @@ export function BloodDonationCard() {
         </CardContent>
       </Card>
 
-      <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      <Dialog open={isOpen} onOpenChange={handleModalClose}>
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="text-2xl font-bold text-red-600 flex items-center gap-2">
@@ -152,10 +434,48 @@ export function BloodDonationCard() {
             </DialogTitle>
           </DialogHeader>
 
+          {!showForm && !showConfirmation ? (
+            // Primeiro estágio: Informações sobre a campanha e termos
           <div className="space-y-6">
-            <div className="bg-red-50 p-4 rounded-lg border border-red-200">
-              <h4 className="font-bold text-lg mb-3 text-red-700">🩸 REQUISITOS PARA DOAR SANGUE</h4>
-              <ul className="space-y-2 text-gray-700">
+              {/* Texto inicial sobre a campanha */}
+              <div className="bg-gradient-to-r from-red-50 to-pink-50 p-6 rounded-xl border border-red-200">
+                <h3 className="text-xl font-bold text-red-700 mb-4 flex items-center gap-2">
+                  Sobre a Campanha
+                </h3>
+                <p className="text-gray-700 leading-relaxed mb-4">
+                  Participe da nossa campanha de doação de sangue e ajude a salvar vidas! 
+                  Cada doação pode beneficiar até 4 pessoas e é um gesto de solidariedade que 
+                  faz toda a diferença para quem precisa.
+                </p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                  <div className="flex items-center gap-2 text-gray-600">
+                    <Calendar className="h-4 w-4 text-red-500" />
+                    <span><strong>Data:</strong> 24 e 25 de outubro de 2025</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-gray-600">
+                    <Clock className="h-4 w-4 text-red-500" />
+                    <span><strong>Horário:</strong> Das 8h às 12h</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-gray-600">
+                    <MapPin className="h-4 w-4 text-red-500" />
+                    <span><strong>Local:</strong> A ser confirmado</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-gray-600">
+                    <FileCheck className="h-4 w-4 text-red-500" />
+                    <span><strong>Documento:</strong> Com foto (obrigatório)</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Informações completas sobre doação de sangue */}
+              <div className="space-y-6">
+                {/* Requisitos básicos */}
+                <div className="bg-red-50 p-6 rounded-xl border border-red-200">
+                  <h4 className="font-bold text-lg mb-4 text-red-700 flex items-center gap-2">
+                    <span className="text-xl">🩸</span>
+                    Requisitos para Doar Sangue
+                  </h4>
+                  <ul className="space-y-2 text-gray-700 text-sm">
                 <li className="flex items-start gap-2">
                   <span className="text-red-500 mt-1">•</span>
                   <span>Estar em boas condições de saúde</span>
@@ -195,32 +515,288 @@ export function BloodDonationCard() {
               </ul>
             </div>
 
-            <div className="border-t pt-6">
-              <h4 className="font-bold text-lg mb-4 text-gray-900">Formulário de Inscrição</h4>
+                {/* Intervalo entre doações */}
+                <div className="bg-blue-50 p-6 rounded-xl border border-blue-200">
+                  <h4 className="font-bold text-lg mb-4 text-blue-700 flex items-center gap-2">
+                    <span className="text-xl">🔁</span>
+                    Intervalo entre Doações
+                  </h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="bg-white p-4 rounded-lg border border-blue-100">
+                      <div className="font-semibold text-blue-800 mb-2">Mulheres</div>
+                      <div className="text-sm text-gray-700">
+                        <div className="font-bold text-blue-600">Mínimo de 90 dias</div>
+                        <div className="text-gray-600">(até 3x ao ano)</div>
+                      </div>
+                    </div>
+                    <div className="bg-white p-4 rounded-lg border border-blue-100">
+                      <div className="font-semibold text-blue-800 mb-2">Homens</div>
+                      <div className="text-sm text-gray-700">
+                        <div className="font-bold text-blue-600">Mínimo de 60 dias</div>
+                        <div className="text-gray-600">(até 4x ao ano)</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Impeditivos temporários */}
+                <div className="bg-yellow-50 p-6 rounded-xl border border-yellow-200">
+                  <h4 className="font-bold text-lg mb-4 text-yellow-700 flex items-center gap-2">
+                    <span className="text-xl">⚠️</span>
+                    Impeditivos Temporários
+                  </h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                    <div>
+                      <div className="font-semibold text-gray-800 mb-2">Saúde Geral:</div>
+                      <ul className="space-y-1 text-gray-700">
+                        <li>• Resfriado: aguardar 7 dias após os sintomas</li>
+                        <li>• Gripe com febre: 14 dias após melhora</li>
+                        <li>• Covid-19: 10 dias após recuperação completa</li>
+                        <li>• Alergias ativas: aguardar até desaparecerem</li>
+                        <li>• Infecções bacterianas: 2 semanas após término</li>
+                        <li>• Herpes labial/genital: após desaparecimento das lesões</li>
+                        <li>• Epilepsia: 3 anos após fim do tratamento e sem crises</li>
+                      </ul>
+                    </div>
+                    <div>
+                      <div className="font-semibold text-gray-800 mb-2">Gravidez e Parto:</div>
+                      <ul className="space-y-1 text-gray-700">
+                        <li>• Gravidez</li>
+                        <li>• Parto normal: após 90 dias</li>
+                        <li>• Cesariana: após 180 dias</li>
+                        <li>• Amamentação: após 12 meses do parto</li>
+                      </ul>
+                    </div>
+                    <div>
+                      <div className="font-semibold text-gray-800 mb-2">Procedimentos:</div>
+                      <ul className="space-y-1 text-gray-700">
+                        <li>• Tatuagem/maquiagem definitiva: 12 meses (6 se local seguro)</li>
+                        <li>• Situações de risco para ISTs: 6 a 12 meses</li>
+                        <li>• Piercing oral/genital: 12 meses após retirada</li>
+                        <li>• Procedimento endoscópico: 6 meses</li>
+                        <li>• Extração dentária/canal: mínimo de 7 dias</li>
+                        <li>• Cirurgias: 3 a 6 meses</li>
+                      </ul>
+                    </div>
+                    <div>
+                      <div className="font-semibold text-gray-800 mb-2">Vacinas:</div>
+                      <ul className="space-y-1 text-gray-700">
+                        <li>• Gripe, Hep. B, Coronavac/Covaxin: após 48h</li>
+                        <li>• AstraZeneca, Pfizer, Janssen, Moderna: após 7 dias</li>
+                        <li>• Febre Amarela, Tríplice viral: após 4 semanas</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Impeditivos definitivos */}
+                <div className="bg-red-50 p-6 rounded-xl border border-red-200">
+                  <h4 className="font-bold text-lg mb-4 text-red-700 flex items-center gap-2">
+                    <span className="text-xl">❌</span>
+                    Impeditivos Definitivos
+                  </h4>
+                  <ul className="space-y-2 text-gray-700 text-sm">
+                    <li className="flex items-start gap-2">
+                      <span className="text-red-500 mt-1">•</span>
+                      <span>Teste positivo para HIV, HTLV, Hepatite B ou C</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-red-500 mt-1">•</span>
+                      <span>Hepatite após os 11 anos</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-red-500 mt-1">•</span>
+                      <span>Doença de Chagas</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-red-500 mt-1">•</span>
+                      <span>Câncer ou leucemia</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-red-500 mt-1">•</span>
+                      <span>Diabetes com complicações vasculares ou em uso de insulina</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-red-500 mt-1">•</span>
+                      <span>Bronquite ou asma grave</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-red-500 mt-1">•</span>
+                      <span>AVC</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-red-500 mt-1">•</span>
+                      <span>Tuberculose extrapulmonar</span>
+                    </li>
+                  </ul>
+                  <div className="mt-4 p-3 bg-red-100 rounded-lg border border-red-200">
+                    <p className="text-sm text-red-800">
+                      <span className="font-semibold">🩺</span> Outros critérios podem ser avaliados pelo profissional de triagem.
+                    </p>
+                    <p className="text-sm text-red-800 mt-1">
+                      <span className="font-semibold">Seja sincero</span> — honestidade também salva vidas.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Cuidados pós-doação */}
+                <div className="bg-green-50 p-6 rounded-xl border border-green-200">
+                  <h4 className="font-bold text-lg mb-4 text-green-700 flex items-center gap-2">
+                    <span className="text-xl">🔋</span>
+                    Cuidados Pós-Doação
+                  </h4>
+                  <ul className="space-y-2 text-gray-700 text-sm">
+                    <li className="flex items-start gap-2">
+                      <span className="text-green-500 mt-1">•</span>
+                      <span>Permaneça no hemocentro por <strong>15 minutos</strong> após doar</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-green-500 mt-1">•</span>
+                      <span>Consuma o lanche oferecido antes de sair</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-green-500 mt-1">•</span>
+                      <span>Beba mais líquidos nas próximas 24h</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-green-500 mt-1">•</span>
+                      <span>Evite álcool por 12h e cigarro por 1h</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-green-500 mt-1">•</span>
+                      <span>Mantenha o curativo por 4h; não faça força com o braço da coleta</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-green-500 mt-1">•</span>
+                      <span>Evite esforço físico e esportes por 12h</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-green-500 mt-1">•</span>
+                      <span>Em caso de mal-estar: <strong>sente-se ou deite-se com as pernas elevadas</strong></span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-green-500 mt-1">•</span>
+                      <span>Se os sintomas persistirem, procure o hemocentro ou serviço de saúde</span>
+                    </li>
+                  </ul>
+                </div>
+
+                {/* Atenção */}
+                <div className="bg-orange-50 p-6 rounded-xl border border-orange-200">
+                  <h4 className="font-bold text-lg mb-4 text-orange-700 flex items-center gap-2">
+                    <span className="text-xl">☎️</span>
+                    Atenção
+                  </h4>
+                  <div className="space-y-3 text-sm text-gray-700">
+                    <p>
+                      Se tiver <strong>febre, diarreia ou sintomas infecciosos até 15 dias após doar</strong>, 
+                      informe o hemocentro imediatamente.
+                    </p>
+                    <p>
+                      Se lembrar de <strong>qualquer motivo que impeça o uso do seu sangue</strong>, 
+                      avise o hemocentro o quanto antes — isso protege quem precisa da transfusão.
+                    </p>
+                    <p className="text-orange-700">
+                      📞 Contatos disponíveis na listagem de serviços do hemocentro.
+                    </p>
+                    <p className="text-orange-700">
+                      🌐 <strong>Mais informações:</strong> <a href="https://www.saude.rs.gov.br/doacao-de-sangue" target="_blank" rel="noopener noreferrer" className="underline hover:text-orange-800">www.saude.rs.gov.br/doacao-de-sangue</a>
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Checkbox de confirmação */}
+              <div className="bg-gray-50 p-4 rounded-xl border border-gray-200">
+                <div className="flex items-start gap-3">
+                  <Checkbox
+                    id="terms"
+                    checked={termsAccepted}
+                    onCheckedChange={(checked) => setTermsAccepted(checked as boolean)}
+                    className="mt-1"
+                  />
+                  <div className="flex-1">
+                    <label htmlFor="terms" className="text-sm text-gray-700 cursor-pointer">
+                      <span className="font-semibold">Declaro que li e estou em conformidade</span> com todos os requisitos e termos mencionados acima para a doação de sangue. 
+                      Entendo que é obrigatória a leitura completa dos termos para prosseguir com a inscrição.
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              {/* Botão para prosseguir */}
+              <div className="flex gap-3">
+                <Button
+                  variant="outline"
+                  onClick={handleModalClose}
+                  className="flex-1"
+                >
+                  Cancelar
+                </Button>
+                <Button
+                  onClick={() => setShowForm(true)}
+                  disabled={!termsAccepted}
+                  className="flex-1 bg-red-500 hover:bg-red-600 text-white disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Fazer Inscrição
+                </Button>
+              </div>
+            </div>
+          ) : showForm ? (
+            // Segundo estágio: Formulário de inscrição
+            <div className="space-y-6">
+              {/* Cabeçalho do formulário */}
+              <div className="flex items-center gap-3 pb-4 border-b border-gray-200">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setShowForm(false)}
+                  className="p-2"
+                >
+                  <ArrowLeft className="h-4 w-4" />
+                </Button>
+                <h4 className="text-lg font-semibold text-gray-900">Formulário de Inscrição</h4>
+            </div>
+
               <form onSubmit={handleSubmit} className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="nome_completo">Nome Completo *</Label>
+                    <Label htmlFor="nome_completo" className="text-sm font-medium">
+                      Nome Completo <span className="text-red-500">*</span>
+                    </Label>
                   <Input
                     id="nome_completo"
                     required
                     value={formData.nome_completo}
                     onChange={(e) => handleInputChange('nome_completo', e.target.value)}
+                      className="mt-1"
                   />
                 </div>
 
                 <div>
-                  <Label htmlFor="data_nascimento">Data de Nascimento *</Label>
+                    <Label htmlFor="data_nascimento" className="text-sm font-medium">
+                      Data de Nascimento <span className="text-red-500">*</span>
+                    </Label>
                   <Input
                     id="data_nascimento"
                     type="date"
                     required
                     value={formData.data_nascimento}
                     onChange={(e) => handleInputChange('data_nascimento', e.target.value)}
+                      max="2009-10-25"
+                      className="mt-1"
                   />
+                    <p className="text-xs text-gray-500 mt-1">
+                      Data máxima: 25/10/2009
+                    </p>
+                  </div>
                 </div>
 
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="cpf">CPF *</Label>
+                    <Label htmlFor="cpf" className="text-sm font-medium">
+                      CPF <span className="text-red-500">*</span>
+                    </Label>
                   <Input
                     id="cpf"
                     required
@@ -228,82 +804,211 @@ export function BloodDonationCard() {
                     value={formData.cpf}
                     onChange={(e) => handleInputChange('cpf', e.target.value)}
                     maxLength={14}
-                  />
+                      className="mt-1"
+                    />
+                  </div>
+
+                  <div>
+                    <Label htmlFor="telefone" className="text-sm font-medium">
+                      Telefone <span className="text-red-500">*</span>
+                    </Label>
+                    <Input
+                      id="telefone"
+                      required
+                      placeholder="(00) 00000-0000"
+                      value={formData.telefone}
+                      onChange={(e) => handleInputChange('telefone', e.target.value)}
+                      maxLength={15}
+                      className="mt-1"
+                    />
+                  </div>
                 </div>
 
                 <div>
-                  <Label htmlFor="endereco">Endereço *</Label>
+                  <Label htmlFor="endereco" className="text-sm font-medium">
+                    Endereço Completo <span className="text-red-500">*</span>
+                  </Label>
                   <Input
                     id="endereco"
                     required
                     value={formData.endereco}
                     onChange={(e) => handleInputChange('endereco', e.target.value)}
+                    className="mt-1"
                   />
                 </div>
 
                 <div>
-                  <Label htmlFor="telefone">Telefone *</Label>
-                  <Input
-                    id="telefone"
-                    required
-                    placeholder="(00) 00000-0000"
-                    value={formData.telefone}
-                    onChange={(e) => handleInputChange('telefone', e.target.value)}
-                    maxLength={15}
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="email">E-mail *</Label>
+                  <Label htmlFor="email" className="text-sm font-medium">
+                    E-mail <span className="text-red-500">*</span>
+                  </Label>
                   <Input
                     id="email"
                     type="email"
                     required
                     value={formData.email}
                     onChange={(e) => handleInputChange('email', e.target.value)}
+                    className="mt-1"
                   />
                 </div>
 
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="nome_mae">Nome da Mãe *</Label>
+                    <Label htmlFor="nome_mae" className="text-sm font-medium">
+                      Nome da Mãe <span className="text-red-500">*</span>
+                    </Label>
                   <Input
                     id="nome_mae"
                     required
                     value={formData.nome_mae}
                     onChange={(e) => handleInputChange('nome_mae', e.target.value)}
+                      className="mt-1"
                   />
                 </div>
 
                 <div>
-                  <Label htmlFor="nome_pai">Nome do Pai *</Label>
+                    <Label htmlFor="nome_pai" className="text-sm font-medium">
+                      Nome do Pai <span className="text-red-500">*</span>
+                    </Label>
                   <Input
                     id="nome_pai"
                     required
                     value={formData.nome_pai}
                     onChange={(e) => handleInputChange('nome_pai', e.target.value)}
+                      className="mt-1"
                   />
+                  </div>
                 </div>
 
                 <div>
-                  <Label htmlFor="observacoes">Observações</Label>
+                  <Label htmlFor="observacoes" className="text-sm font-medium">
+                    Observações
+                  </Label>
                   <Textarea
                     id="observacoes"
                     value={formData.observacoes}
                     onChange={(e) => handleInputChange('observacoes', e.target.value)}
                     rows={3}
+                    maxLength={100}
+                    className="mt-1"
+                    placeholder="Informações adicionais que considere relevantes..."
                   />
+                  <p className="text-xs text-gray-500 mt-1">
+                    {formData.observacoes.length}/100 caracteres
+                  </p>
                 </div>
 
+                <div className="flex gap-3 pt-4">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => setShowForm(false)}
+                    className="flex-1"
+                  >
+                    Voltar
+                  </Button>
                 <Button
                   type="submit"
-                  className="w-full bg-red-500 hover:bg-red-600 text-white"
+                    className="flex-1 bg-red-500 hover:bg-red-600 text-white"
                   disabled={isSubmitting}
                 >
                   {isSubmitting ? 'Enviando...' : 'Confirmar Inscrição'}
                 </Button>
+                </div>
               </form>
             </div>
+          ) : (
+            // Terceiro estágio: Confirmação e PDF
+            <div className="space-y-6">
+              {/* Cabeçalho da confirmação */}
+              <div className="flex items-center gap-3 pb-4 border-b border-gray-200">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setShowForm(true)}
+                  className="p-2"
+                >
+                  <ArrowLeft className="h-4 w-4" />
+                </Button>
+                <h4 className="text-lg font-semibold text-gray-900">Confirmação de Inscrição</h4>
+              </div>
+
+              {/* Mensagem de sucesso */}
+              <div className="bg-green-50 p-6 rounded-xl border border-green-200">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="p-2 bg-green-100 rounded-full flex items-center justify-center">
+                    <CheckCircle className="h-5 w-5 text-green-600" />
+                  </div>
+                  <h3 className="text-lg font-bold text-green-700">Inscrição Recebida!</h3>
+                </div>
+                <p className="text-green-700 leading-relaxed">
+                  Sua inscrição para a campanha de doação de sangue foi realizada com sucesso! 
+                  A apresentação da confirmação não é necessária, mas ajudará na agilidade do processo.
+                </p>
+                <div className="mt-4 p-3 bg-white rounded-lg border border-green-200">
+                  <p className="text-sm text-gray-600">
+                    <strong>Código de Inscrição:</strong> {registrationId}
+                  </p>
+                </div>
+              </div>
+
+              {/* Seção do PDF */}
+              <div className="bg-gray-50 p-6 rounded-xl border border-gray-200">
+                <div className="flex items-center gap-3 mb-4">
+                  <FileText className="h-5 w-5 text-gray-600" />
+                  <h4 className="text-lg font-semibold text-gray-900">Confirmação em PDF</h4>
+                </div>
+                
+                <p className="text-gray-600 mb-4">
+                  Você pode visualizar ou baixar sua confirmação em PDF com todos os seus dados e orientações.
+                </p>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <Button
+                    onClick={handleViewPDF}
+                    variant="outline"
+                    className="flex items-center gap-2"
+                  >
+                    <Eye className="h-4 w-4" />
+                    Visualizar PDF
+                  </Button>
+                  
+                  <Button
+                    onClick={handleDownloadPDF}
+                    className="flex items-center gap-2 bg-red-500 hover:bg-red-600 text-white"
+                  >
+                    <Download className="h-4 w-4" />
+                    Baixar PDF
+                  </Button>
+                </div>
+
+                <div className="mt-4 p-4 bg-white rounded-lg border border-gray-200">
+                  <h5 className="font-semibold text-gray-800 mb-2">O que contém o PDF:</h5>
+                  <ul className="text-sm text-gray-600 space-y-1">
+                    <li>• Dados pessoais da inscrição</li>
+                    <li>• Orientações importantes</li>
+                    <li>• Identificador único</li>
+                  </ul>
+                </div>
+              </div>
+
+              {/* Botões de ação */}
+              <div className="flex gap-3 pt-4">
+                <Button
+                  variant="outline"
+                  onClick={() => setShowForm(true)}
+                  className="flex-1"
+                >
+                  Voltar ao Formulário
+                </Button>
+                <Button
+                  onClick={handleModalClose}
+                  className="flex-1 bg-red-500 hover:bg-red-600 text-white"
+                >
+                  Finalizar
+                </Button>
+            </div>
           </div>
+          )}
         </DialogContent>
       </Dialog>
     </>

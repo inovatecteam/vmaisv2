@@ -21,7 +21,7 @@ export function UcergsFundraisingCard() {
             <CardTitle className="text-2xl font-bold text-gray-900">
               Arrecadação para a UCERGS
             </CardTitle>
-            <Badge className="bg-blue-100 text-blue-700 mt-1">
+            <Badge className="bg-yellow-100 text-yellow-700 mt-1">
               Campanha Especial
             </Badge>
           </div>
@@ -60,13 +60,13 @@ export function UcergsFundraisingCard() {
               Por que sua ajuda é importante?
             </h3>
             <p className="text-sm text-gray-600 leading-relaxed">
-              Há mais de 40 anos, a UCERGS promove a habilitação e reabilitação de pessoas cegas. A impressora braille Índex DV5 permite imprimir livros e textos táteis, garantindo acesso à alfabetização, cultura e oportunidades. Um móvel adequado reduzirá o ruído e protegerá o equipamento, assegurando sua durabilidade.
+            A UCERGS há mais de 40 anos habilita e reabilita pessoas cegas. A impressora braille Índex DV5 imprime livros e textos táteis, garantindo acesso à alfabetização. Um móvel adequado reduz ruído e protege o equipamento, assegurando sua durabilidade.
             </p>
           </div>
 
-          <div className="bg-blue-50 p-4 rounded-xl border border-blue-100">
-            <h4 className="font-semibold text-blue-800 mb-2">Impacto esperado:</h4>
-            <ul className="text-sm text-blue-700 space-y-1">
+          <div className="bg-yellow-50 p-4 rounded-xl border border-yellow-200">
+            <h4 className="font-semibold text-yellow-800 mb-2">Impacto esperado:</h4>
+            <ul className="text-sm text-yellow-700 space-y-1">
               <li>• Expansão da produção de livros e materiais em braille</li>
               <li>• Proteção contra desgaste e danos ambientais</li>
               <li>• Mais eficiência no atendimento da comunidade</li>
