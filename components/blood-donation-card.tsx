@@ -34,7 +34,9 @@ export function BloodDonationCard() {
     nome_mae: '',
     nome_pai: '',
     horario_selecionado: '',
-    observacoes: ''
+    observacoes: '',
+    participando_batalha: 'não',
+    turma_batalha: ''
   });
 
   const formatCPF = (value: string) => {
@@ -91,6 +93,13 @@ export function BloodDonationCard() {
       return;
     }
 
+    // Validar turma da batalha se participando
+    if (formData.participando_batalha === 'sim' && !formData.turma_batalha) {
+      toast.error('Por favor, selecione sua turma para a Batalha dos Farroups.');
+      setIsSubmitting(false);
+      return;
+    }
+
     try {
       const { error } = await supabase
         .from('blood_donation_registrations')
@@ -107,7 +116,12 @@ export function BloodDonationCard() {
       setShowConfirmation(true);
     } catch (error) {
       console.error('Error submitting registration:', error);
-      toast.error('Erro ao realizar inscrição. Tente novamente.');
+      console.error('Error details:', JSON.stringify(error, null, 2));
+      console.error('Form data being submitted:', formData);
+      
+      // Mostrar mensagem de erro mais específica
+      const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
+      toast.error(`Erro ao realizar inscrição: ${errorMessage}`);
     } finally {
       setIsSubmitting(false);
     }
@@ -130,7 +144,9 @@ export function BloodDonationCard() {
         nome_mae: '',
         nome_pai: '',
       horario_selecionado: '',
-        observacoes: ''
+      observacoes: '',
+      participando_batalha: 'não',
+      turma_batalha: ''
     });
   };
 
@@ -203,6 +219,14 @@ export function BloodDonationCard() {
         pdf.text('Voluntaria+', 20, 20);
       }
       
+      // Adicionar informação da turma no canto superior direito (se participando da batalha)
+      if (formData.participando_batalha === 'sim' && formData.turma_batalha) {
+        pdf.setTextColor(255, 255, 255);
+        pdf.setFontSize(12);
+        pdf.setFont('helvetica', 'bold');
+        pdf.text(`Turma ${formData.turma_batalha}`, 167, 20);
+      }
+      
       // Título do documento
       pdf.setTextColor(0, 0, 0);
       pdf.setFontSize(16);
@@ -213,7 +237,7 @@ export function BloodDonationCard() {
       pdf.setFontSize(12);
       pdf.setFont('helvetica', 'normal');
       
-      const yStart = 70;
+      const yStart = 64;
       let yPos = yStart;
       
       pdf.text(`Nome: ${formData.nome_completo}`, 20, yPos);
@@ -246,6 +270,12 @@ export function BloodDonationCard() {
       pdf.text(`Horário Selecionado: ${diaFormatado}, ${horario}`, 20, yPos);
       yPos += 10;
       pdf.text(`Local: Colégio Farroupilha, Jardim de Infância – Rua Carlos Huber, 425`, 20, yPos);
+      yPos += 10;
+      
+      // Adicionar observações se preenchidas
+      if (formData.observacoes && formData.observacoes.trim()) { 
+        pdf.text(`Observações: ${formData.observacoes}`, 20, yPos);
+      }
 
       yPos += 20;
       
@@ -253,7 +283,7 @@ export function BloodDonationCard() {
       pdf.setFontSize(14);
       pdf.setFont('helvetica', 'bold');
       pdf.text('Orientações Importantes:', 20, yPos);
-      yPos += 15;
+      yPos += 10;
       
       pdf.setFontSize(10);
       pdf.setFont('helvetica', 'normal');
@@ -261,18 +291,22 @@ export function BloodDonationCard() {
       const instructions = [
 "No dia da coleta, leve documento oficial com foto, não esteja em jejum e evite alimentos gordurosos nas 3 horas anteriores.",
 "Durma ao menos 6 horas nas últimas 24h, mantenha-se hidratado e não consuma bebida alcoólica nas 12 horas anteriores.",
-"Permaneça no hemocentro por pelo menos 15 minutos após doar; evite esforço físico, esportes e carregar peso por 12 horas.",
+"Após doar, evite esforço físico, esportes e carregar peso por 12 horas.",
 "Se apresentar febre, diarreia ou sintomas infecciosos até 15 dias após a doação, comunique imediatamente o hemocentro.",
 "Seja sincero na triagem — informações corretas protegem pacientes. Mais informações: https://saude.rs.gov.br/doacao-de-sangue"
       ];
       
-      instructions.forEach((instruction, index) => {
-        const lines = pdf.splitTextToSize(`${index + 1}. ${instruction}`, 170);
-        lines.forEach((line: string) => {
-          pdf.text(line, 20, yPos);
-          yPos += 5;
-        });
-        yPos += 3;
+      instructions.forEach((instruction) => {
+        if (instruction.trim() === "") {
+          yPos += 5; // Espaço extra para linhas vazias
+        } else {
+          const lines = pdf.splitTextToSize(instruction, 170);
+          lines.forEach((line: string) => {
+            pdf.text(line, 20, yPos);
+            yPos += 5;
+          });
+          yPos += 2;
+        }
       });
       
       yPos += 20;
@@ -813,6 +847,7 @@ export function BloodDonationCard() {
                   <Input
                     id="nome_completo"
                     required
+                    maxLength={50}
                     value={formData.nome_completo}
                     onChange={(e) => handleInputChange('nome_completo', e.target.value)}
                       className="mt-1"
@@ -877,6 +912,7 @@ export function BloodDonationCard() {
                   <Input
                     id="endereco"
                     required
+                    maxLength={50}
                     value={formData.endereco}
                     onChange={(e) => handleInputChange('endereco', e.target.value)}
                     className="mt-1"
@@ -891,6 +927,7 @@ export function BloodDonationCard() {
                     id="email"
                     type="email"
                     required
+                    maxLength={50}
                     value={formData.email}
                     onChange={(e) => handleInputChange('email', e.target.value)}
                     className="mt-1"
@@ -905,6 +942,7 @@ export function BloodDonationCard() {
                   <Input
                     id="nome_mae"
                     required
+                    maxLength={50}
                     value={formData.nome_mae}
                     onChange={(e) => handleInputChange('nome_mae', e.target.value)}
                       className="mt-1"
@@ -918,6 +956,7 @@ export function BloodDonationCard() {
                   <Input
                     id="nome_pai"
                     required
+                    maxLength={50}
                     value={formData.nome_pai}
                     onChange={(e) => handleInputChange('nome_pai', e.target.value)}
                       className="mt-1"
@@ -993,6 +1032,63 @@ export function BloodDonationCard() {
                   <p className="text-xs text-gray-500 mt-1">
                     {formData.observacoes.length}/100 caracteres
                   </p>
+                </div>
+
+                {/* Campo Batalha dos Farroups */}
+                <div>
+                  <Label className="text-sm font-medium">
+                    Estou participando da Batalha dos Farroups <span className="text-red-500">*</span>
+                  </Label>
+                  <div className="mt-2 flex gap-4">
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input
+                        type="radio"
+                        name="participando_batalha"
+                        value="não"
+                        checked={formData.participando_batalha === 'não'}
+                        onChange={(e) => setFormData({...formData, participando_batalha: e.target.value, turma_batalha: ''})}
+                        className="text-red-500"
+                      />
+                      <span className="text-sm">Não</span>
+                    </label>
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input
+                        type="radio"
+                        name="participando_batalha"
+                        value="sim"
+                        checked={formData.participando_batalha === 'sim'}
+                        onChange={(e) => setFormData({...formData, participando_batalha: e.target.value})}
+                        className="text-red-500"
+                      />
+                      <span className="text-sm">Sim</span>
+                    </label>
+                  </div>
+                  
+                  {/* Seleção de turma - aparece apenas se "Sim" for selecionado */}
+                  {formData.participando_batalha === 'sim' && (
+                    <div className="mt-4">
+                      <Label className="text-sm font-medium">
+                        Turma <span className="text-red-500">*</span>
+                      </Label>
+                      <div className="mt-2 grid grid-cols-3 md:grid-cols-6 gap-2">
+                        {['9A', '9B', '9C', '9D', '9E', '9F'].map((turma) => (
+                          <Button
+                            key={turma}
+                            type="button"
+                            variant={formData.turma_batalha === turma ? 'default' : 'outline'}
+                            onClick={() => setFormData({...formData, turma_batalha: turma})}
+                            className={`text-sm py-2 ${
+                              formData.turma_batalha === turma 
+                                ? 'bg-red-500 hover:bg-red-600 text-white' 
+                                : 'border-red-200 text-red-600 hover:bg-red-50'
+                            }`}
+                          >
+                            {turma}
+                          </Button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 <div className="flex gap-3 pt-4">
