@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Droplet, Calendar, Clock, MapPin, ArrowLeft, Download, Eye, FileText, CheckCircle, Heart, Users, Shield, Zap, FileCheck, UserPlus } from 'lucide-react';
+import { Droplet, Calendar, Clock, MapPin, ArrowLeft, Download, Eye, FileText, CheckCircle, Heart, Users, Shield, Zap, FileCheck, UserPlus, Copy } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
 import jsPDF from 'jspdf';
@@ -23,6 +23,7 @@ export function BloodDonationCard() {
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [registrationId, setRegistrationId] = useState<string>('');
+  const [pdfBlob, setPdfBlob] = useState<string>('');
   const [formData, setFormData] = useState({
     nome_completo: '',
     data_nascimento: '',
@@ -32,6 +33,7 @@ export function BloodDonationCard() {
     email: '',
     nome_mae: '',
     nome_pai: '',
+    horario_selecionado: '',
     observacoes: ''
   });
 
@@ -82,6 +84,13 @@ export function BloodDonationCard() {
       return;
     }
 
+    // Validar horário selecionado
+    if (!formData.horario_selecionado) {
+      toast.error('Por favor, selecione um horário para a doação.');
+      setIsSubmitting(false);
+      return;
+    }
+
     try {
       const { error } = await supabase
         .from('blood_donation_registrations')
@@ -110,6 +119,7 @@ export function BloodDonationCard() {
     setShowConfirmation(false);
     setTermsAccepted(false);
     setRegistrationId('');
+    setPdfBlob('');
       setFormData({
         nome_completo: '',
         data_nascimento: '',
@@ -119,8 +129,9 @@ export function BloodDonationCard() {
         email: '',
         nome_mae: '',
         nome_pai: '',
+      horario_selecionado: '',
         observacoes: ''
-      });
+    });
   };
 
   const generateBarcode = (text: string): string => {
@@ -161,7 +172,7 @@ export function BloodDonationCard() {
       const pdf = new jsPDF();
       
       // Header com logo
-      pdf.setFillColor(220, 38, 38); // Vermelho
+      pdf.setFillColor(239, 68, 68); // Vermelho
       pdf.rect(0, 0, 210, 30, 'F');
       
       // Logo branco
@@ -180,7 +191,7 @@ export function BloodDonationCard() {
         });
         
         // Adicionar logo com dimensões apropriadas (mantendo proporção)
-        const logoWidth = 60;
+        const logoWidth = 57;
         const logoHeight = 30;
         pdf.addImage(logoImg, 'PNG', 18, 2, logoWidth, logoHeight);
       } catch (error) {
@@ -207,7 +218,14 @@ export function BloodDonationCard() {
       
       pdf.text(`Nome: ${formData.nome_completo}`, 20, yPos);
       yPos += 10;
-      pdf.text(`Data de Nascimento: ${formData.data_nascimento}`, 20, yPos);
+      
+      // Formatar data de nascimento para dd/mm/aaaa
+      const formatDate = (dateString: string) => {
+        const [year, month, day] = dateString.split('-');
+        return `${day}/${month}/${year}`;
+      };
+      
+      pdf.text(`Data de Nascimento: ${formatDate(formData.data_nascimento)}`, 20, yPos);
       yPos += 10;
       pdf.text(`CPF: ${formData.cpf}`, 20, yPos);
       yPos += 10;
@@ -220,6 +238,15 @@ export function BloodDonationCard() {
       pdf.text(`Nome da Mãe: ${formData.nome_mae}`, 20, yPos);
       yPos += 10;
       pdf.text(`Nome do Pai: ${formData.nome_pai}`, 20, yPos);
+      yPos += 10;
+      
+      // Formatar e exibir horário selecionado
+      const [dia, horario] = formData.horario_selecionado.split('-');
+      const diaFormatado = dia === '24' ? '24 de outubro de 2025' : '25 de outubro de 2025';
+      pdf.text(`Horário Selecionado: ${diaFormatado}, ${horario}`, 20, yPos);
+      yPos += 10;
+      pdf.text(`Local: Colégio Farroupilha, Jardim de Infância – Rua Carlos Huber, 425`, 20, yPos);
+
       yPos += 20;
       
       // Orientações (Lorem Ipsum)
@@ -232,12 +259,11 @@ export function BloodDonationCard() {
       pdf.setFont('helvetica', 'normal');
       
       const instructions = [
-        'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
-        'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
-        'Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.',
-        'Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
-        'Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium.',
-        'Totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.'
+"No dia da coleta, leve documento oficial com foto, não esteja em jejum e evite alimentos gordurosos nas 3 horas anteriores.",
+"Durma ao menos 6 horas nas últimas 24h, mantenha-se hidratado e não consuma bebida alcoólica nas 12 horas anteriores.",
+"Permaneça no hemocentro por pelo menos 15 minutos após doar; evite esforço físico, esportes e carregar peso por 12 horas.",
+"Se apresentar febre, diarreia ou sintomas infecciosos até 15 dias após a doação, comunique imediatamente o hemocentro.",
+"Seja sincero na triagem — informações corretas protegem pacientes. Mais informações: https://saude.rs.gov.br/doacao-de-sangue"
       ];
       
       instructions.forEach((instruction, index) => {
@@ -246,7 +272,7 @@ export function BloodDonationCard() {
           pdf.text(line, 20, yPos);
           yPos += 5;
         });
-        yPos += 5;
+        yPos += 3;
       });
       
       yPos += 20;
@@ -269,7 +295,7 @@ export function BloodDonationCard() {
       
       // Footer
       const pageHeight = pdf.internal.pageSize.height;
-      pdf.setFillColor(220, 38, 38);
+      pdf.setFillColor(239, 68, 68);
       pdf.rect(0, pageHeight - 20, 210, 20, 'F');
       
       pdf.setTextColor(255, 255, 255);
@@ -290,9 +316,22 @@ export function BloodDonationCard() {
     }
   };
 
-  const handleDownloadPDF = async () => {
+  const generateAndStorePDF = async () => {
     try {
       const pdf = await generatePDF();
+      const pdfBlob = pdf.output('blob');
+      const pdfUrl = URL.createObjectURL(pdfBlob);
+      setPdfBlob(pdfUrl);
+      return pdf;
+    } catch (error) {
+      console.error('Erro ao gerar PDF:', error);
+      throw error;
+    }
+  };
+
+  const handleDownloadPDF = async () => {
+    try {
+      const pdf = await generateAndStorePDF();
       pdf.save(`confirmacao_doacao_sangue_${registrationId}.pdf`);
       toast.success('PDF baixado com sucesso!');
     } catch (error) {
@@ -300,14 +339,21 @@ export function BloodDonationCard() {
     }
   };
 
-  const handleViewPDF = async () => {
+  // Gerar PDF automaticamente quando a confirmação for exibida
+  useEffect(() => {
+    if (showConfirmation && registrationId) {
+      generateAndStorePDF().catch(error => {
+        console.error('Erro ao gerar PDF para visualização:', error);
+      });
+    }
+  }, [showConfirmation, registrationId]);
+
+  const handleCopyCode = async () => {
     try {
-      const pdf = await generatePDF();
-      const pdfBlob = pdf.output('blob');
-      const pdfUrl = URL.createObjectURL(pdfBlob);
-      window.open(pdfUrl, '_blank');
+      await navigator.clipboard.writeText(registrationId);
+      toast.success('Código copiado para a área de transferência!');
     } catch (error) {
-      toast.error('Erro ao visualizar PDF. Tente novamente.');
+      toast.error('Erro ao copiar código. Tente novamente.');
     }
   };
 
@@ -391,8 +437,8 @@ export function BloodDonationCard() {
                   <MapPin className="h-5 w-5 text-red-500" />
                 </div>
                 <div>
-                  <div className="font-semibold text-gray-900">Local a ser confirmado</div>
-                  <div className="text-sm text-gray-600">Informações em breve</div>
+                  <div className="font-semibold text-gray-900">Colégio Farroupilha</div>
+                  <div className="text-sm text-gray-600">Entrada Jardim de Infância</div>
                 </div>
               </div>
               
@@ -458,7 +504,7 @@ export function BloodDonationCard() {
                   </div>
                   <div className="flex items-center gap-2 text-gray-600">
                     <MapPin className="h-4 w-4 text-red-500" />
-                    <span><strong>Local:</strong> A ser confirmado</span>
+                    <span><strong>Local:</strong> Colégio Farroupilha</span>
                   </div>
                   <div className="flex items-center gap-2 text-gray-600">
                     <FileCheck className="h-4 w-4 text-red-500" />
@@ -879,6 +925,58 @@ export function BloodDonationCard() {
                   </div>
                 </div>
 
+                {/* Seleção de horário */}
+                <div>
+                  <Label className="text-sm font-medium">
+                    Horário de Preferência <span className="text-red-500">*</span>
+                  </Label>
+                  <div className="mt-2 space-y-4">
+                    {/* 24 de outubro */}
+                    <div>
+                      <h4 className="font-semibold text-gray-800 mb-3">24 de outubro de 2025</h4>
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                        {['8h-9h', '9h-10h', '10h-11h', '11h-12h'].map((horario) => (
+                          <Button
+                            key={`24-${horario}`}
+                            type="button"
+                            variant={formData.horario_selecionado === `24-${horario}` ? 'default' : 'outline'}
+                            onClick={() => setFormData({...formData, horario_selecionado: `24-${horario}`})}
+                            className={`text-sm py-2 ${
+                              formData.horario_selecionado === `24-${horario}` 
+                                ? 'bg-red-500 hover:bg-red-600 text-white' 
+                                : 'border-red-200 text-red-600 hover:bg-red-50'
+                            }`}
+                          >
+                            {horario}
+                          </Button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* 25 de outubro */}
+                    <div>
+                      <h4 className="font-semibold text-gray-800 mb-3">25 de outubro de 2025</h4>
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                        {['8h-9h', '9h-10h', '10h-11h', '11h-12h'].map((horario) => (
+                          <Button
+                            key={`25-${horario}`}
+                            type="button"
+                            variant={formData.horario_selecionado === `25-${horario}` ? 'default' : 'outline'}
+                            onClick={() => setFormData({...formData, horario_selecionado: `25-${horario}`})}
+                            className={`text-sm py-2 ${
+                              formData.horario_selecionado === `25-${horario}` 
+                                ? 'bg-red-500 hover:bg-red-600 text-white' 
+                                : 'border-red-200 text-red-600 hover:bg-red-50'
+                            }`}
+                          >
+                            {horario}
+                          </Button>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
                 <div>
                   <Label htmlFor="observacoes" className="text-sm font-medium">
                     Observações
@@ -945,9 +1043,19 @@ export function BloodDonationCard() {
                   A apresentação da confirmação não é necessária, mas ajudará na agilidade do processo.
                 </p>
                 <div className="mt-4 p-3 bg-white rounded-lg border border-green-200">
-                  <p className="text-sm text-gray-600">
-                    <strong>Código de Inscrição:</strong> {registrationId}
-                  </p>
+                  <div className="flex items-center justify-between">
+                    <p className="text-sm text-gray-600">
+                      <strong>Código de Inscrição:</strong> {registrationId}
+                    </p>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={handleCopyCode}
+                      className="p-2 hover:bg-gray-100 transition-colors"
+                    >
+                      <Copy className="h-4 w-4 text-gray-500 hover:text-gray-700" />
+                    </Button>
+                  </div>
                 </div>
               </div>
 
@@ -959,35 +1067,37 @@ export function BloodDonationCard() {
                 </div>
                 
                 <p className="text-gray-600 mb-4">
-                  Você pode visualizar ou baixar sua confirmação em PDF com todos os seus dados e orientações.
+                  Baixe sua confirmação em PDF com todos os seus dados e orientações.
                 </p>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  <Button
-                    onClick={handleViewPDF}
-                    variant="outline"
-                    className="flex items-center gap-2"
-                  >
-                    <Eye className="h-4 w-4" />
-                    Visualizar PDF
-                  </Button>
-                  
-                  <Button
-                    onClick={handleDownloadPDF}
-                    className="flex items-center gap-2 bg-red-500 hover:bg-red-600 text-white"
-                  >
-                    <Download className="h-4 w-4" />
-                    Baixar PDF
-                  </Button>
-                </div>
+                {/* Botão de download em largura completa */}
+                <Button
+                  onClick={handleDownloadPDF}
+                  className="w-full flex items-center justify-center gap-2 bg-red-500 hover:bg-red-600 text-white py-3"
+                >
+                  <Download className="h-4 w-4" />
+                  Baixar PDF
+                </Button>
 
-                <div className="mt-4 p-4 bg-white rounded-lg border border-gray-200">
-                  <h5 className="font-semibold text-gray-800 mb-2">O que contém o PDF:</h5>
-                  <ul className="text-sm text-gray-600 space-y-1">
-                    <li>• Dados pessoais da inscrição</li>
-                    <li>• Orientações importantes</li>
-                    <li>• Identificador único</li>
-                  </ul>
+                {/* Visualização do PDF real */}
+                <div className="mt-6">
+                  <h5 className="font-semibold text-gray-800 mb-3">Visualização do Documento:</h5>
+                  <div className="bg-gray-100 rounded-lg border border-gray-200 overflow-hidden">
+                    {pdfBlob ? (
+                      <iframe
+                        src={pdfBlob}
+                        className="w-full h-96 border-0"
+                        title="Confirmação de Inscrição - PDF"
+                      />
+                    ) : (
+                      <div className="h-96 flex items-center justify-center text-gray-500">
+                        <div className="text-center">
+                          <FileText className="h-12 w-12 mx-auto mb-4 text-gray-300" />
+                          <p>Gerando documento...</p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
 
