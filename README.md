@@ -86,8 +86,8 @@ Conta no Google Cloud (para Maps API)
 
 ```bash
 # Clone o repositório
-git clone https://github.com/peddrof/vmaisv2
-cd voluntaria-plus
+  git clone https://github.com/inovatecteam/vmaisv2
+cd voluntaria-mais
 
 # Instale as dependências
 npm install

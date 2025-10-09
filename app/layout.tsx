@@ -33,7 +33,7 @@ export const metadata: Metadata = {
     title: 'Voluntaria+ | Conectando ONGs e Voluntários',
     description: 'Transforme vidas através do voluntariado. Conecte-se com ONGs e faça a diferença na sua comunidade.',
     type: 'website',
-    url: 'https://voluntariaplus.com',
+    url: 'https://voluntariamais.com.br',
     siteName: 'Voluntaria+',
     images: [
       {

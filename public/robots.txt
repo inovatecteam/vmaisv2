@@ -5,7 +5,7 @@ Allow: /
 Disallow: /admin/
 
 # Sitemap
-Sitemap: https://voluntariaplus.com/sitemap.xml
+Sitemap: https:///sitemap.xml
 
 # Disallow admin or sensitive areas (if any)
 # Disallow: /admin/
