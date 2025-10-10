@@ -202,4 +202,4 @@ Para suporte e dúvidas:
 
 ---
 
-**Voluntaria+** - Conectando corações e causas para um mundo melhor 💛
+**Voluntaria+** | Conectando corações e causas para um mundo melhor 💛
