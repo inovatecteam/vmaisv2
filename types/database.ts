@@ -130,6 +130,55 @@ export interface Database {
           timestamp?: string
         }
       }
+      blood_donation_registrations: {
+        Row: {
+          id: string
+          nome_completo: string
+          data_nascimento: string
+          cpf: string
+          endereco: string
+          telefone: string
+          email: string
+          nome_mae: string
+          nome_pai: string
+          observacoes: string | null
+          horario_selecionado: string
+          participando_batalha: string
+          turma_batalha: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          nome_completo: string
+          data_nascimento: string
+          cpf: string
+          endereco: string
+          telefone: string
+          email: string
+          nome_mae: string
+          nome_pai: string
+          observacoes?: string | null
+          horario_selecionado: string
+          participando_batalha: string
+          turma_batalha?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          nome_completo?: string
+          data_nascimento?: string
+          cpf?: string
+          endereco?: string
+          telefone?: string
+          email?: string
+          nome_mae?: string
+          nome_pai?: string
+          observacoes?: string | null
+          horario_selecionado?: string
+          participando_batalha?: string
+          turma_batalha?: string | null
+        }
+      }
     }
     Views: {
       [_ in never]: never

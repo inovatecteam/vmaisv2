@@ -11,6 +11,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Droplet, Calendar, Clock, MapPin, ArrowLeft, Download, Eye, FileText, CheckCircle, Heart, Users, Shield, Zap, FileCheck, UserPlus, Copy } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
+import { testSupabaseConnection } from '@/lib/utils';
 import { toast } from 'sonner';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
@@ -101,9 +102,25 @@ export function BloodDonationCard() {
     }
 
     try {
+      // Test Supabase connection first
+      const connectionTest = await testSupabaseConnection();
+      if (!connectionTest.success) {
+        console.error('Supabase connection test failed:', connectionTest);
+        toast.error(`Erro de conexão: ${connectionTest.error}`);
+        return;
+      }
+
+      // Prepare data for insertion, ensuring turma_batalha is null when not participating
+      const insertData = {
+        ...formData,
+        turma_batalha: formData.participando_batalha === 'sim' ? formData.turma_batalha : null
+      };
+
+      console.log('Attempting to insert data:', insertData);
+
       const { error } = await supabase
         .from('blood_donation_registrations')
-        .insert([formData]);
+        .insert([insertData]);
 
       if (error) throw error;
 
@@ -120,7 +137,22 @@ export function BloodDonationCard() {
       console.error('Form data being submitted:', formData);
       
       // Mostrar mensagem de erro mais específica
-      const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
+      let errorMessage = 'Erro desconhecido';
+      
+      if (error && typeof error === 'object') {
+        if ('message' in error && typeof error.message === 'string') {
+          errorMessage = error.message;
+        } else if ('details' in error && typeof error.details === 'string') {
+          errorMessage = error.details;
+        } else if ('hint' in error && typeof error.hint === 'string') {
+          errorMessage = error.hint;
+        } else {
+          errorMessage = JSON.stringify(error);
+        }
+      } else if (typeof error === 'string') {
+        errorMessage = error;
+      }
+      
       toast.error(`Erro ao realizar inscrição: ${errorMessage}`);
     } finally {
       setIsSubmitting(false);

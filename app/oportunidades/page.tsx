@@ -268,9 +268,10 @@ export default function CatalogoPage() {
           </div>
 
           {/* Campanhas Especiais */}
-          <div className="mb-8 grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6">
-            <BloodDonationCard />
-            <UcergsFundraisingCard />
+          <div className="mb-8 flex justify-center">
+            <div className="w-full max-w-2xl">
+              <UcergsFundraisingCard />
+            </div>
           </div>
 
            {/* Filtros */}
