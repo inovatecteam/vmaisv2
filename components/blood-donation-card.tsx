@@ -463,7 +463,7 @@ export function BloodDonationCard() {
           </div>
 
           <p className="text-white/90 text-lg leading-relaxed mb-6">
-            Participe da nossa campanha e ajude a salvar vidas! Cada doação pode beneficiar até 4 pessoas. Esta é uma parceria inédita entre Voluntaria+, Grêmio Estudantil do Colégio Farroupilha e Hemocentro do RS.
+            Participe e ajude a salvar vidas! Cada doação pode beneficiar até 4 pessoas. Esta é uma parceria inédita entre Voluntaria+, Grêmio Estudantil do Colégio Farroupilha e Hemocentro do RS.
           </p>
 
           {/* Estatísticas visuais */}
