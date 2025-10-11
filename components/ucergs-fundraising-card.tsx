@@ -153,14 +153,6 @@ export function UcergsFundraisingCard() {
               </li>
               <li className="flex items-start">
                 <span className="text-yellow-600 mr-2 mt-0.5">•</span>
-                <span>Proteção contra desgaste e danos ambientais</span>
-              </li>
-              <li className="flex items-start">
-                <span className="text-yellow-600 mr-2 mt-0.5">•</span>
-                <span>Mais eficiência no atendimento da comunidade</span>
-              </li>
-              <li className="flex items-start">
-                <span className="text-yellow-600 mr-2 mt-0.5">•</span>
                 <span>Fortalecimento da autonomia e inclusão social</span>
               </li>
             </ul>
