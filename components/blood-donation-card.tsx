@@ -77,12 +77,12 @@ export function BloodDonationCard() {
     e.preventDefault();
     setIsSubmitting(true);
 
-    // Validar data de nascimento (não permitir datas após 25/10/2009)
+    // Validar data de nascimento (não permitir datas após 30/10/2009)
     const birthDate = new Date(formData.data_nascimento);
-    const maxDate = new Date('2009-10-25');
+    const maxDate = new Date('2009-10-30');
     
     if (birthDate > maxDate) {
-      toast.error('A data de nascimento não pode ser posterior a 25/10/2009.');
+      toast.error('A data de nascimento não pode ser posterior a 30/10/2009.');
       setIsSubmitting(false);
       return;
     }
@@ -133,6 +133,9 @@ export function BloodDonationCard() {
       setShowConfirmation(true);
     } catch (error) {
       console.error('Error submitting registration:', error);
+      console.error('Error type:', typeof error);
+      console.error('Error constructor:', error?.constructor?.name);
+      console.error('Error keys:', error ? Object.keys(error) : 'No keys');
       console.error('Error details:', JSON.stringify(error, null, 2));
       console.error('Form data being submitted:', formData);
       
@@ -146,11 +149,20 @@ export function BloodDonationCard() {
           errorMessage = error.details;
         } else if ('hint' in error && typeof error.hint === 'string') {
           errorMessage = error.hint;
+        } else if ('code' in error && typeof error.code === 'string') {
+          errorMessage = `Erro ${error.code}`;
         } else {
-          errorMessage = JSON.stringify(error);
+          // Tentar serializar o erro de forma mais robusta
+          try {
+            errorMessage = JSON.stringify(error, Object.getOwnPropertyNames(error));
+          } catch (serializationError) {
+            errorMessage = `Erro: ${error.toString()}`;
+          }
         }
       } else if (typeof error === 'string') {
         errorMessage = error;
+      } else if (error) {
+        errorMessage = error.toString();
       }
       
       toast.error(`Erro ao realizar inscrição: ${errorMessage}`);
@@ -298,7 +310,7 @@ export function BloodDonationCard() {
       
       // Formatar e exibir horário selecionado
       const [dia, horario] = formData.horario_selecionado.split('-');
-      const diaFormatado = dia === '24' ? '24 de outubro de 2025' : '25 de outubro de 2025';
+      const diaFormatado = '30 de outubro de 2025';
       pdf.text(`Horário Selecionado: ${diaFormatado}, ${horario}`, 20, yPos);
       yPos += 10;
       pdf.text(`Local: Colégio Farroupilha, Jardim de Infância – Rua Carlos Huber, 425`, 20, yPos);
@@ -459,7 +471,7 @@ export function BloodDonationCard() {
             <div className="bg-white/20 backdrop-blur-sm rounded-lg p-3 text-center">
               <Users className="h-5 w-5 text-white mx-auto mb-1" />
               <div className="text-sm text-white/80">Voluntários</div>
-              <div className="text-lg font-bold text-white">160</div>
+              <div className="text-lg font-bold text-white">80</div>
             </div>
             <div className="bg-white/20 backdrop-blur-sm rounded-lg p-3 text-center">
               <Shield className="h-5 w-5 text-white mx-auto mb-1" />
@@ -483,8 +495,8 @@ export function BloodDonationCard() {
                   <Calendar className="h-5 w-5 text-red-500" />
                 </div>
                 <div>
-                  <div className="font-semibold text-gray-900">24 e 25 de outubro de 2025</div>
-                  <div className="text-sm text-gray-600">Dois dias de campanha</div>
+                  <div className="font-semibold text-gray-900">30 de outubro de 2025</div>
+                  <div className="text-sm text-gray-600">Dia da campanha</div>
                 </div>
               </div>
               
@@ -562,7 +574,7 @@ export function BloodDonationCard() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                   <div className="flex items-center gap-2 text-gray-600">
                     <Calendar className="h-4 w-4 text-red-500" />
-                    <span><strong>Data:</strong> 24 e 25 de outubro de 2025</span>
+                    <span><strong>Data:</strong> 30 de outubro de 2025</span>
                   </div>
                   <div className="flex items-center gap-2 text-gray-600">
                     <Clock className="h-4 w-4 text-red-500" />
@@ -896,11 +908,11 @@ export function BloodDonationCard() {
                     required
                     value={formData.data_nascimento}
                     onChange={(e) => handleInputChange('data_nascimento', e.target.value)}
-                      max="2009-10-25"
+                      max="2009-10-30"
                       className="mt-1"
                   />
                     <p className="text-xs text-gray-500 mt-1">
-                      Data máxima: 25/10/2009
+                      Data máxima: 30/10/2009
                     </p>
                   </div>
                 </div>
@@ -1002,40 +1014,18 @@ export function BloodDonationCard() {
                     Horário de Preferência <span className="text-red-500">*</span>
                   </Label>
                   <div className="mt-2 space-y-4">
-                    {/* 24 de outubro */}
+                    {/* 30 de outubro */}
                     <div>
-                      <h4 className="font-semibold text-gray-800 mb-3">24 de outubro de 2025</h4>
+                      <h4 className="font-semibold text-gray-800 mb-3">30 de outubro de 2025</h4>
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
                         {['8h-9h', '9h-10h', '10h-11h', '11h-12h'].map((horario) => (
                           <Button
-                            key={`24-${horario}`}
+                            key={`30-${horario}`}
                             type="button"
-                            variant={formData.horario_selecionado === `24-${horario}` ? 'default' : 'outline'}
-                            onClick={() => setFormData({...formData, horario_selecionado: `24-${horario}`})}
+                            variant={formData.horario_selecionado === `30-${horario}` ? 'default' : 'outline'}
+                            onClick={() => setFormData({...formData, horario_selecionado: `30-${horario}`})}
                             className={`text-sm py-2 ${
-                              formData.horario_selecionado === `24-${horario}` 
-                                ? 'bg-red-500 hover:bg-red-600 text-white' 
-                                : 'border-red-200 text-red-600 hover:bg-red-50'
-                            }`}
-                          >
-                            {horario}
-                          </Button>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* 25 de outubro */}
-                    <div>
-                      <h4 className="font-semibold text-gray-800 mb-3">25 de outubro de 2025</h4>
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-                        {['8h-9h', '9h-10h', '10h-11h', '11h-12h'].map((horario) => (
-                          <Button
-                            key={`25-${horario}`}
-                            type="button"
-                            variant={formData.horario_selecionado === `25-${horario}` ? 'default' : 'outline'}
-                            onClick={() => setFormData({...formData, horario_selecionado: `25-${horario}`})}
-                            className={`text-sm py-2 ${
-                              formData.horario_selecionado === `25-${horario}` 
+                              formData.horario_selecionado === `30-${horario}` 
                                 ? 'bg-red-500 hover:bg-red-600 text-white' 
                                 : 'border-red-200 text-red-600 hover:bg-red-50'
                             }`}
