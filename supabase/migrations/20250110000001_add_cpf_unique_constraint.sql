@@ -3,7 +3,7 @@
 
   1. Schema Changes
     - Add unique constraint on CPF field to prevent duplicate registrations
-    - This ensures database-level protection against duplicate CPF entries
+    - This ensures database-level protection against duplicate CPF entrie s
 */
 
 -- Add unique constraint on CPF field
