@@ -25,6 +25,7 @@ export function BloodDonationCard() {
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [registrationId, setRegistrationId] = useState<string>('');
   const [pdfBlob, setPdfBlob] = useState<string>('');
+  const [slotCapacities, setSlotCapacities] = useState<{[key: string]: number}>({});
   const [formData, setFormData] = useState({
     nome_completo: '',
     data_nascimento: '',
@@ -61,6 +62,44 @@ export function BloodDonationCard() {
         .replace(/(-\d{4})\d+?$/, '$1');
     }
     return value.slice(0, 15);
+  };
+
+  // Function to fetch slot capacities from database
+  const fetchSlotCapacities = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('blood_donation_registrations')
+        .select('horario_selecionado')
+        .in('horario_selecionado', ['30-7h40-8h40', '30-8h40-9h40', '30-9h40-10h40', '30-10h40-11h40']);
+
+      if (error) throw error;
+
+      // Count registrations for each slot
+      const capacities: {[key: string]: number} = {
+        '30-7h40-8h40': 0,
+        '30-8h40-9h40': 0,
+        '30-9h40-10h40': 0,
+        '30-10h40-11h40': 0
+      };
+
+      data?.forEach(registration => {
+        const slot = registration.horario_selecionado;
+        if (capacities.hasOwnProperty(slot)) {
+          capacities[slot]++;
+        }
+      });
+
+      setSlotCapacities(capacities);
+    } catch (error) {
+      console.error('Error fetching slot capacities:', error);
+      // Set default capacities if error occurs
+      setSlotCapacities({
+        '30-7h40-8h40': 0,
+        '30-8h40-9h40': 0,
+        '30-9h40-10h40': 0,
+        '30-10h40-11h40': 0
+      });
+    }
   };
 
   const handleInputChange = (field: string, value: string) => {
@@ -107,6 +146,25 @@ export function BloodDonationCard() {
       if (!connectionTest.success) {
         console.error('Supabase connection test failed:', connectionTest);
         toast.error(`Erro de conexão: ${connectionTest.error}`);
+        return;
+      }
+
+      // Check if CPF already exists
+      const { data: existingRegistration, error: checkError } = await supabase
+        .from('blood_donation_registrations')
+        .select('cpf')
+        .eq('cpf', formData.cpf)
+        .single();
+
+      if (checkError && checkError.code !== 'PGRST116') { // PGRST116 is "not found" error
+        console.error('Error checking existing CPF:', checkError);
+        toast.error('Erro ao verificar CPF. Tente novamente.');
+        return;
+      }
+
+      if (existingRegistration) {
+        toast.error('Este CPF já possui uma inscrição na campanha de doação de sangue.');
+        setIsSubmitting(false);
         return;
       }
 
@@ -426,6 +484,13 @@ export function BloodDonationCard() {
     }
   }, [showConfirmation, registrationId]);
 
+  // Fetch slot capacities when form is shown
+  useEffect(() => {
+    if (showForm) {
+      fetchSlotCapacities();
+    }
+  }, [showForm]);
+
   const handleCopyCode = async () => {
     try {
       await navigator.clipboard.writeText(registrationId);
@@ -505,7 +570,7 @@ export function BloodDonationCard() {
                   <Clock className="h-5 w-5 text-red-500" />
                 </div>
                 <div>
-                  <div className="font-semibold text-gray-900">Das 8h às 12h</div>
+                  <div className="font-semibold text-gray-900">Das 7h40 às 11h40</div>
                   <div className="text-sm text-gray-600">Horário estendido</div>
                 </div>
               </div>
@@ -578,7 +643,7 @@ export function BloodDonationCard() {
                   </div>
                   <div className="flex items-center gap-2 text-gray-600">
                     <Clock className="h-4 w-4 text-red-500" />
-                    <span><strong>Horário:</strong> Das 8h às 12h</span>
+                    <span><strong>Horário:</strong> Das 7h40 às 11h40</span>
                   </div>
                   <div className="flex items-center gap-2 text-gray-600">
                     <MapPin className="h-4 w-4 text-red-500" />
@@ -1018,22 +1083,39 @@ export function BloodDonationCard() {
                     <div>
                       <h4 className="font-semibold text-gray-800 mb-3">30 de outubro de 2025</h4>
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-                        {['8h-9h', '9h-10h', '10h-11h', '11h-12h'].map((horario) => (
-                          <Button
-                            key={`30-${horario}`}
-                            type="button"
-                            variant={formData.horario_selecionado === `30-${horario}` ? 'default' : 'outline'}
-                            onClick={() => setFormData({...formData, horario_selecionado: `30-${horario}`})}
-                            className={`text-sm py-2 ${
-                              formData.horario_selecionado === `30-${horario}` 
-                                ? 'bg-red-500 hover:bg-red-600 text-white' 
-                                : 'border-red-200 text-red-600 hover:bg-red-50'
-                            }`}
-                          >
-                            {horario}
-                          </Button>
-                        ))}
+                        {[
+                          { display: '7h40-8h40', value: '30-7h40-8h40' },
+                          { display: '8h40-9h40', value: '30-8h40-9h40' },
+                          { display: '9h40-10h40', value: '30-9h40-10h40' },
+                          { display: '10h40-11h40', value: '30-10h40-11h40' }
+                        ].map(({ display, value }) => {
+                          const isFull = slotCapacities[value] >= 20;
+                          const isSelected = formData.horario_selecionado === value;
+                          
+                          return (
+                            <Button
+                              key={value}
+                              type="button"
+                              variant={isSelected ? 'default' : 'outline'}
+                              onClick={() => !isFull && setFormData({...formData, horario_selecionado: value})}
+                              disabled={isFull}
+                              className={`text-sm py-2 ${
+                                isFull 
+                                  ? 'bg-gray-100 border-gray-300 text-gray-400 cursor-not-allowed border-dashed' 
+                                  : isSelected 
+                                    ? 'bg-red-500 hover:bg-red-600 text-white' 
+                                    : 'border-red-200 text-red-600 hover:bg-red-50'
+                              }`}
+                            >
+                              {display}
+                              {isFull && <span className="ml-1 text-xs">(Lotado)</span>}
+                            </Button>
+                          );
+                        })}
                       </div>
+                      <p className="text-xs text-gray-500 mt-2">
+                        Cada horário tem limite de 20 doadores. Horários lotados aparecem em cinza.
+                      </p>
                     </div>
                   </div>
                 </div>
