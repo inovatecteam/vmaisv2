@@ -2,7 +2,7 @@
 
 Uma plataforma web moderna que conecta ONGs a voluntários, facilitando o encontro entre organizações que precisam de ajuda e pessoas dispostas a fazer a diferença em suas comunidades. 
 
-## 🌟 Características
+## 🌟 Características 
 
 - **Interface Moderna**: Design limpo com bordas arredondadas e paleta branco/amarela
 - **Responsivo**: Mobile-first com experiência otimizada para todos os dispositivos
