@@ -1,6 +1,6 @@
 # Voluntaria+ 💛
 
-Uma plataforma web moderna que conecta ONGs a voluntários, facilitando o encontro entre organizações que precisam de ajuda e pessoas dispostas a fazer a diferença em suas comunidades. 
+Uma plataforma web moderna que conecta ONGs a voluntários, facilitando o encontro entre organizações que precisam de ajuda e pessoas dispostas a fazer a diferença em suas comunidades.
 
 ## 🌟 Características 
 
