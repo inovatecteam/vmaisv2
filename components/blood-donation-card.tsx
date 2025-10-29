@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Droplet, Calendar, Clock, MapPin, ArrowLeft, Download, Eye, FileText, CheckCircle, Heart, Users, Shield, Zap, FileCheck, UserPlus, Copy } from 'lucide-react';
+import { Droplet, Calendar, Clock, MapPin, ArrowLeft, Download, Eye, FileText, CheckCircle, Heart, Users, Shield, Zap, FileCheck, UserPlus, Copy, ShieldPlus } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { testSupabaseConnection } from '@/lib/utils';
 import { toast } from 'sonner';
@@ -502,7 +502,7 @@ export function BloodDonationCard() {
 
   return (
     <>
-      <Card className="rounded-2xl shadow-xl border-0 bg-gradient-to-br from-red-50 via-red-100/50 to-pink-50 hover:shadow-2xl transition-all duration-500 cursor-pointer h-full flex flex-col group overflow-hidden" onClick={() => setIsOpen(true)}>
+      <Card className="rounded-2xl shadow-xl border-0 bg-gradient-to-br from-red-50 via-red-100/50 to-pink-50 hover:shadow-2xl transition-all duration-500 h-full flex flex-col group overflow-hidden">
         {/* Header com gradiente e padrão */}
         <div className="relative bg-gradient-to-r from-red-500 to-red-600 p-6 text-white overflow-hidden">
           <div className="absolute inset-0 opacity-20">
@@ -600,9 +600,13 @@ export function BloodDonationCard() {
           
 
           <div className="mt-auto">
-            <Button className="w-full bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 font-semibold rounded-xl py-4 text-lg shadow-lg hover:shadow-xl transition-all duration-300 group">
-              <UserPlus className="h-5 w-5 mr-2 group-hover:scale-110 transition-transform" />
-              Inscreva-se Agora
+            <Button
+              className="w-full bg-red-200 text-red-600 font-semibold rounded-xl py-4 text-md shadow-lg cursor-not-allowed flex items-center justify-center gap-2 border-2 px border-red-300"
+              disabled={true}
+
+            >
+              <ShieldPlus className="h-5 w-5 mr-2 text-red-600" />
+              Inscrições Finalizadas
             </Button>
 
             <div className="text-center pt-4 border-t border-gray-200/50 mt-4">
