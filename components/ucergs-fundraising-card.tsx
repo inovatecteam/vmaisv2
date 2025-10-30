@@ -90,7 +90,7 @@ export function UcergsFundraisingCard() {
           {/* Valores arrecadados e meta */}
           <div className="grid grid-cols-2 gap-4 mb-4">
             <div className="text-center p-3 bg-green-50 rounded-lg border border-green-200">
-              <div className="text-2xl font-bold text-green-700">R$ 3.875</div>
+              <div className="text-2xl font-bold text-green-700">R$ 4.225</div>
               <div className="text-xs text-green-600 font-medium">Arrecadado</div>
             </div>
             <div className="text-center p-3 bg-gray-50 rounded-lg border border-gray-200">
@@ -103,14 +103,14 @@ export function UcergsFundraisingCard() {
           <div className="space-y-2">
             <div className="flex justify-between text-sm">
               <span className="text-gray-600">Progresso</span>
-              <span className="font-semibold text-gray-800">64,6%</span>
+              <span className="font-semibold text-gray-800">70,4%</span>
             </div>
             <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden relative">
               {/* Progress bar with sliding animation */}
               <div 
                 className="bg-gradient-to-r from-green-500 to-green-600 h-3 rounded-full transition-all duration-1000 ease-out relative"
                 style={{
-                  width: '64.6%',
+                  width: '70.4%',
                   animation: 'slideInFromLeft 2s ease-out',
                   animationDelay: '0.3s',
                   animationFillMode: 'both',
@@ -122,13 +122,13 @@ export function UcergsFundraisingCard() {
               <div 
                 className="absolute top-0 right-0 h-3 bg-gradient-to-r from-transparent via-white/60 to-transparent"
                 style={{
-                  width: '35.4%',
+                  width: '29.6%',
                   animation: 'loadingShimmer 1.5s ease-in-out infinite',
                   background: 'linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent)'
                 }}
               ></div>
             </div>
-            <p className="text-xs text-gray-500 text-center">Faltam R$ 2.125 para atingir a meta</p>
+            <p className="text-xs text-gray-500 text-center">Faltam R$ 1.775 para atingir a meta</p>
           </div>
         </div>
 
