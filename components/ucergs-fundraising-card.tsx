@@ -90,12 +90,12 @@ export function UcergsFundraisingCard() {
           {/* Valores arrecadados e meta */}
           <div className="grid grid-cols-2 gap-4 mb-4">
             <div className="text-center p-3 bg-green-50 rounded-lg border border-green-200">
-              <div className="text-2xl font-bold text-green-700">R$ 4.225</div>
+              <div className="text-2xl font-bold text-green-700">R$ 6.300</div>
               <div className="text-xs text-green-600 font-medium">Arrecadado</div>
             </div>
-            <div className="text-center p-3 bg-gray-50 rounded-lg border border-gray-200">
-              <div className="text-2xl font-bold text-gray-700">R$ 6.000</div>
-              <div className="text-xs text-gray-600 font-medium">Meta</div>
+            <div className="text-center p-3 bg-green-50 rounded-lg border border-green-200">
+              <div className="text-2xl font-bold text-green-700">R$ 6.000</div>
+              <div className="text-xs text-green-600 font-medium">Meta Atingida!</div>
             </div>
           </div>
           
@@ -103,32 +103,32 @@ export function UcergsFundraisingCard() {
           <div className="space-y-2">
             <div className="flex justify-between text-sm">
               <span className="text-gray-600">Progresso</span>
-              <span className="font-semibold text-gray-800">70,4%</span>
+              <span className="font-semibold text-green-800">105%</span>
             </div>
             <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden relative">
               {/* Progress bar with sliding animation */}
-              <div 
+              <div
                 className="bg-gradient-to-r from-green-500 to-green-600 h-3 rounded-full transition-all duration-1000 ease-out relative"
                 style={{
-                  width: '70.4%',
+                  width: '105%',
                   animation: 'slideInFromLeft 2s ease-out',
                   animationDelay: '0.3s',
                   animationFillMode: 'both',
                   zIndex: 10
                 }}
               ></div>
-              
+
               {/* Loading animation for remaining space */}
-              <div 
+              <div
                 className="absolute top-0 right-0 h-3 bg-gradient-to-r from-transparent via-white/60 to-transparent"
                 style={{
-                  width: '29.6%',
+                  width: '0%',
                   animation: 'loadingShimmer 1.5s ease-in-out infinite',
                   background: 'linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent)'
                 }}
               ></div>
             </div>
-            <p className="text-xs text-gray-500 text-center">Faltam R$ 1.775 para atingir a meta</p>
+            <p className="text-xs text-green-600 text-center font-medium">🎉 Meta atingida! Arrecadação ultrapassada em R$ 300</p>
           </div>
         </div>
 
@@ -136,41 +136,45 @@ export function UcergsFundraisingCard() {
         <div className="space-y-4">
           <div>
             <h3 className="font-semibold text-gray-800 mb-2 flex items-center">
-              <Heart className="h-4 w-4 text-primary mr-2 fill-current" />
-              Por que sua ajuda é importante?
+              <Heart className="h-4 w-4 text-green-600 mr-2 fill-current" />
+              🎉 Meta Atingida com Sucesso!
             </h3>
             <p className="text-sm text-gray-600 leading-relaxed">
-            A UCERGS há mais de 40 anos habilita e reabilita pessoas cegas. A impressora braille Índex DV5 imprime livros e textos táteis, garantindo acesso à alfabetização. Um móvel adequado reduz ruído e protege o equipamento, assegurando sua durabilidade.
+            Obrigado a todos que contribuíram! A UCERGS arrecadou R$ 6.300, ultrapassando a meta de R$ 6.000. Com este apoio, adquiriremos o móvel adequado para a impressora braille Índex DV5, que permitirá expandir a produção de livros e materiais táteis em braille.
             </p>
           </div>
 
-          <div className="bg-yellow-50/70 p-4 rounded-xl border border-yellow-200/50">
-            <h4 className="font-semibold text-yellow-800 mb-3 text-sm">Impacto esperado:</h4>
-            <ul className="text-xs text-yellow-700 space-y-1.5">
+          <div className="bg-green-50/70 p-4 rounded-xl border border-green-200/50">
+            <h4 className="font-semibold text-green-800 mb-3 text-sm">Impacto conquistado:</h4>
+            <ul className="text-xs text-green-700 space-y-1.5">
               <li className="flex items-start">
-                <span className="text-yellow-600 mr-2 mt-0.5">•</span>
-                <span>Expansão da produção de livros e materiais em braille</span>
+                <span className="text-green-600 mr-2 mt-0.5">✅</span>
+                <span>Equipamento de impressão braille totalmente equipado</span>
               </li>
               <li className="flex items-start">
-                <span className="text-yellow-600 mr-2 mt-0.5">•</span>
-                <span>Fortalecimento da autonomia e inclusão social</span>
+                <span className="text-green-600 mr-2 mt-0.5">✅</span>
+                <span>Maior autonomia e inclusão para pessoas com deficiência visual</span>
+              </li>
+              <li className="flex items-start">
+                <span className="text-green-600 mr-2 mt-0.5">✅</span>
+                <span>Continuidade dos 40+ anos de trabalho da UCERGS</span>
               </li>
             </ul>
           </div>
         </div>
 
-        {/* Botão de contribuição */}
+        {/* Botão para acompanhar */}
         <Link href={fundraisingLink} target="_blank" rel="noopener noreferrer" className="block">
-          <Button className="w-full bg-primary hover:bg-primary/90 font-medium rounded-xl py-3 text-base shadow-md hover:shadow-lg transition-all duration-300">
+          <Button className="w-full bg-green-600 hover:bg-green-700 font-medium rounded-xl py-3 text-base shadow-md hover:shadow-lg transition-all duration-300">
             <ExternalLink className="h-4 w-4 mr-2" />
-            Contribuir Agora
+            Acompanhar Projeto
           </Button>
         </Link>
 
         {/* Informações adicionais */}
         <div className="text-center pt-3 border-t border-gray-200/50">
-          <p className="text-xs text-gray-500">
-            Toda contribuição faz a diferença • Transparência total no uso dos recursos
+          <p className="text-xs text-green-600 font-medium">
+            🎉 Meta atingida • Obrigado a todos que contribuíram!
           </p>
         </div>
       </CardContent>

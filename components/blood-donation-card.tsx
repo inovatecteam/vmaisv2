@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Droplet, Calendar, Clock, MapPin, ArrowLeft, Download, Eye, FileText, CheckCircle, Heart, Users, Shield, Zap, FileCheck, UserPlus, Copy, ShieldPlus } from 'lucide-react';
+import { Droplet, Calendar, Clock, MapPin, ArrowLeft, Download, Eye, FileText, CheckCircle, Heart, Users, Shield, Zap, FileCheck, UserPlus, Copy, ShieldPlus, Instagram } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { testSupabaseConnection } from '@/lib/utils';
 import { toast } from 'sonner';
@@ -528,25 +528,25 @@ export function BloodDonationCard() {
           </div>
 
           <p className="text-white/90 text-lg leading-relaxed mb-6">
-            Participe e ajude a salvar vidas! Cada doação pode beneficiar até 4 pessoas. Esta é uma parceria inédita entre Voluntaria+, Grêmio Estudantil do Colégio Farroupilha e Hemocentro do RS.
+            🎉 Campanha realizada com sucesso! Mais de 80 voluntários participaram desta parceria inédita entre Voluntaria+, Grêmio Estudantil do Colégio Farroupilha e Hemocentro do RS. Obrigado a todos que contribuíram!
           </p>
 
           {/* Estatísticas visuais */}
           <div className="grid grid-cols-3 gap-4 mb-6">
             <div className="bg-white/20 backdrop-blur-sm rounded-lg p-3 text-center">
               <Users className="h-5 w-5 text-white mx-auto mb-1" />
-              <div className="text-sm text-white/80">Voluntários</div>
-              <div className="text-lg font-bold text-white">80</div>
+              <div className="text-sm text-white/80">Doadores</div>
+              <div className="text-lg font-bold text-white">80+</div>
             </div>
             <div className="bg-white/20 backdrop-blur-sm rounded-lg p-3 text-center">
-              <Shield className="h-5 w-5 text-white mx-auto mb-1" />
-              <div className="text-sm text-white/80">Seguro</div>
+              <Heart className="h-5 w-5 text-white mx-auto mb-1" />
+              <div className="text-sm text-white/80">Vidas Impactadas</div>
+              <div className="text-lg font-bold text-white">320+</div>
+            </div>
+            <div className="bg-white/20 backdrop-blur-sm rounded-lg p-3 text-center">
+              <CheckCircle className="h-5 w-5 text-white mx-auto mb-1" />
+              <div className="text-sm text-white/80">Sucesso</div>
               <div className="text-lg font-bold text-white">100%</div>
-            </div>
-            <div className="bg-white/20 backdrop-blur-sm rounded-lg p-3 text-center">
-              <Zap className="h-5 w-5 text-white mx-auto mb-1" />
-              <div className="text-sm text-white/80">Rápido</div>
-              <div className="text-lg font-bold text-white">15min</div>
             </div>
           </div>
         </div>
@@ -601,17 +601,16 @@ export function BloodDonationCard() {
 
           <div className="mt-auto">
             <Button
-              className="w-full bg-red-200 text-red-600 font-semibold rounded-xl py-4 text-md shadow-lg cursor-not-allowed flex items-center justify-center gap-2 border-2 px border-red-300"
-              disabled={true}
-
+              className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-semibold rounded-xl py-4 text-md shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center gap-2"
+              onClick={() => window.open('https://instagram.com/voluntaria_plus', '_blank')}
             >
-              <ShieldPlus className="h-5 w-5 mr-2 text-red-600" />
-              Inscrições Finalizadas
+              <Instagram className="h-5 w-5 mr-2" />
+              Ver no Instagram
             </Button>
 
             <div className="text-center pt-4 border-t border-gray-200/50 mt-4">
               <p className="text-xs text-gray-500 flex items-center justify-center gap-2">
-                Salve vidas com um gesto simples • Processo rápido e seguro
+                🎉 Campanha realizada com sucesso • Obrigado a todos os doadores!
               </p>
             </div>
           </div>
