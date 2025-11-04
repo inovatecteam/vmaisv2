@@ -69,102 +69,87 @@ export function UcergsFundraisingCard() {
           </div>
         </div>
         <CardDescription className="text-gray-700 text-sm leading-relaxed">
-          Apoie a União de Cegos do Rio Grande do Sul na aquisição de um móvel que permita o uso ideal e seguro da impressora braille Índex DV5, essencial para a produção de materiais táteis e inclusão de pessoas com deficiência visual.
+          Meta alcançada e superada! Graças à comunidade Voluntaria+, a União de Cegos do Rio Grande do Sul terá o móvel ideal para a impressora braille Índex DV5. Cada contribuição virou inclusão e autonomia para quem depende de materiais táteis.
         </CardDescription>
       </CardHeader>
       
       <CardContent className="space-y-6">
         {/* Meta de arrecadação */}
-        <div className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center space-x-2">
-              <DollarSign className="h-5 w-5 text-green-600" />
-              <span className="text-lg font-semibold text-green-700">Arrecadação</span>
+          <div className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center space-x-2">
+                <DollarSign className="h-5 w-5 text-green-600" />
+                <span className="text-lg font-semibold text-green-700">Meta superada</span>
+              </div>
+              <Badge variant="secondary" className="bg-primary/10 text-primary">
+                <Printer className="h-3 w-3 mr-1" />
+                Impressora Braille
+              </Badge>
             </div>
-            <Badge variant="secondary" className="bg-primary/10 text-primary">
-              <Printer className="h-3 w-3 mr-1" />
-              Impressora Braille
-            </Badge>
+            
+            {/* Valores arrecadados e meta */}
+            <div className="grid grid-cols-2 gap-4 mb-4">
+              <div className="text-center p-3 bg-green-50 rounded-lg border border-green-200">
+                <div className="text-2xl font-bold text-green-700">R$ 6.300</div>
+                <div className="text-xs text-green-600 font-medium">Arrecadado</div>
+              </div>
+              <div className="text-center p-3 bg-gray-50 rounded-lg border border-gray-200">
+                <div className="text-2xl font-bold text-gray-700">R$ 6.000</div>
+                <div className="text-xs text-gray-600 font-medium">Meta inicial</div>
+              </div>
+            </div>
+            
+            {/* Barra de progresso visual */}
+            <div className="space-y-2">
+              <div className="flex justify-between text-sm">
+                <span className="text-gray-600">Progresso consolidado</span>
+                <span className="font-semibold text-green-700">105%</span>
+              </div>
+              <div className="relative w-full overflow-hidden rounded-full bg-green-100/70 p-[2px]">
+                <div className="h-3 rounded-full bg-gradient-to-r from-green-500 via-emerald-500 to-lime-500 shadow-inner" style={{ width: '100%' }}></div>
+                <span className="absolute inset-y-0 right-2 flex items-center text-[10px] font-semibold uppercase tracking-[0.24em] text-green-900/90">
+                  +5%
+                </span>
+              </div>
+              <p className="text-xs text-center text-green-700">
+                Superamos a meta em R$ 300. Obrigado por ir além!
+              </p>
+            </div>
           </div>
-          
-          {/* Valores arrecadados e meta */}
-          <div className="grid grid-cols-2 gap-4 mb-4">
-            <div className="text-center p-3 bg-green-50 rounded-lg border border-green-200">
-              <div className="text-2xl font-bold text-green-700">R$ 4.225</div>
-              <div className="text-xs text-green-600 font-medium">Arrecadado</div>
-            </div>
-            <div className="text-center p-3 bg-gray-50 rounded-lg border border-gray-200">
-              <div className="text-2xl font-bold text-gray-700">R$ 6.000</div>
-              <div className="text-xs text-gray-600 font-medium">Meta</div>
-            </div>
-          </div>
-          
-          {/* Barra de progresso visual */}
-          <div className="space-y-2">
-            <div className="flex justify-between text-sm">
-              <span className="text-gray-600">Progresso</span>
-              <span className="font-semibold text-gray-800">70,4%</span>
-            </div>
-            <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden relative">
-              {/* Progress bar with sliding animation */}
-              <div 
-                className="bg-gradient-to-r from-green-500 to-green-600 h-3 rounded-full transition-all duration-1000 ease-out relative"
-                style={{
-                  width: '70.4%',
-                  animation: 'slideInFromLeft 2s ease-out',
-                  animationDelay: '0.3s',
-                  animationFillMode: 'both',
-                  zIndex: 10
-                }}
-              ></div>
-              
-              {/* Loading animation for remaining space */}
-              <div 
-                className="absolute top-0 right-0 h-3 bg-gradient-to-r from-transparent via-white/60 to-transparent"
-                style={{
-                  width: '29.6%',
-                  animation: 'loadingShimmer 1.5s ease-in-out infinite',
-                  background: 'linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent)'
-                }}
-              ></div>
-            </div>
-            <p className="text-xs text-gray-500 text-center">Faltam R$ 1.775 para atingir a meta</p>
-          </div>
-        </div>
 
         {/* Informações sobre o projeto */}
-        <div className="space-y-4">
-          <div>
-            <h3 className="font-semibold text-gray-800 mb-2 flex items-center">
-              <Heart className="h-4 w-4 text-primary mr-2 fill-current" />
-              Por que sua ajuda é importante?
-            </h3>
-            <p className="text-sm text-gray-600 leading-relaxed">
-            A UCERGS há mais de 40 anos habilita e reabilita pessoas cegas. A impressora braille Índex DV5 imprime livros e textos táteis, garantindo acesso à alfabetização. Um móvel adequado reduz ruído e protege o equipamento, assegurando sua durabilidade.
-            </p>
-          </div>
+          <div className="space-y-4">
+            <div>
+              <h3 className="font-semibold text-gray-800 mb-2 flex items-center">
+                <Heart className="h-4 w-4 text-primary mr-2 fill-current" />
+                Impacto da campanha
+              </h3>
+              <p className="text-sm text-gray-600 leading-relaxed">
+                A UCERGS há mais de 40 anos habilita e reabilita pessoas cegas. Com o novo móvel, a impressora braille Índex DV5 terá o suporte perfeito para produzir materiais táteis com mais segurança, conforto acústico e continuidade.
+              </p>
+            </div>
 
-          <div className="bg-yellow-50/70 p-4 rounded-xl border border-yellow-200/50">
-            <h4 className="font-semibold text-yellow-800 mb-3 text-sm">Impacto esperado:</h4>
-            <ul className="text-xs text-yellow-700 space-y-1.5">
-              <li className="flex items-start">
-                <span className="text-yellow-600 mr-2 mt-0.5">•</span>
-                <span>Expansão da produção de livros e materiais em braille</span>
-              </li>
-              <li className="flex items-start">
-                <span className="text-yellow-600 mr-2 mt-0.5">•</span>
-                <span>Fortalecimento da autonomia e inclusão social</span>
-              </li>
-            </ul>
-          </div>
+            <div className="bg-yellow-50/70 p-4 rounded-xl border border-yellow-200/50">
+              <h4 className="font-semibold text-yellow-800 mb-3 text-sm">Legados que seguimos construindo:</h4>
+              <ul className="text-xs text-yellow-700 space-y-1.5">
+                <li className="flex items-start">
+                  <span className="text-yellow-600 mr-2 mt-0.5">•</span>
+                  <span>Expansão da produção de livros e materiais em braille para estudantes de todo o RS</span>
+                </li>
+                <li className="flex items-start">
+                  <span className="text-yellow-600 mr-2 mt-0.5">•</span>
+                  <span>Fortalecimento da autonomia e da inclusão social de pessoas cegas e com baixa visão</span>
+                </li>
+              </ul>
+            </div>
         </div>
 
         {/* Botão de contribuição */}
         <Link href={fundraisingLink} target="_blank" rel="noopener noreferrer" className="block">
-          <Button className="w-full bg-primary hover:bg-primary/90 font-medium rounded-xl py-3 text-base shadow-md hover:shadow-lg transition-all duration-300">
-            <ExternalLink className="h-4 w-4 mr-2" />
-            Contribuir Agora
-          </Button>
+            <Button className="w-full bg-primary hover:bg-primary/90 font-medium rounded-xl py-3 text-base shadow-md hover:shadow-lg transition-all duration-300">
+              <ExternalLink className="h-4 w-4 mr-2" />
+              Ver celebração na Vakinha
+            </Button>
         </Link>
 
         {/* Informações adicionais */}
