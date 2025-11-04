@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Droplet, Calendar, Clock, MapPin, ArrowLeft, Download, Eye, FileText, CheckCircle, Heart, Users, Shield, Zap, FileCheck, UserPlus, Copy, ShieldPlus } from 'lucide-react';
+import { Droplet, Calendar, Clock, MapPin, ArrowLeft, Download, Eye, FileText, CheckCircle, Heart, Users, Shield, Zap, FileCheck, UserPlus, Copy, ShieldPlus, Instagram } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { testSupabaseConnection } from '@/lib/utils';
 import { toast } from 'sonner';
@@ -519,16 +519,17 @@ export function BloodDonationCard() {
             </div>
               <div>
                 <h3 className="text-2xl font-bold text-white">Campanha de Doação de Sangue</h3>
-                <Badge className="bg-white/20 text-white border-white/30 mt-2 backdrop-blur-sm">
-                Campanha Especial
-              </Badge>
+                <Badge className="bg-white/20 text-white mt-2 text-xs flex border border-white/30 items-center gap-1.5 w-fit">
+              <CheckCircle className="h-3 w-3" />
+              Campanha Concluída!
+            </Badge>
             </div>
           </div>
 
           </div>
 
-          <p className="text-white/90 text-lg leading-relaxed mb-6">
-            Participe e ajude a salvar vidas! Cada doação pode beneficiar até 4 pessoas. Esta é uma parceria inédita entre Voluntaria+, Grêmio Estudantil do Colégio Farroupilha e Hemocentro do RS.
+          <p className="text-white/90 text-md leading-relaxed mb-6">
+            🎉 Campanha realizada com sucesso! Obrigado a todos os voluntários que participaram dessa ação incrível. Juntos, salvamos vidas!
           </p>
 
           {/* Estatísticas visuais */}
@@ -536,17 +537,17 @@ export function BloodDonationCard() {
             <div className="bg-white/20 backdrop-blur-sm rounded-lg p-3 text-center">
               <Users className="h-5 w-5 text-white mx-auto mb-1" />
               <div className="text-sm text-white/80">Voluntários</div>
-              <div className="text-lg font-bold text-white">80</div>
+              <div className="text-lg font-bold text-white">80+</div>
             </div>
             <div className="bg-white/20 backdrop-blur-sm rounded-lg p-3 text-center">
-              <Shield className="h-5 w-5 text-white mx-auto mb-1" />
-              <div className="text-sm text-white/80">Seguro</div>
-              <div className="text-lg font-bold text-white">100%</div>
+              <Heart className="h-5 w-5 text-white mx-auto mb-1 " />
+              <div className="text-sm text-white/80">Vidas salvas</div>
+              <div className="text-lg font-bold text-white">320+</div>
             </div>
             <div className="bg-white/20 backdrop-blur-sm rounded-lg p-3 text-center">
-              <Zap className="h-5 w-5 text-white mx-auto mb-1" />
-              <div className="text-sm text-white/80">Rápido</div>
-              <div className="text-lg font-bold text-white">15min</div>
+              <CheckCircle className="h-5 w-5 text-white mx-auto mb-1" />
+              <div className="text-sm text-white/80">Status</div>
+              <div className="text-lg font-bold text-white">Sucesso!</div>
             </div>
           </div>
         </div>
@@ -584,34 +585,24 @@ export function BloodDonationCard() {
                   <div className="text-sm text-gray-600">Entrada Jardim de Infância</div>
                 </div>
               </div>
-              
-              <div className="flex items-center gap-3 text-gray-700">
-                <div className="p-2 bg-red-100 rounded-lg">
-                  <FileCheck className="h-5 w-5 text-red-500" />
-                </div>
-                <div>
-                  <div className="font-semibold text-gray-900">Documento com foto obrigatório</div>
-                  <div className="text-sm text-gray-600">RG, CNH ou passaporte</div>
-                </div>
-              </div>
             </div>
           </div>
 
           
 
           <div className="mt-auto">
-            <Button
-              className="w-full bg-red-200 text-red-600 font-semibold rounded-xl py-4 text-md shadow-lg cursor-not-allowed flex items-center justify-center gap-2 border-2 px border-red-300"
-              disabled={true}
-
-            >
-              <ShieldPlus className="h-5 w-5 mr-2 text-red-600" />
-              Inscrições Finalizadas
-            </Button>
+            <a href="https://www.instagram.com/reel/DQeSrrWjjg9/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==" target="_blank" rel="noopener noreferrer" className="block w-full">
+              <Button
+                className="w-full bg-gradient-to-r from-pink-500 to-red-500 hover:from-pink-600 hover:to-red-600 text-white font-medium rounded-xl py-4 text-md shadow-lg flex items-center justify-center gap-2 border-0 transition-all duration-300"
+              >
+                <Instagram className="h-5 w-5" />
+                Ver Campanha no Instagram
+              </Button>
+            </a>
 
             <div className="text-center pt-4 border-t border-gray-200/50 mt-4">
               <p className="text-xs text-gray-500 flex items-center justify-center gap-2">
-                Salve vidas com um gesto simples • Processo rápido e seguro
+                ✨ Obrigado por fazer parte dessa história • Cada doação salvou vidas
               </p>
             </div>
           </div>
