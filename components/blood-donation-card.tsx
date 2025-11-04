@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Droplet, Calendar, Clock, MapPin, ArrowLeft, Download, Eye, FileText, CheckCircle, Heart, Users, Shield, Zap, FileCheck, UserPlus, Copy, ShieldPlus } from 'lucide-react';
+import { Droplet, Calendar, Clock, MapPin, ArrowLeft, Download, Eye, FileText, CheckCircle, Heart, Users, Shield, Zap, FileCheck, UserPlus, Copy, ShieldPlus, Instagram, Sparkles } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { testSupabaseConnection } from '@/lib/utils';
 import { toast } from 'sonner';
@@ -26,6 +26,9 @@ export function BloodDonationCard() {
   const [registrationId, setRegistrationId] = useState<string>('');
   const [pdfBlob, setPdfBlob] = useState<string>('');
   const [slotCapacities, setSlotCapacities] = useState<{[key: string]: number}>({});
+  
+  // Link do Instagram para a campanha - atualize conforme necessário
+  const instagramLink = "https://instagram.com/voluntariamais";
   const [formData, setFormData] = useState({
     nome_completo: '',
     data_nascimento: '',
@@ -519,40 +522,63 @@ export function BloodDonationCard() {
             </div>
               <div>
                 <h3 className="text-2xl font-bold text-white">Campanha de Doação de Sangue</h3>
-                <Badge className="bg-white/20 text-white border-white/30 mt-2 backdrop-blur-sm">
-                Campanha Especial
-              </Badge>
+                <Badge className="bg-green-500/90 text-white border-white/30 mt-2 backdrop-blur-sm flex items-center gap-1">
+                  <Sparkles className="h-3 w-3" />
+                  Campanha Concluída com Sucesso!
+                </Badge>
             </div>
           </div>
 
           </div>
 
-          <p className="text-white/90 text-lg leading-relaxed mb-6">
-            Participe e ajude a salvar vidas! Cada doação pode beneficiar até 4 pessoas. Esta é uma parceria inédita entre Voluntaria+, Grêmio Estudantil do Colégio Farroupilha e Hemocentro do RS.
-          </p>
+          <div className="bg-green-500/30 backdrop-blur-sm rounded-xl p-4 mb-6 border border-green-300/50">
+            <div className="flex items-center gap-3 mb-2">
+              <CheckCircle className="h-6 w-6 text-white" fill="currentColor" />
+              <h4 className="text-xl font-bold text-white">Campanha Realizada com Sucesso!</h4>
+            </div>
+            <p className="text-white/95 text-base leading-relaxed">
+              Nossa campanha de doação de sangue foi um sucesso! Muitas vidas foram salvas graças à generosidade de todos os voluntários. Esta foi uma parceria inédita entre Voluntaria+, Grêmio Estudantil do Colégio Farroupilha e Hemocentro do RS.
+            </p>
+          </div>
 
           {/* Estatísticas visuais */}
           <div className="grid grid-cols-3 gap-4 mb-6">
             <div className="bg-white/20 backdrop-blur-sm rounded-lg p-3 text-center">
               <Users className="h-5 w-5 text-white mx-auto mb-1" />
               <div className="text-sm text-white/80">Voluntários</div>
-              <div className="text-lg font-bold text-white">80</div>
+              <div className="text-lg font-bold text-white">80+</div>
             </div>
             <div className="bg-white/20 backdrop-blur-sm rounded-lg p-3 text-center">
-              <Shield className="h-5 w-5 text-white mx-auto mb-1" />
-              <div className="text-sm text-white/80">Seguro</div>
-              <div className="text-lg font-bold text-white">100%</div>
+              <Heart className="h-5 w-5 text-white mx-auto mb-1" fill="currentColor" />
+              <div className="text-sm text-white/80">Vidas Salvas</div>
+              <div className="text-lg font-bold text-white">320+</div>
             </div>
             <div className="bg-white/20 backdrop-blur-sm rounded-lg p-3 text-center">
-              <Zap className="h-5 w-5 text-white mx-auto mb-1" />
-              <div className="text-sm text-white/80">Rápido</div>
-              <div className="text-lg font-bold text-white">15min</div>
+              <Droplet className="h-5 w-5 text-white mx-auto mb-1" fill="currentColor" />
+              <div className="text-sm text-white/80">Doações</div>
+              <div className="text-lg font-bold text-white">80+</div>
             </div>
           </div>
         </div>
 
         <CardContent className="p-6 flex-1 flex flex-col">
-          {/* Informações do evento */}
+          {/* Mensagem de sucesso */}
+          <div className="bg-gradient-to-r from-green-50 to-emerald-50 p-5 rounded-xl border-2 border-green-200 shadow-sm mb-6">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="p-2 bg-green-100 rounded-lg">
+                <CheckCircle className="h-6 w-6 text-green-600" fill="currentColor" />
+              </div>
+              <div>
+                <h4 className="font-bold text-green-800 text-lg">Missão Cumprida!</h4>
+                <p className="text-sm text-green-700">A campanha foi realizada com sucesso</p>
+              </div>
+            </div>
+            <p className="text-gray-700 leading-relaxed">
+              Agradecemos a todos os voluntários que participaram desta campanha. Cada doação fez a diferença e ajudou a salvar vidas. Juntos, fizemos história!
+            </p>
+          </div>
+
+          {/* Informações do evento realizado */}
           <div className="bg-white/80 backdrop-blur-sm p-5 rounded-xl border border-red-200/50 shadow-sm mb-6">
             <div className="space-y-4">
               <div className="flex items-center gap-3 text-gray-700">
@@ -561,17 +587,7 @@ export function BloodDonationCard() {
                 </div>
                 <div>
                   <div className="font-semibold text-gray-900">30 de outubro de 2025</div>
-                  <div className="text-sm text-gray-600">Dia da campanha</div>
-                </div>
-              </div>
-              
-              <div className="flex items-center gap-3 text-gray-700">
-                <div className="p-2 bg-red-100 rounded-lg">
-                  <Clock className="h-5 w-5 text-red-500" />
-                </div>
-                <div>
-                  <div className="font-semibold text-gray-900">Das 7h40 às 11h40</div>
-                  <div className="text-sm text-gray-600">Horário estendido</div>
+                  <div className="text-sm text-gray-600">Data realizada</div>
                 </div>
               </div>
               
@@ -587,31 +603,30 @@ export function BloodDonationCard() {
               
               <div className="flex items-center gap-3 text-gray-700">
                 <div className="p-2 bg-red-100 rounded-lg">
-                  <FileCheck className="h-5 w-5 text-red-500" />
+                  <Heart className="h-5 w-5 text-red-500" fill="currentColor" />
                 </div>
                 <div>
-                  <div className="font-semibold text-gray-900">Documento com foto obrigatório</div>
-                  <div className="text-sm text-gray-600">RG, CNH ou passaporte</div>
+                  <div className="font-semibold text-gray-900">Parceria Realizada</div>
+                  <div className="text-sm text-gray-600">Voluntaria+, Grêmio Estudantil e Hemocentro do RS</div>
                 </div>
               </div>
             </div>
           </div>
 
-          
-
           <div className="mt-auto">
-            <Button
-              className="w-full bg-red-200 text-red-600 font-semibold rounded-xl py-4 text-md shadow-lg cursor-not-allowed flex items-center justify-center gap-2 border-2 px border-red-300"
-              disabled={true}
-
-            >
-              <ShieldPlus className="h-5 w-5 mr-2 text-red-600" />
-              Inscrições Finalizadas
-            </Button>
+            <a href={instagramLink} target="_blank" rel="noopener noreferrer" className="block">
+              <Button
+                className="w-full bg-gradient-to-r from-purple-500 via-pink-500 to-orange-500 hover:from-purple-600 hover:via-pink-600 hover:to-orange-600 text-white font-semibold rounded-xl py-4 text-md shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center gap-2"
+              >
+                <Instagram className="h-5 w-5" />
+                Ver Fotos e Mais Detalhes no Instagram
+              </Button>
+            </a>
 
             <div className="text-center pt-4 border-t border-gray-200/50 mt-4">
               <p className="text-xs text-gray-500 flex items-center justify-center gap-2">
-                Salve vidas com um gesto simples • Processo rápido e seguro
+                <Sparkles className="h-3 w-3 text-green-500" />
+                Campanha concluída com sucesso • Obrigado por fazer a diferença!
               </p>
             </div>
           </div>
