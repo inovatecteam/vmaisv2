@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Droplet, Calendar, Clock, MapPin, ArrowLeft, Download, Eye, FileText, CheckCircle, Heart, Users, Shield, Zap, FileCheck, UserPlus, Copy, ShieldPlus } from 'lucide-react';
+import { Droplet, Calendar, Clock, MapPin, ArrowLeft, Download, Eye, FileText, CheckCircle, Heart, Users, Shield, Zap, FileCheck, UserPlus, Copy, ShieldPlus, Instagram } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { testSupabaseConnection } from '@/lib/utils';
 import { toast } from 'sonner';
@@ -528,25 +528,25 @@ export function BloodDonationCard() {
           </div>
 
           <p className="text-white/90 text-lg leading-relaxed mb-6">
-            Participe e ajude a salvar vidas! Cada doação pode beneficiar até 4 pessoas. Esta é uma parceria inédita entre Voluntaria+, Grêmio Estudantil do Colégio Farroupilha e Hemocentro do RS.
+            🎉 Campanha realizada com sucesso! Obrigado a todos os 80 voluntários que participaram dessa ação incrível. Juntos, salvamos vidas!
           </p>
 
           {/* Estatísticas visuais */}
           <div className="grid grid-cols-3 gap-4 mb-6">
+            <div className="bg-white/20 backdrop-blur-sm rounded-lg p-3 text-center">
+              <CheckCircle className="h-5 w-5 text-white mx-auto mb-1" />
+              <div className="text-sm text-white/80">Campanha</div>
+              <div className="text-lg font-bold text-white">Concluída</div>
+            </div>
             <div className="bg-white/20 backdrop-blur-sm rounded-lg p-3 text-center">
               <Users className="h-5 w-5 text-white mx-auto mb-1" />
               <div className="text-sm text-white/80">Voluntários</div>
               <div className="text-lg font-bold text-white">80</div>
             </div>
             <div className="bg-white/20 backdrop-blur-sm rounded-lg p-3 text-center">
-              <Shield className="h-5 w-5 text-white mx-auto mb-1" />
-              <div className="text-sm text-white/80">Seguro</div>
-              <div className="text-lg font-bold text-white">100%</div>
-            </div>
-            <div className="bg-white/20 backdrop-blur-sm rounded-lg p-3 text-center">
-              <Zap className="h-5 w-5 text-white mx-auto mb-1" />
-              <div className="text-sm text-white/80">Rápido</div>
-              <div className="text-lg font-bold text-white">15min</div>
+              <Heart className="h-5 w-5 text-white mx-auto mb-1 fill-current" />
+              <div className="text-sm text-white/80">Vidas</div>
+              <div className="text-lg font-bold text-white">Salvas</div>
             </div>
           </div>
         </div>
@@ -600,18 +600,18 @@ export function BloodDonationCard() {
           
 
           <div className="mt-auto">
-            <Button
-              className="w-full bg-red-200 text-red-600 font-semibold rounded-xl py-4 text-md shadow-lg cursor-not-allowed flex items-center justify-center gap-2 border-2 px border-red-300"
-              disabled={true}
-
-            >
-              <ShieldPlus className="h-5 w-5 mr-2 text-red-600" />
-              Inscrições Finalizadas
-            </Button>
+            <a href="https://www.instagram.com/voluntariamais/" target="_blank" rel="noopener noreferrer" className="block w-full">
+              <Button
+                className="w-full bg-gradient-to-r from-pink-500 to-red-500 hover:from-pink-600 hover:to-red-600 text-white font-semibold rounded-xl py-4 text-md shadow-lg flex items-center justify-center gap-2 border-0 transition-all duration-300"
+              >
+                <Instagram className="h-5 w-5" />
+                Ver Fotos da Campanha no Instagram
+              </Button>
+            </a>
 
             <div className="text-center pt-4 border-t border-gray-200/50 mt-4">
               <p className="text-xs text-gray-500 flex items-center justify-center gap-2">
-                Salve vidas com um gesto simples • Processo rápido e seguro
+                ✨ Obrigado por fazer parte dessa história • Cada doação salvou vidas
               </p>
             </div>
           </div>
