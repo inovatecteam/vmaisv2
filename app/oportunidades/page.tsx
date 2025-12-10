@@ -15,7 +15,6 @@ import { ONG } from '@/types'
 import { toast } from 'sonner'
 import { useAuth } from '@/components/providers/auth-provider'
 import { AuthModal } from '@/components/auth/auth-modal'
-import { WhatsAppConfirmModal } from '@/components/whatsapp-confirm-modal'
 import { sendContactEmail } from '@/lib/api'
 import Footer from '@/components/layout/footer'
 import { UcergsFundraisingCard } from '@/components/ucergs-fundraising-card'
@@ -29,8 +28,6 @@ export default function CatalogoPage() {
   const [selectedOng, setSelectedOng] = useState<ONG | null>(null)
   const [showAuthModal, setShowAuthModal] = useState(false)
   const [ongToOpenAfterAuth, setOngToOpenAfterAuth] = useState<ONG | null>(null)
-  const [showWhatsappConfirmModal, setShowWhatsappConfirmModal] = useState(false)
-  const [ongToConfirmWhatsapp, setOngToConfirmWhatsapp] = useState<ONG | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [searchTerm, setSearchTerm] = useState('')
@@ -55,11 +52,7 @@ export default function CatalogoPage() {
       setLoading(true)
       setError(null)
       
-      const { data, error } = await supabase
-        .from('ongs')
-        .select('*')
-        .eq('admin_approved', true)
-        .order('created_at', { ascending: false })
+      const { data, error } = await supabase.rpc('get_public_ongs')
 
       if (error) {
         throw error
@@ -129,45 +122,7 @@ export default function CatalogoPage() {
     }
   }
 
-  const handleWhatsAppClick = (ong: ONG) => {
-    if (!user) {
-      setOngToOpenAfterAuth(ong)
-      setShowAuthModal(true)
-      return
-    }
 
-    if (ong.whatsapp) {
-      setOngToConfirmWhatsapp(ong)
-      setShowWhatsappConfirmModal(true)
-    }
-  }
-
-  const handleWhatsappConfirmed = async (observation: string) => {
-    if (!ongToConfirmWhatsapp || !user) return
-
-    try {
-      // Send contact email
-      await sendContactEmail({
-        user_id: user.id,
-        ong_id: ongToConfirmWhatsapp.id,
-        observation_message: observation
-      })
-
-      // Register interaction
-      await handleInteraction(ongToConfirmWhatsapp.id)
-
-      // Redirect to WhatsApp
-      const whatsappUrl = `https://wa.me/${ongToConfirmWhatsapp.whatsapp!.replace(/\D/g, '')}?text=Olá! Encontrei vocês na plataforma Voluntaria%2B e gostaria de saber como posso ajudar como voluntário.`
-      window.open(whatsappUrl, '_blank')
-
-      toast.success('Informações enviadas! Redirecionando para WhatsApp...')
-      setShowWhatsappConfirmModal(false)
-      setOngToConfirmWhatsapp(null)
-    } catch (error: any) {
-      console.error('Erro ao enviar informações:', error)
-      toast.error('Erro ao enviar informações. Tente novamente.')
-    }
-  }
 
   const handleOngClick = (ong: ONG) => {
     if (!user) {
@@ -622,16 +577,6 @@ export default function CatalogoPage() {
                 )}
 
                 <div className="flex flex-col sm:flex-row gap-3 pt-6 border-t border-gray-100">
-                  {selectedOng.whatsapp && (
-                    <Button 
-                      onClick={() => handleWhatsAppClick(selectedOng)}
-                      className="bg-green-600 hover:bg-green-700 text-white rounded-xl flex-1"
-                    >
-                      <Phone className="h-4 w-4 mr-2" />
-                      Conversar no WhatsApp
-                    </Button>
-                  )}
-                  
                   <Button 
                     variant="outline" 
                     onClick={() => {
@@ -657,14 +602,6 @@ export default function CatalogoPage() {
         onAuthSuccess={handleAuthSuccess}
       />
       
-      {/* Modal de Confirmação do WhatsApp */}
-      <WhatsAppConfirmModal
-        open={showWhatsappConfirmModal}
-        onOpenChange={setShowWhatsappConfirmModal}
-        ong={ongToConfirmWhatsapp}
-        user={user}
-        onConfirm={handleWhatsappConfirmed}
-      />
       
       <Footer />
     </div>
