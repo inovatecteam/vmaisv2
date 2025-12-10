@@ -1,0 +1,10 @@
+
+> nextjs@0.1.0 start
+> next start -p 3002
+
+   ▲ Next.js 15.5.4
+   - Local:        http://localhost:3002
+   - Network:      http://192.168.0.2:3002
+
+ ✓ Starting...
+ ✓ Ready in 485ms
