@@ -1,205 +1,246 @@
-# Voluntaria+ 💛
+# Voluntária+ 💛
 
-Uma plataforma web moderna que conecta ONGs a voluntários, facilitando o encontro entre organizações que precisam de ajuda e pessoas dispostas a fazer a diferença em suas comunidades.
+Plataforma web que conecta ONGs a voluntários no Rio Grande do Sul, facilitando o encontro entre organizações que precisam de ajuda e pessoas dispostas a fazer a diferença.
 
-## 🌟 Características 
-
-- **Interface Moderna**: Design limpo com bordas arredondadas e paleta branco/amarela
-- **Responsivo**: Mobile-first com experiência otimizada para todos os dispositivos
-- **Autenticação Completa**: Sistema seguro com Supabase Auth
-- **Mapa Interativo**: Visualização geográfica das ONGs (com Google Maps API)
-- **Dashboard Intuitivo**: Métricas e atividades do usuário
-- **Conexão Direta**: Integração com WhatsApp para comunicação
-
-## 🚀 Tecnologias
-
-- **Frontend**: Next.js 14 com App Router, TypeScript, TailwindCSS
-- **UI Components**: shadcn/ui
-- **Backend**: Supabase (PostgreSQL + Auth + APIs)
-- **Mapas**: Google Maps JavaScript API
-- **Deploy**: Vercel
-
-## 📋 Funcionalidades
-
-### Para Voluntários
-- ✅ Buscar ONGs por localização, tipo e causa
-- ✅ Visualizar ONGs no mapa interativo
-- ✅ Ver detalhes completos das organizações
-- ✅ Contato direto via WhatsApp
-- ✅ Dashboard com histórico de interações
-- ✅ Gerenciamento de perfil e interesses
-
-### Para ONGs
-- ✅ Cadastro completo da organização
-- ✅ Publicação nas oportunidades públicas
-- ✅ Definição de necessidades de voluntariado
-- ✅ Recebimento de contatos qualificados
-- ✅ Presença no mapa da região
-
-## 🏗️ Estrutura do Projeto
-
-```
-├── app/                    # Páginas do Next.js App Router
-│   ├── oportunidades/          # Oportunidades de Voluntariado
-│   ├── mapa/              # Mapa interativo
-│   ├── dashboard/         # Dashboard do usuário
-│   └── perfil/            # Perfil e configurações
-├── components/            # Componentes React
-│   ├── auth/              # Componentes de autenticação
-│   ├── layout/            # Layout e navegação
-│   ├── providers/         # Context providers
-│   └── ui/                # Componentes shadcn/ui
-├── lib/                   # Utilitários e configurações
-├── types/                 # Tipos TypeScript
-└── supabase/             # Migrações do banco
-```
-
-## 🗄️ Banco de Dados
-
-### Tabelas Principais
-
-**users**
-- Dados pessoais dos usuários (voluntários e ONGs)
-- Interesses, disponibilidade, localização
-
-**ongs**
-- Informações das organizações
-- Descrição, necessidades, contato
-- Coordenadas para o mapa
-
-**interacoes**
-- Histórico de conexões entre usuários e ONGs
-- Métricas de engajamento
-
-## ⚙️ Configuração
-
-### 1. Pré-requisitos
-
-```bash
-Node.js 18+
-npm ou yarn
-Conta no Supabase
-Conta no Google Cloud (para Maps API)
-```
-
-### 2. Instalação
-
-```bash
-# Clone o repositório
-  git clone https://github.com/inovatecteam/vmaisv2
-cd voluntaria-mais
-
-# Instale as dependências
-npm install
-```
-
-### 3. Configuração do Ambiente
-
-Copie `.env.example` para `.env.local` e configure:
-
-```bash
-# Supabase
-NEXT_PUBLIC_SUPABASE_URL=sua_url_do_supabase
-NEXT_PUBLIC_SUPABASE_ANON_KEY=sua_chave_anonima
-
-# Google Maps (opcional)
-NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=sua_chave_do_google_maps
-```
-
-### 4. Configuração do Supabase
-
-1. Crie um novo projeto no [Supabase](https://supabase.com)
-2. Execute as migrações SQL (disponíveis na pasta `supabase/migrations/`)
-3. Configure as políticas RLS (Row Level Security)
-4. Obtenha as chaves de API
-
-### 5. Migrações do Banco
-
-Execute as migrações SQL no painel do Supabase:
-
-```sql
--- Criar tabelas users, ongs, interacoes, tarefas
--- Habilitar RLS e criar políticas
--- Configurar triggers e funções (se necessário)
-```
-
-### 6. Executar o Projeto
-
-```bash
-# Desenvolvimento
-npm run dev
-
-# Build para produção
-npm run build
-npm start
-```
-
-## 🎨 Customização
-
-### Cores e Tema
-
-As cores podem ser ajustadas em `tailwind.config.ts`:
-
-```typescript
-colors: {
-  primary: '#FBBF24', // Amarelo principal
-  secondary: '#FFFFFF', // Branco
-  // ... outras cores
-}
-```
-
-### Componentes UI
-
-Todos os componentes utilizam shadcn/ui e podem ser customizados individualmente.
-
-## 🚀 Deploy
-
-### Vercel (Recomendado)
-
-1. Conecte seu repositório no [Vercel](https://vercel.com)
-2. Configure as variáveis de ambiente
-3. Deploy automático a cada push
-
-### Outras Plataformas
-
-O projeto é compatível com qualquer plataforma que suporte Next.js:
-- Netlify
-- Railway
-- Digital Ocean App Platform
-
-## 🔒 Segurança
-
-- ✅ Autenticação via Supabase Auth
-- ✅ Row Level Security (RLS) habilitado
-- ✅ Validação de dados com Zod
-- ✅ Sanitização de inputs
-- ✅ Rotas protegidas com middleware
-
-## 📱 Responsividade
-
-- ✅ Mobile-first design
-- ✅ Breakpoints otimizados
-- ✅ Touch-friendly na mobile
-- ✅ Navegação adaptativa
-
-## 🤝 Contribuição
-
-1. Fork o projeto
-2. Crie uma branch para sua feature (`git checkout -b feature/AmazingFeature`)
-3. Commit suas mudanças (`git commit -m 'Add some AmazingFeature'`)
-4. Push para a branch (`git push origin feature/AmazingFeature`)
-5. Abra um Pull Request
-
-## 📄 Licença
-
-Este projeto está sob a licença MIT. Veja o arquivo `LICENSE` para mais detalhes.
-
-## 💬 Suporte
-
-Para suporte e dúvidas:
-- Abra uma issue no GitHub
-- Entre em contato: voluntariamaisrs@gmail.com
+**Produção:** [voluntariamais.com.br](https://voluntariamais.com.br)
 
 ---
 
-**Voluntaria+** | Conectando corações e causas para um mundo melhor 💛
+## Stack Tecnológica
+
+| Camada | Tecnologia |
+|--------|-----------|
+| Framework | Next.js 15 (App Router) |
+| Linguagem | TypeScript |
+| Estilização | Tailwind CSS 3 + shadcn/ui (Radix UI) |
+| Banco de Dados | Supabase (PostgreSQL gerenciado) |
+| Autenticação | Supabase Auth via `@supabase/ssr` |
+| Mapas | Google Maps JavaScript API |
+| Forms | React Hook Form + Zod |
+| Email | Resend (via Supabase Edge Function) |
+| Analytics | Vercel Analytics + Google Ads |
+| Deploy | Vercel (deploy automático via GitHub) |
+
+---
+
+## Pré-requisitos
+
+- Node.js 18+
+- npm
+- Conta no [Supabase](https://supabase.com) (projeto já existente)
+- Chave da Google Maps API (opcional — mapa não carrega sem ela)
+
+---
+
+## Configuração Local
+
+### 1. Clonar e instalar
+
+```bash
+git clone https://github.com/inovatecteam/vmaisv2.git
+cd vmaisv2
+npm install
+```
+
+### 2. Variáveis de ambiente
+
+Crie o arquivo `.env.local` na raiz do projeto:
+
+```env
+# Obrigatórias — encontre no Supabase Dashboard > Settings > API
+NEXT_PUBLIC_SUPABASE_URL=https://seu-projeto.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGc...
+
+# Opcional — mapa interativo das ONGs
+NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=AIzaSy...
+
+# Opcional — tracking Google Ads
+NEXT_PUBLIC_GOOGLE_ADS_ID=AW-17507836658
+```
+
+### 3. Rodar
+
+```bash
+npm run dev
+```
+
+Acesse [http://localhost:3000](http://localhost:3000).
+
+### Outros comandos
+
+```bash
+npm run build     # Build de produção
+npm start         # Servidor de produção
+npm run lint      # ESLint
+```
+
+---
+
+## Estrutura do Projeto
+
+```
+vmaisv2/
+├── app/                          # Páginas (App Router)
+│   ├── page.tsx                 # Landing page
+│   ├── entrar/                  # Login
+│   ├── cadastrar/               # Cadastro
+│   ├── esqueci-senha/           # Reset de senha
+│   ├── oportunidades/           # Listagem de ONGs com filtros e paginação
+│   ├── mapa/                    # Mapa interativo (Google Maps)
+│   ├── dashboard/               # Painel do voluntário (protegido)
+│   ├── perfil/                  # Edição de perfil (protegido)
+│   ├── configuracoes/           # Configurações e exclusão de conta (protegido)
+│   ├── onboarding/              # Setup obrigatório pós-cadastro (protegido)
+│   ├── sobre/, ajuda/, privacidade/, termos/   # Páginas estáticas
+│   └── api/auth/callback/       # Callback OAuth do Supabase
+│
+├── components/
+│   ├── ui/                      # Componentes shadcn/ui (gerados via CLI)
+│   ├── auth/                    # Modal de autenticação
+│   ├── layout/                  # Navbar e Footer
+│   ├── providers/               # AuthProvider (Context API)
+│   └── map/                     # LocationPickerMap
+│
+├── lib/
+│   ├── supabase.ts              # Cliente Supabase (browser, singleton)
+│   ├── supabase-server.ts       # Cliente Supabase (server components)
+│   ├── auth.ts                  # signUp, signIn, signOut, getCurrentUser
+│   ├── api.ts                   # sendContactEmail (com retry)
+│   ├── google-maps-loader.ts    # Loader lazy do Google Maps
+│   └── utils.ts                 # cn(), formatPhone(), retryWithBackoff()
+│
+├── types/
+│   ├── database.ts              # Tipos gerados do Supabase (manter sincronizado)
+│   └── index.ts                 # User, ONG, Interacao
+│
+├── supabase/
+│   ├── migrations/              # Migrações SQL (aplicar manualmente no Supabase)
+│   └── functions/               # Edge Functions (send-whatsapp-contact-email)
+│
+├── middleware.ts                 # Proteção de rotas + refresh de sessão
+└── tailwind.config.ts            # Cores, animações, tema
+```
+
+---
+
+## Autenticação
+
+A autenticação usa **Supabase Auth** com `@supabase/ssr`:
+
+- **Browser**: `lib/supabase.ts` → `createBrowserClient` (usado em componentes client)
+- **Server**: `lib/supabase-server.ts` → `createServerClient` (usado em route handlers e server components)
+- **Middleware**: `middleware.ts` → refresh de sessão via cookies em **todas as rotas**, proteção de `/dashboard`, `/perfil`, `/configuracoes`, `/onboarding`
+
+### Fluxo do usuário
+
+1. Cadastro em `/cadastrar` → email de confirmação
+2. Login em `/entrar` → sessão persistida via cookies
+3. Primeiro login → redirecionado para `/onboarding` (obrigatório)
+4. Após onboarding → acesso ao dashboard e funcionalidades completas
+
+### Rotas protegidas
+
+Definidas no `middleware.ts`. O middleware verifica sessão e status de onboarding. Se o perfil não existir no banco, é criado automaticamente no primeiro login (`lib/auth.ts`).
+
+---
+
+## Banco de Dados
+
+### Tabelas principais
+
+| Tabela | Descrição |
+|--------|-----------|
+| `users` | Perfis de voluntários e ONGs |
+| `ongs` | Organizações cadastradas (requer `admin_approved = true` para exibição) |
+| `interacoes` | Histórico de contatos entre voluntários e ONGs |
+| `blood_donation_registrations` | Campanha de doação de sangue |
+
+### Segurança (RLS)
+
+Row Level Security está habilitado em todas as tabelas:
+- **users**: cada usuário só lê/edita seu próprio perfil
+- **ongs**: somente ONGs aprovadas são visíveis publicamente; donos veem suas próprias ONGs
+- **interacoes**: usuários inserem e leem suas próprias interações
+
+### Migrações
+
+As migrações ficam em `supabase/migrations/`. Para aplicar uma nova migração:
+
+1. Abra o **SQL Editor** no [Supabase Dashboard](https://supabase.com/dashboard)
+2. Cole o conteúdo do arquivo `.sql`
+3. Clique **Run**
+
+**Importante:** migrações não são aplicadas automaticamente pelo deploy. Sempre aplique manualmente após merge.
+
+---
+
+## Supabase Edge Functions
+
+### `send-whatsapp-contact-email`
+
+Envia emails quando um voluntário contata uma ONG via WhatsApp. Usa **Resend** como provider.
+
+**Variáveis de ambiente necessárias no Supabase:**
+
+| Variável | Descrição |
+|----------|-----------|
+| `RESEND_API_KEY` | Chave da API do Resend |
+| `ADMIN_EMAIL` | Email admin (fallback: voluntariamaisrs@gmail.com) |
+
+Para deploy de funções:
+```bash
+npx supabase functions deploy send-whatsapp-contact-email
+```
+
+---
+
+## Deploy (Vercel)
+
+O projeto está conectado à Vercel via GitHub. Todo push na branch `main` dispara deploy automático.
+
+### Variáveis de ambiente na Vercel
+
+Configure no [Vercel Dashboard](https://vercel.com) > Project Settings > Environment Variables:
+
+| Variável | Tipo |
+|----------|------|
+| `NEXT_PUBLIC_SUPABASE_URL` | Pública |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Pública |
+| `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY` | Pública |
+| `NEXT_PUBLIC_GOOGLE_ADS_ID` | Pública (opcional) |
+
+### Checklist pós-deploy
+
+- [ ] Verificar que o login persiste após refresh
+- [ ] Verificar que o mapa carrega no Chrome e Safari
+- [ ] Verificar que "Sobre Nós" aparece no menu quando logado
+- [ ] Verificar que o botão "Reportar" funciona em `/oportunidades`
+- [ ] Aplicar migrações SQL pendentes no Supabase
+
+---
+
+## Funcionalidades
+
+### Para Voluntários
+- Buscar ONGs por localização, tipo e causa
+- Visualizar ONGs no mapa interativo
+- Contato direto via WhatsApp (com envio de email à ONG)
+- Dashboard com histórico de interações
+- Reportar ONGs com problemas
+
+### Para ONGs
+- Cadastro completo da organização
+- Publicação nas oportunidades (após aprovação admin)
+- Recebimento de contatos qualificados por email
+- Presença no mapa da região
+
+---
+
+## Contato
+
+- Email: voluntariamaisrs@gmail.com
+- GitHub: [inovatecteam/vmaisv2](https://github.com/inovatecteam/vmaisv2)
+
+## Licença
+
+MIT — ver [LICENSE](LICENSE)
