@@ -8,7 +8,8 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Search, MapPin, Phone, ExternalLink, Filter, Heart } from 'lucide-react'
+import { Search, MapPin, Phone, ExternalLink, Filter, Heart, Flag, Loader2 } from 'lucide-react'
+import { Textarea } from '@/components/ui/textarea'
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
 import { ONG } from '@/types'
@@ -40,6 +41,13 @@ export default function CatalogoPage() {
   const { user, loading: authLoading } = useAuth()
   const [currentPage, setCurrentPage] = useState(1)
   const itemsPerPage = 9
+
+  // Report modal state
+  const [showReportModal, setShowReportModal] = useState(false)
+  const [reportOng, setReportOng] = useState<ONG | null>(null)
+  const [reportReason, setReportReason] = useState('')
+  const [reportDescription, setReportDescription] = useState('')
+  const [reportSending, setReportSending] = useState(false)
 
   useEffect(() => {
     // Always load ONGs regardless of authentication status
@@ -146,25 +154,28 @@ export default function CatalogoPage() {
     if (!ongToConfirmWhatsapp || !user) return
 
     try {
-      // Send contact email
+      // Send contact email first — only proceed to WhatsApp if it succeeds
       await sendContactEmail({
         user_id: user.id,
         ong_id: ongToConfirmWhatsapp.id,
         observation_message: observation
       })
 
-      // Register interaction
-      await handleInteraction(ongToConfirmWhatsapp.id)
+      toast.success('Informações enviadas! Redirecionando para WhatsApp...')
 
-      // Redirect to WhatsApp
-      const whatsappUrl = `https://wa.me/${ongToConfirmWhatsapp.whatsapp!.replace(/\D/g, '')}?text=Olá! Encontrei vocês na plataforma Voluntaria%2B e gostaria de saber como posso ajudar como voluntário.`
+      // Register interaction (non-blocking)
+      handleInteraction(ongToConfirmWhatsapp.id).catch(() => {})
+
+      // Format and validate WhatsApp number
+      const rawNumber = ongToConfirmWhatsapp.whatsapp!.replace(/\D/g, '')
+      const whatsappNumber = rawNumber.startsWith('55') ? rawNumber : `55${rawNumber}`
+      const whatsappUrl = `https://wa.me/${whatsappNumber}?text=Olá! Encontrei vocês na plataforma Voluntaria%2B e gostaria de saber como posso ajudar como voluntário.`
       window.open(whatsappUrl, '_blank')
 
-      toast.success('Informações enviadas! Redirecionando para WhatsApp...')
       setShowWhatsappConfirmModal(false)
       setOngToConfirmWhatsapp(null)
-    } catch (error: any) {
-      console.error('Erro ao enviar informações:', error)
+    } catch (error) {
+      console.error('Erro ao enviar informações:', error instanceof Error ? error.message : error)
       toast.error('Erro ao enviar informações. Tente novamente.')
     }
   }
@@ -175,6 +186,30 @@ export default function CatalogoPage() {
       setShowAuthModal(true)
     } else {
       setSelectedOng(ong)
+    }
+  }
+
+  const handleReportSubmit = async () => {
+    if (!reportOng || !user || !reportReason) return
+
+    setReportSending(true)
+    try {
+      await supabase.functions.invoke('send-whatsapp-contact-email', {
+        body: {
+          user_id: user.id,
+          ong_id: reportOng.id,
+          observation_message: `[REPORT] Motivo: ${reportReason}\nDescrição: ${reportDescription || 'Sem descrição adicional'}`
+        }
+      })
+      toast.success('Report enviado com sucesso. Obrigado!')
+      setShowReportModal(false)
+      setReportOng(null)
+      setReportReason('')
+      setReportDescription('')
+    } catch (error) {
+      toast.error('Erro ao enviar report. Tente novamente.')
+    } finally {
+      setReportSending(false)
     }
   }
 
@@ -622,26 +657,41 @@ export default function CatalogoPage() {
                 )}
 
                 <div className="flex flex-col sm:flex-row gap-3 pt-6 border-t border-gray-100">
-                  {selectedOng.whatsapp && (
-                    <Button 
+                  {selectedOng.whatsapp ? (
+                    <Button
                       onClick={() => handleWhatsAppClick(selectedOng)}
                       className="bg-green-600 hover:bg-green-700 text-white rounded-xl flex-1"
                     >
                       <Phone className="h-4 w-4 mr-2" />
                       Conversar no WhatsApp
                     </Button>
+                  ) : (
+                    <p className="text-sm text-gray-400 italic flex-1 flex items-center">
+                      Contato WhatsApp não disponível para esta ONG.
+                    </p>
                   )}
                   
-                  <Button 
-                    variant="outline" 
+                  <Button
+                    variant="outline"
                     onClick={() => {
-                      handleInteraction(selectedOng.id)
+                      handleInteraction(selectedOng.id).catch(() => {})
                       setSelectedOng(null)
                     }}
                     className="rounded-xl sm:w-auto w-full"
                   >
-                    <ExternalLink className="h-4 w-4 mr-2" />
                     Fechar
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => {
+                      setReportOng(selectedOng)
+                      setShowReportModal(true)
+                    }}
+                    className="text-gray-400 hover:text-red-500 rounded-xl"
+                  >
+                    <Flag className="h-4 w-4 mr-1" />
+                    Reportar
                   </Button>
                 </div>
               </div>
@@ -665,7 +715,68 @@ export default function CatalogoPage() {
         user={user}
         onConfirm={handleWhatsappConfirmed}
       />
-      
+
+      {/* Modal de Report */}
+      <Dialog open={showReportModal} onOpenChange={setShowReportModal}>
+        <DialogContent className="max-w-md rounded-2xl">
+          <DialogHeader>
+            <DialogTitle>Reportar ONG</DialogTitle>
+          </DialogHeader>
+          {reportOng && (
+            <div className="space-y-4">
+              <p className="text-sm text-gray-600">
+                Reportando: <strong>{reportOng.nome}</strong>
+              </p>
+              <div>
+                <label className="text-sm font-medium mb-1 block">Motivo</label>
+                <Select value={reportReason} onValueChange={setReportReason}>
+                  <SelectTrigger className="rounded-xl">
+                    <SelectValue placeholder="Selecione o motivo" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="informacoes_incorretas">Informações incorretas</SelectItem>
+                    <SelectItem value="conteudo_inapropriado">Conteúdo inapropriado</SelectItem>
+                    <SelectItem value="ong_inativa">ONG parece inativa</SelectItem>
+                    <SelectItem value="fraude">Suspeita de fraude</SelectItem>
+                    <SelectItem value="outro">Outro</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <label className="text-sm font-medium mb-1 block">Descrição (opcional)</label>
+                <Textarea
+                  placeholder="Descreva o problema..."
+                  value={reportDescription}
+                  onChange={(e) => setReportDescription(e.target.value)}
+                  className="rounded-xl"
+                  rows={3}
+                />
+              </div>
+              <div className="flex gap-3 pt-2">
+                <Button
+                  onClick={handleReportSubmit}
+                  disabled={!reportReason || reportSending}
+                  className="flex-1 bg-red-600 hover:bg-red-700 text-white rounded-xl"
+                >
+                  {reportSending ? (
+                    <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Enviando...</>
+                  ) : (
+                    <><Flag className="h-4 w-4 mr-2" /> Enviar Report</>
+                  )}
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => setShowReportModal(false)}
+                  className="rounded-xl"
+                >
+                  Cancelar
+                </Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
       <Footer />
     </div>
   )

@@ -3,27 +3,27 @@ import { Loader } from '@googlemaps/js-api-loader'
 let googleMapsPromise: Promise<typeof google> | null = null
 
 export const loadGoogleMaps = async (apiKey: string): Promise<typeof google> => {
-  // Se já estamos carregando ou já carregamos, retorna a promise existente
   if (googleMapsPromise) {
     return googleMapsPromise
   }
 
-  // Se o Google Maps já está carregado globalmente
   if (typeof window !== 'undefined' && window.google?.maps) {
     return Promise.resolve(window.google)
   }
 
-  // Validar API key
   if (!apiKey || apiKey.trim() === '') {
     throw new Error('Google Maps API key não fornecida')
   }
 
-  // Carrega o Google Maps usando o Loader
   googleMapsPromise = new Loader({
     apiKey,
     version: 'weekly',
     libraries: ['places', 'geometry']
-  }).load()
+  }).load().catch((error) => {
+    // Reset promise so retry is possible
+    googleMapsPromise = null
+    throw error
+  })
 
   return googleMapsPromise
 }

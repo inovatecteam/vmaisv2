@@ -7,17 +7,28 @@ export interface ContactEmailData {
 }
 
 export const sendContactEmail = async (data: ContactEmailData): Promise<void> => {
-  try {
-    const { error } = await supabase.functions.invoke('send-whatsapp-contact-email', {
-      body: data
-    })
+  const maxRetries = 2
+  let lastError: Error | null = null
 
-    if (error) {
-      console.error('Erro ao enviar email de contato:', error)
-      throw new Error(error.message || 'Erro ao enviar email de contato')
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    try {
+      const { error } = await supabase.functions.invoke('send-whatsapp-contact-email', {
+        body: data
+      })
+
+      if (error) {
+        throw new Error(error.message || 'Erro ao enviar email de contato')
+      }
+
+      return // success
+    } catch (error) {
+      lastError = error instanceof Error ? error : new Error('Erro ao processar solicitação de contato')
+
+      if (attempt < maxRetries) {
+        await new Promise(resolve => setTimeout(resolve, 1000 * Math.pow(2, attempt)))
+      }
     }
-  } catch (error: any) {
-    console.error('Erro na chamada da função:', error)
-    throw new Error(error.message || 'Erro ao processar solicitação de contato')
   }
+
+  throw lastError
 }

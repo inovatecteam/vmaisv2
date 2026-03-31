@@ -101,20 +101,19 @@ export function Navbar() {
             Mapa
             <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all group-hover:w-full" />
           </Link>
-          {user ? (
-            <Link 
-              href="/dashboard" 
+          <Link
+            href="/sobre"
+            className="text-gray-700 hover:text-primary font-medium transition-colors relative group"
+          >
+            Sobre Nós
+            <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all group-hover:w-full" />
+          </Link>
+          {user && (
+            <Link
+              href="/dashboard"
               className="text-gray-700 hover:text-primary font-medium transition-colors relative group"
             >
               Dashboard
-              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all group-hover:w-full" />
-            </Link>
-          ) : (
-            <Link 
-              href="/sobre" 
-              className="text-gray-700 hover:text-primary font-medium transition-colors relative group"
-            >
-              Sobre Nós
               <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all group-hover:w-full" />
             </Link>
           )}
@@ -212,21 +211,20 @@ export function Navbar() {
                     >
                       Mapa
                     </Link>
-                    {user ? (
-                      <Link 
-                        href="/dashboard" 
+                    <Link
+                      href="/sobre"
+                      className="block text-lg font-medium text-gray-700 hover:text-primary transition-colors py-2"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      Sobre Nós
+                    </Link>
+                    {user && (
+                      <Link
+                        href="/dashboard"
                         className="block text-lg font-medium text-gray-700 hover:text-primary transition-colors py-2"
                         onClick={() => setMobileMenuOpen(false)}
                       >
                         Dashboard
-                      </Link>
-                    ) : (
-                      <Link 
-                        href="/sobre" 
-                        className="block text-lg font-medium text-gray-700 hover:text-primary transition-colors py-2"
-                        onClick={() => setMobileMenuOpen(false)}
-                      >
-                        Sobre Nós
                       </Link>
                     )}
                   </nav>

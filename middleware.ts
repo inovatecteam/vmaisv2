@@ -1,65 +1,89 @@
-import { createMiddlewareClient } from '@supabase/auth-helpers-nextjs'
+import { createServerClient } from '@supabase/ssr'
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
 export async function middleware(request: NextRequest) {
-  // Only run middleware for protected routes
   const protectedRoutes = ['/dashboard', '/perfil', '/configuracoes', '/onboarding']
-  const isProtectedRoute = protectedRoutes.some(route => request.nextUrl.pathname.startsWith(route))
-  
+  const isProtectedRoute = protectedRoutes.some(route =>
+    request.nextUrl.pathname.startsWith(route)
+  )
+
+  // Create response and Supabase client with cookie handling
+  let supabaseResponse = NextResponse.next({ request })
+
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll() {
+          return request.cookies.getAll()
+        },
+        setAll(cookiesToSet) {
+          cookiesToSet.forEach(({ name, value }) =>
+            request.cookies.set(name, value)
+          )
+          supabaseResponse = NextResponse.next({ request })
+          cookiesToSet.forEach(({ name, value, options }) =>
+            supabaseResponse.cookies.set(name, value, options)
+          )
+        },
+      },
+    }
+  )
+
+  // Refresh session — MUST happen before any auth checks
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  // For non-protected routes, just return with refreshed cookies
   if (!isProtectedRoute) {
-    return NextResponse.next()
+    return supabaseResponse
   }
 
-  const response = NextResponse.next()
-  const supabase = createMiddlewareClient({ req: request, res: response })
-
-  const {
-    data: { session },
-  } = await supabase.auth.getSession()
-
-  // Se não estiver autenticado, redirecionar para login
-  if (!session) {
+  // Protected route: redirect if not authenticated
+  if (!user) {
     const redirectUrl = new URL('/entrar', request.url)
     redirectUrl.searchParams.set('redirect', request.nextUrl.pathname)
     return NextResponse.redirect(redirectUrl)
   }
 
-  // Se usuário está autenticado, verificar onboarding
+  // Check onboarding status
   const { data: profile, error } = await supabase
     .from('users')
     .select('onboarded')
-    .eq('id', session.user.id)
+    .eq('id', user.id)
     .maybeSingle()
 
   if (error) {
-    console.error('Middleware: Erro ao buscar perfil do usuário:', error)
+    console.error('Middleware: erro ao buscar perfil:', error.message)
+    const redirectUrl = new URL('/entrar', request.url)
+    redirectUrl.searchParams.set('error', 'session')
+    return NextResponse.redirect(redirectUrl)
   }
 
-  // Determinar se precisa de onboarding
   const needsOnboarding = !profile || profile.onboarded !== true
 
-  // Se precisa de onboarding e não está na página de onboarding
+  // Redirect to onboarding if needed
   if (needsOnboarding && !request.nextUrl.pathname.startsWith('/onboarding')) {
     return NextResponse.redirect(new URL('/onboarding', request.url))
   }
-  
-  // Se já fez onboarding e está tentando acessar /onboarding
+
+  // Redirect away from onboarding if already completed
   if (!needsOnboarding && request.nextUrl.pathname.startsWith('/onboarding')) {
     return NextResponse.redirect(new URL('/perfil', request.url))
   }
 
-  return response
- }
+  return supabaseResponse
+}
 
 export const config = {
   matcher: [
     /*
-     * Protege apenas as rotas que requerem autenticação
+     * Match all routes except static files and images.
+     * This ensures session cookies are always refreshed.
      */
-    '/dashboard',
-    '/perfil',
-    '/configuracoes',
-    '/onboarding'
-  ]
+    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico)$).*)',
+  ],
 }

@@ -1,33 +1,21 @@
-import { cookies } from 'next/headers'
+// This route is kept for backwards compatibility.
+// The canonical auth callback is at /auth/callback.
 import { NextResponse } from 'next/server'
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
+import { createClient } from '@/lib/supabase-server'
 
 export async function GET(request: Request) {
-  const requestUrl = new URL(request.url)
-  const code = requestUrl.searchParams.get('code')
-  const next = requestUrl.searchParams.get('next') ?? '/'
+  const { searchParams, origin } = new URL(request.url)
+  const code = searchParams.get('code')
+  const next = searchParams.get('next') ?? '/'
 
   if (code) {
-    const supabase = createRouteHandlerClient({ cookies })
-    await supabase.auth.exchangeCodeForSession(code)
+    const supabase = await createClient()
+    const { error } = await supabase.auth.exchangeCodeForSession(code)
+
+    if (!error) {
+      return NextResponse.redirect(new URL(next, origin))
+    }
   }
 
-  return NextResponse.redirect(new URL(next, requestUrl.origin))
+  return NextResponse.redirect(new URL('/entrar?error=auth', origin))
 }
-
-export async function POST(request: Request) {
-  const supabase = createRouteHandlerClient({ cookies })
-  const { event, session } = await request.json()
-
-  if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED' || event === 'USER_UPDATED') {
-    await supabase.auth.setSession(session)
-  }
-
-  if (event === 'SIGNED_OUT') {
-    await supabase.auth.signOut()
-  }
-
-  return NextResponse.json({ ok: true })
-}
-
-export const dynamic = 'force-dynamic'

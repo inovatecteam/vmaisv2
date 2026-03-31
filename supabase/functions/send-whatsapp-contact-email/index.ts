@@ -158,20 +158,7 @@ Atenciosamente,
 Equipe Voluntaria+
     `.trim()
 
-    // Note: In a real implementation, you would use an email service like Resend, SendGrid, etc.
-    // For now, we'll simulate the email sending and log the content
-    console.log('=== EMAIL TO ADMIN ===')
-    console.log('To:', 'voluntariamaisrs@gmail.com')
-    console.log('Subject:', adminEmailSubject)
-    console.log('Body:', adminEmailBody)
-    console.log('\n=== EMAIL TO ONG ===')
-    console.log('To:', ongOwner.email)
-    console.log('Subject:', ongEmailSubject)
-    console.log('Body:', ongEmailBody)
-
-    // TODO: Replace this simulation with actual email sending
-    // Example with Resend:
-    
+    const adminEmail = Deno.env.get('ADMIN_EMAIL') ?? 'voluntariamaisrs@gmail.com'
     const resendApiKey = Deno.env.get('RESEND_API_KEY')
     if (!resendApiKey) {
       throw new Error('RESEND_API_KEY not configured')
@@ -186,7 +173,7 @@ Equipe Voluntaria+
       },
       body: JSON.stringify({
         from: 'Voluntaria+ <info@voluntariamais.com.br>',
-        to: ['voluntariamaisrs@gmail.com'],
+        to: [adminEmail],
         subject: adminEmailSubject,
         text: adminEmailBody,
       }),

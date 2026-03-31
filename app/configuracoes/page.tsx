@@ -107,13 +107,13 @@ export default function ConfiguracoesPage() {
   }
 
   const handleDeleteAccount = async () => {
+    if (!user) return
     setLoadingDelete(true)
     try {
-      // Primeiro, deletar o perfil do usuário (que cascateará para ONGs devido ao ON DELETE CASCADE)
       const { error: profileError } = await supabase
         .from('users')
         .delete()
-        .eq('id', user?.id)
+        .eq('id', user.id)
 
       if (profileError) throw profileError
 

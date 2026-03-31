@@ -47,126 +47,15 @@ export default function MapaPage() {
     loadOngs()
   }, [])
 
-  // Browser-agnostic map ref detection with multiple strategies
-  useEffect(() => {
-    let isInitialized = false
-    let cleanupFunctions: (() => void)[] = []
-
-    const initializeMap = () => {
-      if (isInitialized || mapInstanceRef.current) return
-      if (!mapRef.current) return
-
-      console.log('✅ Map ref detected, initializing Google Maps...')
-      isInitialized = true
-      initializeGoogleMaps()
-      
-      // Clear all cleanup functions
-      cleanupFunctions.forEach(cleanup => cleanup())
-      cleanupFunctions = []
-    }
-
-    // Strategy 1: Immediate check (works in most browsers)
-    if (mapRef.current) {
-      initializeMap()
-      return
-    }
-
-    // Strategy 2: requestAnimationFrame (browser-agnostic DOM ready)
-    const rafId = requestAnimationFrame(() => {
-      if (mapRef.current) {
-        initializeMap()
-      }
-    })
-    cleanupFunctions.push(() => cancelAnimationFrame(rafId))
-
-    // Strategy 3: Multiple timing approaches for different browsers
-    const timingStrategies = [
-      // Immediate microtask (Chrome, Firefox)
-      () => Promise.resolve().then(() => {
-        if (mapRef.current) initializeMap()
-      }),
-      
-      // Short delay (Safari, older browsers)
-      () => setTimeout(() => {
-        if (mapRef.current) initializeMap()
-      }, 0),
-      
-      // Progressive delays for slower browsers
-      () => setTimeout(() => {
-        if (mapRef.current) initializeMap()
-      }, 10),
-      
-      () => setTimeout(() => {
-        if (mapRef.current) initializeMap()
-      }, 50),
-      
-      () => setTimeout(() => {
-        if (mapRef.current) initializeMap()
-      }, 100),
-      
-      () => setTimeout(() => {
-        if (mapRef.current) initializeMap()
-      }, 200),
-      
-      // Fallback for very slow browsers
-      () => setTimeout(() => {
-        if (mapRef.current) initializeMap()
-      }, 500)
-    ]
-
-    // Execute all strategies
-    timingStrategies.forEach((strategy, index) => {
-      const cleanup = strategy()
-      if (cleanup && typeof cleanup === 'number') {
-        // setTimeout cleanup
-        cleanupFunctions.push(() => clearTimeout(cleanup))
-      }
-      // Promise-based strategies don't need cleanup
-    })
-
-    // Strategy 4: MutationObserver for DOM changes (most reliable)
-    if (typeof MutationObserver !== 'undefined') {
-      const observer = new MutationObserver(() => {
-        if (mapRef.current) {
-          initializeMap()
-          observer.disconnect()
-        }
-      })
-      
-      // Observe the parent container
-      const parentElement = document.querySelector('[data-map-container]')
-      if (parentElement) {
-        observer.observe(parentElement, { 
-          childList: true, 
-          subtree: true 
-        })
-        cleanupFunctions.push(() => observer.disconnect())
+  // Map initialization — single clean approach using ref callback
+  const mapRefCallback = (el: HTMLDivElement | null) => {
+    if (el && !mapRef.current) {
+      (mapRef as any).current = el
+      if (!mapInstanceRef.current) {
+        initializeGoogleMaps()
       }
     }
-
-    // Strategy 5: IntersectionObserver for visibility (modern browsers)
-    if (typeof IntersectionObserver !== 'undefined') {
-      const intersectionObserver = new IntersectionObserver((entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting && mapRef.current) {
-            initializeMap()
-            intersectionObserver.disconnect()
-          }
-        })
-      })
-      
-      // Observe when the map container becomes visible
-      const mapContainer = document.querySelector('[data-map-container]')
-      if (mapContainer) {
-        intersectionObserver.observe(mapContainer)
-        cleanupFunctions.push(() => intersectionObserver.disconnect())
-      }
-    }
-
-    return () => {
-      cleanupFunctions.forEach(cleanup => cleanup())
-    }
-  }, [])
+  }
 
   useEffect(() => {
     filterOngs()
@@ -268,10 +157,9 @@ export default function MapaPage() {
       setMapLoading(false)
       
       // Atualizar marcadores após inicializar o mapa
-      // Use a small delay to ensure the map is fully rendered
-      setTimeout(() => {
+      if (mapInstanceRef.current) {
         updateMapMarkers()
-      }, 100)
+      }
       
     } catch (error) {
       showMapPlaceholder(`Erro ao carregar Google Maps: ${error instanceof Error ? error.message : 'Erro desconhecido'}`)
@@ -467,25 +355,28 @@ export default function MapaPage() {
     if (!ongToConfirmWhatsapp || !user) return
 
     try {
-      // Send contact email
+      // Send contact email first — only proceed to WhatsApp if it succeeds
       await sendContactEmail({
         user_id: user.id,
         ong_id: ongToConfirmWhatsapp.id,
         observation_message: observation
       })
 
-      // Register interaction
-      await handleInteraction(ongToConfirmWhatsapp.id)
+      toast.success('Informações enviadas! Redirecionando para WhatsApp...')
 
-      // Redirect to WhatsApp
-      const whatsappUrl = `https://wa.me/${ongToConfirmWhatsapp.whatsapp!.replace(/\D/g, '')}?text=Olá! Encontrei vocês na plataforma Voluntaria%2B e gostaria de saber como posso ajudar como voluntário.`
+      // Register interaction (non-blocking)
+      handleInteraction(ongToConfirmWhatsapp.id).catch(() => {})
+
+      // Format and validate WhatsApp number
+      const rawNumber = ongToConfirmWhatsapp.whatsapp!.replace(/\D/g, '')
+      const whatsappNumber = rawNumber.startsWith('55') ? rawNumber : `55${rawNumber}`
+      const whatsappUrl = `https://wa.me/${whatsappNumber}?text=Olá! Encontrei vocês na plataforma Voluntaria%2B e gostaria de saber como posso ajudar como voluntário.`
       window.open(whatsappUrl, '_blank')
 
-      toast.success('Informações enviadas! Redirecionando para WhatsApp...')
       setShowWhatsappConfirmModal(false)
       setOngToConfirmWhatsapp(null)
-    } catch (error: any) {
-      console.error('Erro ao enviar informações:', error)
+    } catch (error) {
+      console.error('Erro ao enviar informações:', error instanceof Error ? error.message : error)
       toast.error('Erro ao enviar informações. Tente novamente.')
     }
   }
@@ -710,28 +601,10 @@ export default function MapaPage() {
               <Card className="h-80 sm:h-96 lg:h-[600px] rounded-2xl shadow-xl shadow-gray-200/50 overflow-hidden">
                 <CardContent className="p-0 h-full">
                   <div className="relative w-full h-full">
-                    <div 
-                      ref={(el) => {
-                        // Set the ref immediately
-                        if (el && !mapRef.current) {
-                          (mapRef as any).current = el
-                          
-                          // Trigger initialization with multiple browser-compatible methods
-                          // Method 1: Immediate (works in most browsers)
-                          if (!mapInstanceRef.current) {
-                            setTimeout(() => initializeGoogleMaps(), 0)
-                          }
-                          
-                          // Method 2: requestAnimationFrame (browser-agnostic)
-                          requestAnimationFrame(() => {
-                            if (!mapInstanceRef.current && mapRef.current) {
-                              initializeGoogleMaps()
-                            }
-                          })
-                        }
-                      }}
+                    <div
+                      ref={mapRefCallback}
                       data-map-container
-                      className="w-full h-full bg-gray-50" 
+                      className="w-full h-full bg-gray-50"
                     />
                     {mapLoading && (
                       <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-75 rounded-2xl">
@@ -963,25 +836,28 @@ export default function MapaPage() {
                 )}
 
                 <div className="flex flex-col sm:flex-row gap-3 pt-4 sm:pt-6 border-t border-gray-100">
-                  {selectedOng.whatsapp && (
-                    <Button 
+                  {selectedOng.whatsapp ? (
+                    <Button
                       onClick={() => handleWhatsAppClick(selectedOng)}
                       className="bg-green-600 hover:bg-green-700 text-white rounded-xl flex-1"
                     >
                       <Phone className="h-4 w-4 mr-2" />
                       Conversar no WhatsApp
                     </Button>
+                  ) : (
+                    <p className="text-sm text-gray-400 italic flex-1 flex items-center">
+                      Contato WhatsApp não disponível para esta ONG.
+                    </p>
                   )}
                   
-                  <Button 
-                    variant="outline" 
+                  <Button
+                    variant="outline"
                     onClick={() => {
-                      handleInteraction(selectedOng.id)
+                      handleInteraction(selectedOng.id).catch(() => {})
                       setSelectedOng(null)
                     }}
                     className="rounded-xl sm:w-auto w-full"
                   >
-                    <ExternalLink className="h-4 w-4 mr-2" />
                     Fechar
                   </Button>
                 </div>

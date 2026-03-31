@@ -4,7 +4,6 @@ import { createContext, useContext, useEffect, useState } from 'react'
 import { User as SupabaseUser } from '@supabase/supabase-js'
 import { supabase } from '@/lib/supabase'
 import { User } from '@/types'
-import { detectBrowserIssues, clearBrowserStorage } from '@/lib/utils'
 
 type AuthContextType = {
   user: User | null
@@ -20,28 +19,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [supabaseUser, setSupabaseUser] = useState<SupabaseUser | null>(null)
   const [loading, setLoading] = useState(true)
-  const [mounted, setMounted] = useState(false)
 
   const refreshUser = async () => {
     try {
-      const { data: { session } } = await supabase.auth.getSession()
-      
-      if (session?.user) {
-        setSupabaseUser(session.user)
-        
+      const { data: { user: authUser } } = await supabase.auth.getUser()
+
+      if (authUser) {
+        setSupabaseUser(authUser)
+
         const { data: profile } = await supabase
           .from('users')
           .select('*')
-          .eq('id', session.user.id)
+          .eq('id', authUser.id)
           .maybeSingle()
-        
+
         setUser(profile)
       } else {
         setSupabaseUser(null)
         setUser(null)
       }
     } catch (error) {
-      console.error('❌ AuthProvider: Erro ao carregar usuário:', error)
+      console.error('AuthProvider: erro ao carregar usuário:', error instanceof Error ? error.message : error)
       setSupabaseUser(null)
       setUser(null)
     } finally {
@@ -56,16 +54,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   useEffect(() => {
-    setMounted(true)
-  }, [])
-
-  useEffect(() => {
-    if (!mounted) return
-    
     refreshUser()
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
+      async (event) => {
         if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED' || event === 'USER_UPDATED') {
           await refreshUser()
         } else if (event === 'SIGNED_OUT') {
@@ -76,12 +68,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     )
 
     return () => subscription.unsubscribe()
-  }, [mounted])
-
-  // Don't render anything until mounted to prevent SSR issues
-  if (!mounted) {
-    return null
-  }
+  }, [])
 
   return (
     <AuthContext.Provider value={{ user, supabaseUser, loading, signOut, refreshUser }}>

@@ -46,6 +46,7 @@ export interface Database {
           onboarded?: boolean
           updated_at?: string
         }
+        Relationships: []
       }
       ongs: {
         Row: {
@@ -109,6 +110,15 @@ export interface Database {
           lng?: number | null
           updated_at?: string
         }
+        Relationships: [
+          {
+            foreignKeyName: "ongs_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          }
+        ]
       }
       interacoes: {
         Row: {
@@ -129,6 +139,22 @@ export interface Database {
           ong_id?: string
           timestamp?: string
         }
+        Relationships: [
+          {
+            foreignKeyName: "interacoes_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "interacoes_ong_id_fkey"
+            columns: ["ong_id"]
+            isOneToOne: false
+            referencedRelation: "ongs"
+            referencedColumns: ["id"]
+          }
+        ]
       }
       blood_donation_registrations: {
         Row: {
@@ -178,6 +204,7 @@ export interface Database {
           participando_batalha?: string
           turma_batalha?: string | null
         }
+        Relationships: []
       }
     }
     Views: {
