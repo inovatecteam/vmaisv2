@@ -35,21 +35,14 @@ export default function EntrarPage() {
   const handleSubmit = async (data: LoginData) => {
     setLoading(true)
     try {
-      const result = await signIn(data.email, data.password)
-      
-      if (!result.session) {
-        toast.error('Email não confirmado. Verifique sua caixa de entrada e confirme seu email.')
-        return
-      }
-      
+      await signIn(data.email, data.password)
+
       await refreshUser()
       toast.success('Login realizado com sucesso!')
       router.push('/onboarding')
     } catch (error: any) {
       if (error.message?.includes('Invalid login credentials')) {
         toast.error('Email ou senha incorretos.')
-      } else if (error.message?.includes('Email not confirmed')) {
-        toast.error('Email não confirmado. Verifique sua caixa de entrada.')
       } else {
         toast.error(error.message || 'Erro ao fazer login')
       }
