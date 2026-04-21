@@ -126,18 +126,21 @@ export interface Database {
           user_id: string
           ong_id: string
           timestamp: string
+          tipo: string
         }
         Insert: {
           id?: string
           user_id: string
           ong_id: string
           timestamp?: string
+          tipo: string
         }
         Update: {
           id?: string
           user_id?: string
           ong_id?: string
           timestamp?: string
+          tipo?: string
         }
         Relationships: [
           {

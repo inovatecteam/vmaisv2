@@ -262,7 +262,7 @@ export function MapaClient({ initialOngs }: MapaClientProps) {
     }
   }
 
-  const handleInteraction = async (ongId: string) => {
+  const handleInteraction = async (ongId: string, tipo: 'view' | 'whatsapp' | 'report') => {
     if (!user) return
 
     try {
@@ -271,6 +271,7 @@ export function MapaClient({ initialOngs }: MapaClientProps) {
         .insert({
           user_id: user.id,
           ong_id: ongId,
+          tipo,
         })
     } catch (error) {
       console.error('Erro ao registrar interação:', error)
@@ -302,7 +303,7 @@ export function MapaClient({ initialOngs }: MapaClientProps) {
 
       toast.success('Informações enviadas! Redirecionando para WhatsApp...')
 
-      handleInteraction(ongToConfirmWhatsapp.id).catch(() => {})
+      handleInteraction(ongToConfirmWhatsapp.id, 'whatsapp').catch(() => {})
 
       const rawNumber = ongToConfirmWhatsapp.whatsapp!.replace(/\D/g, '')
       const whatsappNumber = rawNumber.startsWith('55') ? rawNumber : `55${rawNumber}`
@@ -322,12 +323,14 @@ export function MapaClient({ initialOngs }: MapaClientProps) {
       setOngToOpenAfterAuth(ong)
       setShowAuthModal(true)
     } else {
+      handleInteraction(ong.id, 'view').catch(() => {})
       setSelectedOng(ong)
     }
   }
 
   const handleAuthSuccess = () => {
     if (ongToOpenAfterAuth) {
+      handleInteraction(ongToOpenAfterAuth.id, 'view').catch(() => {})
       setSelectedOng(ongToOpenAfterAuth)
       setOngToOpenAfterAuth(null)
     }
@@ -711,10 +714,7 @@ export function MapaClient({ initialOngs }: MapaClientProps) {
 
                   <Button
                     variant="outline"
-                    onClick={() => {
-                      handleInteraction(selectedOng.id).catch(() => {})
-                      setSelectedOng(null)
-                    }}
+                    onClick={() => setSelectedOng(null)}
                     className="rounded-xl sm:w-auto w-full"
                   >
                     Fechar

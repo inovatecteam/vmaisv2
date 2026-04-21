@@ -81,7 +81,7 @@ export function OportunidadesClient({ initialOngs }: OportunidadesClientProps) {
     setCurrentPage(1)
   }, [ongs, searchTerm, selectedTipo, selectedLocalizacaoTipo])
 
-  const handleInteraction = async (ongId: string) => {
+  const handleInteraction = async (ongId: string, tipo: 'view' | 'whatsapp' | 'report') => {
     if (!user) return
 
     try {
@@ -90,6 +90,7 @@ export function OportunidadesClient({ initialOngs }: OportunidadesClientProps) {
         .insert({
           user_id: user.id,
           ong_id: ongId,
+          tipo,
         })
     } catch (error) {
       console.error('Erro ao registrar interação:', error)
@@ -121,7 +122,7 @@ export function OportunidadesClient({ initialOngs }: OportunidadesClientProps) {
 
       toast.success('Informações enviadas! Redirecionando para WhatsApp...')
 
-      handleInteraction(ongToConfirmWhatsapp.id).catch(() => {})
+      handleInteraction(ongToConfirmWhatsapp.id, 'whatsapp').catch(() => {})
 
       const rawNumber = ongToConfirmWhatsapp.whatsapp!.replace(/\D/g, '')
       const whatsappNumber = rawNumber.startsWith('55') ? rawNumber : `55${rawNumber}`
@@ -141,6 +142,7 @@ export function OportunidadesClient({ initialOngs }: OportunidadesClientProps) {
       setOngToOpenAfterAuth(ong)
       setShowAuthModal(true)
     } else {
+      handleInteraction(ong.id, 'view').catch(() => {})
       setSelectedOng(ong)
     }
   }
@@ -157,6 +159,7 @@ export function OportunidadesClient({ initialOngs }: OportunidadesClientProps) {
           observation_message: `[REPORT] Motivo: ${reportReason}\nDescrição: ${reportDescription || 'Sem descrição adicional'}`
         }
       })
+      handleInteraction(reportOng.id, 'report').catch(() => {})
       toast.success('Report enviado com sucesso. Obrigado!')
       setShowReportModal(false)
       setReportOng(null)
@@ -171,6 +174,7 @@ export function OportunidadesClient({ initialOngs }: OportunidadesClientProps) {
 
   const handleAuthSuccess = () => {
     if (ongToOpenAfterAuth) {
+      handleInteraction(ongToOpenAfterAuth.id, 'view').catch(() => {})
       setSelectedOng(ongToOpenAfterAuth)
       setOngToOpenAfterAuth(null)
     }
@@ -560,10 +564,7 @@ export function OportunidadesClient({ initialOngs }: OportunidadesClientProps) {
 
                   <Button
                     variant="outline"
-                    onClick={() => {
-                      handleInteraction(selectedOng.id).catch(() => {})
-                      setSelectedOng(null)
-                    }}
+                    onClick={() => setSelectedOng(null)}
                     className="rounded-xl sm:w-auto w-full"
                   >
                     Fechar
