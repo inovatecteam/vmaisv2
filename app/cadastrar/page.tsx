@@ -9,13 +9,12 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Textarea } from '@/components/ui/textarea'
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { signUp } from '@/lib/auth'
 import { toast } from 'sonner'
-import { Loader2, Eye, EyeOff, Heart, ArrowLeft, User, Building, Mail, CheckCircle } from 'lucide-react'
+import { Loader2, Eye, EyeOff, Heart, ArrowLeft, User, Building } from 'lucide-react'
 import { useAuth } from '@/components/providers/auth-provider'
 import { formatPhone } from '@/lib/utils'
 
@@ -37,8 +36,6 @@ type RegisterData = z.infer<typeof registerSchema>
 export default function CadastrarPage() {
   const [loading, setLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
-  const [showEmailConfirmationModal, setShowEmailConfirmationModal] = useState(false)
-  const [userEmail, setUserEmail] = useState('')
   const { refreshUser } = useAuth()
   const router = useRouter()
 
@@ -59,28 +56,19 @@ export default function CadastrarPage() {
     setLoading(true)
     try {
       const { confirmPassword, password, ...userData } = data
-      const result = await signUp(data.email, password, userData)
-      
-      setLoading(false) // Parar loading imediatamente após resposta
-      
-      // Se chegou até aqui, o cadastro foi bem-sucedido
-      if (!result.session) {
-        // Email de confirmação necessário
-        setUserEmail(data.email)
-        setShowEmailConfirmationModal(true)
-      } else {
-        // Sessão estabelecida imediatamente
-        await refreshUser()
-        toast.success('Conta criada com sucesso!')
-        router.push('/')
-      }
+      await signUp(data.email, password, userData)
+
+      await refreshUser()
+      toast.success('Conta criada com sucesso!')
+      router.push('/')
     } catch (error: any) {
-      setLoading(false) // Garantir que loading pare em caso de erro
       if (error.message?.includes('User already registered')) {
         toast.error('Este email já possui uma conta. Tente fazer login.')
       } else {
         toast.error(error.message || 'Erro ao criar conta')
       }
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -269,84 +257,6 @@ export default function CadastrarPage() {
           </Link>
         </div>
       </div>
-
-      {/* Modal de Confirmação de Email */}
-      <Dialog open={showEmailConfirmationModal} onOpenChange={setShowEmailConfirmationModal}>
-        <DialogContent className="w-full max-w-md mx-4 rounded-2xl">
-          <DialogHeader className="text-center">
-            <div className="mx-auto w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-4">
-              <Mail className="h-8 w-8 text-primary" />
-            </div>
-            <DialogTitle className="text-2xl font-bold">
-              Confirme seu email
-            </DialogTitle>
-            <DialogDescription className="text-base text-gray-600 mt-2">
-              Sua conta foi criada com sucesso!
-            </DialogDescription>
-          </DialogHeader>
-          
-          <div className="space-y-4">
-            <div className="bg-primary/5 p-4 rounded-xl">
-              <div className="flex items-start space-x-3">
-                <CheckCircle className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                <div>
-                  <p className="font-medium text-gray-900 mb-1">
-                    Email de confirmação enviado
-                  </p>
-                  <p className="text-sm text-gray-600 break-words">
-                    Enviamos um link de confirmação para:
-                  </p>
-                  <p className="text-sm font-medium text-primary mt-1 break-words">
-                    {userEmail}
-                  </p>
-                </div>
-              </div>
-            </div>
-            
-            <div className="space-y-3 text-sm text-gray-600">
-              <div className="flex items-start space-x-2">
-                <span className="font-bold text-primary flex-shrink-0">1.</span>
-                <span className="break-words">Verifique sua caixa de entrada (e spam/lixo eletrônico)</span>
-              </div>
-              <div className="flex items-start space-x-2">
-                <span className="font-bold text-primary flex-shrink-0">2.</span>
-                <span className="break-words">Clique no link de confirmação no email</span>
-              </div>
-              <div className="flex items-start space-x-2">
-                <span className="font-bold text-primary flex-shrink-0">3.</span>
-                <span className="break-words">Retorne aqui e faça login com suas credenciais</span>
-              </div>
-            </div>
-            
-            <div className="bg-yellow-50 border border-yellow-200 p-3 rounded-lg">
-              <p className="text-xs text-yellow-800 break-words">
-                <strong>Importante:</strong> Você só conseguirá fazer login após confirmar seu email. 
-                O link de confirmação expira em 30 minutos.
-              </p>
-            </div>
-            
-            <div className="flex flex-col space-y-3 pt-4">
-              <Button 
-                onClick={() => {
-                  setShowEmailConfirmationModal(false)
-                  router.push('/entrar')
-                }}
-                className="bg-primary hover:bg-primary/90 rounded-xl"
-              >
-                Ir para Login
-              </Button>
-              
-              <Button 
-                variant="outline" 
-                onClick={() => setShowEmailConfirmationModal(false)}
-                className="rounded-xl"
-              >
-                Fechar
-              </Button>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
     </div>
   )
 }
