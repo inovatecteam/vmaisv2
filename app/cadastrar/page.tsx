@@ -2,7 +2,6 @@
 
 import { useState, useCallback } from 'react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -12,10 +11,9 @@ import { Textarea } from '@/components/ui/textarea'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { signUp } from '@/lib/auth'
+import { signUpAction } from './actions'
 import { toast } from 'sonner'
 import { Loader2, Eye, EyeOff, Heart, ArrowLeft, User, Building } from 'lucide-react'
-import { useAuth } from '@/components/providers/auth-provider'
 import { formatPhone } from '@/lib/utils'
 
 const registerSchema = z.object({
@@ -36,8 +34,6 @@ type RegisterData = z.infer<typeof registerSchema>
 export default function CadastrarPage() {
   const [loading, setLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
-  const { refreshUser } = useAuth()
-  const router = useRouter()
 
   const form = useForm<RegisterData>({
     resolver: zodResolver(registerSchema),
@@ -51,23 +47,18 @@ export default function CadastrarPage() {
     const formatted = formatPhone(e.target.value)
     form.setValue('telefone', formatted, { shouldDirty: true })
   }, [form])
-  
+
   const handleSubmit = async (data: RegisterData) => {
     setLoading(true)
-    try {
-      const { confirmPassword, password, ...userData } = data
-      await signUp(data.email, password, userData)
-
-      await refreshUser()
-      toast.success('Conta criada com sucesso!')
-      router.push('/')
-    } catch (error: any) {
-      if (error.message?.includes('User already registered')) {
+    const { confirmPassword, password, ...userData } = data
+    const result = await signUpAction(data.email, password, userData)
+    // Em sucesso, a action redireciona e o código abaixo não executa.
+    if (result?.error) {
+      if (result.error.includes('User already registered')) {
         toast.error('Este email já possui uma conta. Tente fazer login.')
       } else {
-        toast.error(error.message || 'Erro ao criar conta')
+        toast.error(result.error)
       }
-    } finally {
       setLoading(false)
     }
   }

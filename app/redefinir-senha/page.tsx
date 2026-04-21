@@ -1,5 +1,4 @@
 import Link from 'next/link'
-import { redirect } from 'next/navigation'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { ArrowLeft, Heart } from 'lucide-react'
@@ -8,32 +7,16 @@ import { RedefinirSenhaForm } from './form'
 
 export const dynamic = 'force-dynamic'
 
-type PageProps = {
-  searchParams: Promise<{ code?: string; erro?: string }>
-}
-
-export default async function RedefinirSenhaPage({ searchParams }: PageProps) {
-  const { code, erro } = await searchParams
-
-  // Se veio com ?code=... do email, troca no servidor (o server client
-  // tem acesso ao cookie code_verifier que o client-side não alcança de forma confiável)
-  if (code) {
-    const supabase = await createClient()
-    const { error } = await supabase.auth.exchangeCodeForSession(code)
-    if (error) {
-      redirect('/redefinir-senha?erro=link_invalido')
-    }
-    // Strip code da URL antes de renderizar o form
-    redirect('/redefinir-senha')
-  }
-
-  // Sem code → precisa de sessão ativa (já trocou) ou é erro
+export default async function RedefinirSenhaPage() {
+  // Troca de código PKCE acontece em /auth/callback (Route Handler).
+  // Quando o usuário chega aqui, ou já tem sessão (fluxo esperado) ou
+  // veio direto sem passar pelo callback — tratamos como link inválido.
   const supabase = await createClient()
   const {
     data: { user },
   } = await supabase.auth.getUser()
 
-  if (erro || !user) {
+  if (!user) {
     return <LinkInvalido />
   }
 

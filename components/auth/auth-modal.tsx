@@ -10,11 +10,10 @@ import { Textarea } from '@/components/ui/textarea'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { signUp, signIn } from '@/lib/auth'
+import { signInAction } from '@/app/entrar/actions'
+import { signUpAction } from '@/app/cadastrar/actions'
 import { toast } from 'sonner'
 import { Loader2, Eye, EyeOff } from 'lucide-react'
-import { useAuth } from '@/components/providers/auth-provider'
-import { useRouter } from 'next/navigation'
 import { formatPhone } from '@/lib/utils'
 
 const loginSchema = z.object({
@@ -41,14 +40,12 @@ type RegisterData = z.infer<typeof registerSchema>
 interface AuthModalProps {
   open: boolean
   onOpenChange: (open: boolean) => void
-  onAuthSuccess?: () => void
 }
 
-export function AuthModal({ open, onOpenChange, onAuthSuccess }: AuthModalProps) {
+export function AuthModal({ open, onOpenChange }: AuthModalProps) {
   const [isLogin, setIsLogin] = useState(true)
   const [loading, setLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
-  const { refreshUser } = useAuth()
 
   const loginForm = useForm<LoginData>({
     resolver: zodResolver(loginSchema)
@@ -63,66 +60,43 @@ export function AuthModal({ open, onOpenChange, onAuthSuccess }: AuthModalProps)
 
   const handleLogin = async (data: LoginData) => {
     setLoading(true)
-    try {
-      const result = await signIn(data.email, data.password)
-      
-      if (!result.session) {
-        toast.error('Email não confirmado. Verifique sua caixa de entrada e confirme seu email.')
-        return
-      }
-      
-      await refreshUser()
-      toast.success('Login realizado com sucesso!')
-      
-      if (onAuthSuccess) {
-        onAuthSuccess()
-      }
-      onOpenChange(false)
-    } catch (error: any) {
-      if (error.message?.includes('Invalid login credentials')) {
+    const result = await signInAction(data.email, data.password, null)
+
+    if (result?.error) {
+      if (result.error.includes('Invalid login credentials')) {
         toast.error('Email ou senha incorretos.')
-      } else if (error.message?.includes('Email not confirmed')) {
-        toast.error('Email não confirmado. Verifique sua caixa de entrada.')
       } else {
-        toast.error(error.message || 'Erro ao fazer login')
+        toast.error(result.error)
       }
-    } finally {
       setLoading(false)
-      loginForm.reset()
+      return
     }
+
+    // Hard reload garante que AuthProvider + middleware peguem os cookies
+    // novos. O caller pode ter salvado state em sessionStorage antes de
+    // abrir o modal (ex.: oportunidades-client salva ong.id pra reabrir
+    // o modal de detalhes depois do reload).
+    onOpenChange(false)
+    window.location.reload()
   }
 
   const handleRegister = async (data: RegisterData) => {
     setLoading(true)
-    try {
-      const { confirmPassword, password, ...userData } = data
-      const result = await signUp(data.email, password, userData)
-      
-      // Se chegou até aqui, o cadastro foi bem-sucedido
-      if (!result.session) {
-        // Email de confirmação necessário
-        toast.success('Conta criada! Verifique seu email para confirmar o cadastro.')
-        onOpenChange(false)
-      } else {
-        // Sessão estabelecida imediatamente
-        await refreshUser()
-        toast.success('Conta criada com sucesso!')
-        
-        if (onAuthSuccess) {
-          onAuthSuccess()
-        }
-        onOpenChange(false)
-      }
-    } catch (error: any) {
-      if (error.message?.includes('User already registered')) {
+    const { confirmPassword, password, ...userData } = data
+    const result = await signUpAction(data.email, password, userData, null)
+
+    if (result?.error) {
+      if (result.error.includes('User already registered')) {
         toast.error('Este email já possui uma conta. Tente fazer login.')
       } else {
-        toast.error(error.message || 'Erro ao criar conta')
+        toast.error(result.error)
       }
-    } finally {
       setLoading(false)
-      registerForm.reset()
+      return
     }
+
+    onOpenChange(false)
+    window.location.reload()
   }
 
   const toggleMode = () => {

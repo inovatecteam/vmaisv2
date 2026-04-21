@@ -30,24 +30,14 @@ export default function EntrarPage() {
 
   const handleSubmit = async (data: LoginData) => {
     setLoading(true)
-    try {
-      const result = await signInAction(data.email, data.password)
-
-      if (result.error) {
-        if (result.error.includes('Invalid login credentials')) {
-          toast.error('Email ou senha incorretos.')
-        } else {
-          toast.error(result.error)
-        }
-        return
+    const result = await signInAction(data.email, data.password)
+    // Em sucesso, a action redireciona e o código abaixo não executa.
+    if (result?.error) {
+      if (result.error.includes('Invalid login credentials')) {
+        toast.error('Email ou senha incorretos.')
+      } else {
+        toast.error(result.error)
       }
-
-      toast.success('Login realizado com sucesso!')
-      // Hard navigation pra garantir que AuthProvider remonte com os cookies novos
-      window.location.href = '/onboarding'
-    } catch (error: any) {
-      toast.error(error.message || 'Erro ao fazer login')
-    } finally {
       setLoading(false)
     }
   }

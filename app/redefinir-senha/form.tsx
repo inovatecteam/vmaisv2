@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -10,10 +9,9 @@ import { Label } from '@/components/ui/label'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { supabase } from '@/lib/supabase'
 import { toast } from 'sonner'
 import { Loader2, Eye, EyeOff, Heart, ArrowLeft } from 'lucide-react'
-import { useAuth } from '@/components/providers/auth-provider'
+import { updatePasswordAction } from './actions'
 
 const resetPasswordSchema = z.object({
   password: z.string().min(6, 'Senha deve ter pelo menos 6 caracteres'),
@@ -28,8 +26,6 @@ type ResetPasswordData = z.infer<typeof resetPasswordSchema>
 export function RedefinirSenhaForm() {
   const [submitting, setSubmitting] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
-  const router = useRouter()
-  const { refreshUser } = useAuth()
 
   const form = useForm<ResetPasswordData>({
     resolver: zodResolver(resetPasswordSchema),
@@ -37,16 +33,10 @@ export function RedefinirSenhaForm() {
 
   const handleSubmit = async (data: ResetPasswordData) => {
     setSubmitting(true)
-    try {
-      const { error } = await supabase.auth.updateUser({ password: data.password })
-      if (error) throw error
-
-      await refreshUser()
-      toast.success('Senha redefinida com sucesso!')
-      router.push('/')
-    } catch (error: any) {
-      toast.error(error.message || 'Erro ao redefinir senha')
-    } finally {
+    const result = await updatePasswordAction(data.password)
+    // Em sucesso a action redireciona; só cai aqui em erro.
+    if (result?.error) {
+      toast.error(result.error)
       setSubmitting(false)
     }
   }
