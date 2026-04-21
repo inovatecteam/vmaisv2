@@ -1,10 +1,23 @@
 'use server'
 
+import { revalidatePath } from 'next/cache'
+import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase-server'
 
 export type SignInResult = { error?: string }
 
-export async function signInAction(email: string, password: string): Promise<SignInResult> {
+/**
+ * Login server-side. Quando `redirectTo` é truthy (padrão: /onboarding),
+ * redireciona depois do signInWithPassword — padrão oficial Next 15 +
+ * @supabase/ssr que garante que os cookies de sessão cheguem ao browser.
+ * Quando `redirectTo` é null (uso em modais, p.ex. AuthModal), retorna
+ * { ok: true } e o cliente decide como navegar.
+ */
+export async function signInAction(
+  email: string,
+  password: string,
+  redirectTo: string | null = '/onboarding'
+): Promise<SignInResult> {
   const supabase = await createClient()
 
   const { data, error } = await supabase.auth.signInWithPassword({ email, password })
@@ -12,7 +25,7 @@ export async function signInAction(email: string, password: string): Promise<Sig
     return { error: error.message }
   }
 
-  // Cria perfil na tabela users se ainda não existe (primeiro login)
+  // Cria perfil em users se ainda não existe (primeiro login)
   if (data.user) {
     const { data: profile } = await supabase
       .from('users')
@@ -42,5 +55,7 @@ export async function signInAction(email: string, password: string): Promise<Sig
     }
   }
 
+  revalidatePath('/', 'layout')
+  if (redirectTo) redirect(redirectTo)
   return {}
 }

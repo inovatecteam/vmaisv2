@@ -23,12 +23,13 @@ type MapaClientProps = {
   initialOngs: ONG[]
 }
 
+const POST_AUTH_ONG_KEY = 'post-auth-ong-id'
+
 export function MapaClient({ initialOngs }: MapaClientProps) {
   const [ongs] = useState<ONG[]>(initialOngs)
   const [filteredOngs, setFilteredOngs] = useState<ONG[]>(initialOngs)
   const [selectedOng, setSelectedOng] = useState<ONG | null>(null)
   const [showAuthModal, setShowAuthModal] = useState(false)
-  const [ongToOpenAfterAuth, setOngToOpenAfterAuth] = useState<ONG | null>(null)
   const [showWhatsappConfirmModal, setShowWhatsappConfirmModal] = useState(false)
   const [ongToConfirmWhatsapp, setOngToConfirmWhatsapp] = useState<ONG | null>(null)
   const [mapLoading, setMapLoading] = useState(true)
@@ -89,6 +90,23 @@ export function MapaClient({ initialOngs }: MapaClientProps) {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filteredOngs])
+
+  // Retoma o modal de detalhe depois de login via AuthModal (hard reload).
+  useEffect(() => {
+    if (!user) return
+    let pendingId: string | null = null
+    try {
+      pendingId = sessionStorage.getItem(POST_AUTH_ONG_KEY)
+    } catch {}
+    if (!pendingId) return
+    try { sessionStorage.removeItem(POST_AUTH_ONG_KEY) } catch {}
+    const ong = ongs.find(o => o.id === pendingId)
+    if (ong) {
+      handleInteraction(ong.id, 'view').catch(() => {})
+      setSelectedOng(ong)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user])
 
   const initializeGoogleMaps = async () => {
     try {
@@ -280,7 +298,7 @@ export function MapaClient({ initialOngs }: MapaClientProps) {
 
   const handleWhatsAppClick = (ong: ONG) => {
     if (!user) {
-      setOngToOpenAfterAuth(ong)
+      try { sessionStorage.setItem(POST_AUTH_ONG_KEY, ong.id) } catch {}
       setShowAuthModal(true)
       return
     }
@@ -320,19 +338,11 @@ export function MapaClient({ initialOngs }: MapaClientProps) {
 
   const handleOngClick = (ong: ONG) => {
     if (!user) {
-      setOngToOpenAfterAuth(ong)
+      try { sessionStorage.setItem(POST_AUTH_ONG_KEY, ong.id) } catch {}
       setShowAuthModal(true)
     } else {
       handleInteraction(ong.id, 'view').catch(() => {})
       setSelectedOng(ong)
-    }
-  }
-
-  const handleAuthSuccess = () => {
-    if (ongToOpenAfterAuth) {
-      handleInteraction(ongToOpenAfterAuth.id, 'view').catch(() => {})
-      setSelectedOng(ongToOpenAfterAuth)
-      setOngToOpenAfterAuth(null)
     }
   }
 
@@ -729,7 +739,6 @@ export function MapaClient({ initialOngs }: MapaClientProps) {
       <AuthModal
         open={showAuthModal}
         onOpenChange={setShowAuthModal}
-        onAuthSuccess={handleAuthSuccess}
       />
 
       <WhatsAppConfirmModal

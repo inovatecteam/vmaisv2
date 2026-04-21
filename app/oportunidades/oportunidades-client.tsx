@@ -26,12 +26,13 @@ type OportunidadesClientProps = {
   initialOngs: ONG[]
 }
 
+const POST_AUTH_ONG_KEY = 'post-auth-ong-id'
+
 export function OportunidadesClient({ initialOngs }: OportunidadesClientProps) {
   const [ongs] = useState<ONG[]>(initialOngs)
   const [filteredOngs, setFilteredOngs] = useState<ONG[]>(initialOngs)
   const [selectedOng, setSelectedOng] = useState<ONG | null>(null)
   const [showAuthModal, setShowAuthModal] = useState(false)
-  const [ongToOpenAfterAuth, setOngToOpenAfterAuth] = useState<ONG | null>(null)
   const [showWhatsappConfirmModal, setShowWhatsappConfirmModal] = useState(false)
   const [ongToConfirmWhatsapp, setOngToConfirmWhatsapp] = useState<ONG | null>(null)
   const [searchTerm, setSearchTerm] = useState('')
@@ -81,6 +82,24 @@ export function OportunidadesClient({ initialOngs }: OportunidadesClientProps) {
     setCurrentPage(1)
   }, [ongs, searchTerm, selectedTipo, selectedLocalizacaoTipo])
 
+  // Retoma o modal de detalhe depois de login via AuthModal (que faz hard reload).
+  // A ONG que o usuário tentou abrir antes do login fica salva em sessionStorage.
+  useEffect(() => {
+    if (!user) return
+    let pendingId: string | null = null
+    try {
+      pendingId = sessionStorage.getItem(POST_AUTH_ONG_KEY)
+    } catch {}
+    if (!pendingId) return
+    try { sessionStorage.removeItem(POST_AUTH_ONG_KEY) } catch {}
+    const ong = ongs.find(o => o.id === pendingId)
+    if (ong) {
+      handleInteraction(ong.id, 'view').catch(() => {})
+      setSelectedOng(ong)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user])
+
   const handleInteraction = async (ongId: string, tipo: 'view' | 'whatsapp' | 'report') => {
     if (!user) return
 
@@ -99,7 +118,7 @@ export function OportunidadesClient({ initialOngs }: OportunidadesClientProps) {
 
   const handleWhatsAppClick = (ong: ONG) => {
     if (!user) {
-      setOngToOpenAfterAuth(ong)
+      try { sessionStorage.setItem(POST_AUTH_ONG_KEY, ong.id) } catch {}
       setShowAuthModal(true)
       return
     }
@@ -139,7 +158,7 @@ export function OportunidadesClient({ initialOngs }: OportunidadesClientProps) {
 
   const handleOngClick = (ong: ONG) => {
     if (!user) {
-      setOngToOpenAfterAuth(ong)
+      try { sessionStorage.setItem(POST_AUTH_ONG_KEY, ong.id) } catch {}
       setShowAuthModal(true)
     } else {
       handleInteraction(ong.id, 'view').catch(() => {})
@@ -169,14 +188,6 @@ export function OportunidadesClient({ initialOngs }: OportunidadesClientProps) {
       toast.error('Erro ao enviar report. Tente novamente.')
     } finally {
       setReportSending(false)
-    }
-  }
-
-  const handleAuthSuccess = () => {
-    if (ongToOpenAfterAuth) {
-      handleInteraction(ongToOpenAfterAuth.id, 'view').catch(() => {})
-      setSelectedOng(ongToOpenAfterAuth)
-      setOngToOpenAfterAuth(null)
     }
   }
 
@@ -591,7 +602,6 @@ export function OportunidadesClient({ initialOngs }: OportunidadesClientProps) {
       <AuthModal
         open={showAuthModal}
         onOpenChange={setShowAuthModal}
-        onAuthSuccess={handleAuthSuccess}
       />
 
       <WhatsAppConfirmModal
