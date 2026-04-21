@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -10,10 +9,9 @@ import { Label } from '@/components/ui/label'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { signIn } from '@/lib/auth'
+import { signInAction } from './actions'
 import { toast } from 'sonner'
 import { Loader2, Eye, EyeOff, Heart, ArrowLeft } from 'lucide-react'
-import { useAuth } from '@/components/providers/auth-provider'
 
 const loginSchema = z.object({
   email: z.string().email('Email inválido'),
@@ -25,8 +23,6 @@ type LoginData = z.infer<typeof loginSchema>
 export default function EntrarPage() {
   const [loading, setLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
-  const { refreshUser } = useAuth()
-  const router = useRouter()
 
   const form = useForm<LoginData>({
     resolver: zodResolver(loginSchema)
@@ -35,17 +31,22 @@ export default function EntrarPage() {
   const handleSubmit = async (data: LoginData) => {
     setLoading(true)
     try {
-      await signIn(data.email, data.password)
+      const result = await signInAction(data.email, data.password)
 
-      await refreshUser()
-      toast.success('Login realizado com sucesso!')
-      router.push('/onboarding')
-    } catch (error: any) {
-      if (error.message?.includes('Invalid login credentials')) {
-        toast.error('Email ou senha incorretos.')
-      } else {
-        toast.error(error.message || 'Erro ao fazer login')
+      if (result.error) {
+        if (result.error.includes('Invalid login credentials')) {
+          toast.error('Email ou senha incorretos.')
+        } else {
+          toast.error(result.error)
+        }
+        return
       }
+
+      toast.success('Login realizado com sucesso!')
+      // Hard navigation pra garantir que AuthProvider remonte com os cookies novos
+      window.location.href = '/onboarding'
+    } catch (error: any) {
+      toast.error(error.message || 'Erro ao fazer login')
     } finally {
       setLoading(false)
     }
