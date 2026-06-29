@@ -20,20 +20,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [supabaseUser, setSupabaseUser] = useState<SupabaseUser | null>(null)
   const [loading, setLoading] = useState(true)
 
+  const loadProfile = async (authUserId: string) => {
+    const { data: profile } = await supabase
+      .from('users')
+      .select('*')
+      .eq('id', authUserId)
+      .maybeSingle()
+
+    setUser(profile)
+  }
+
   const refreshUser = async () => {
     try {
       const { data: { user: authUser } } = await supabase.auth.getUser()
 
       if (authUser) {
         setSupabaseUser(authUser)
-
-        const { data: profile } = await supabase
-          .from('users')
-          .select('*')
-          .eq('id', authUser.id)
-          .maybeSingle()
-
-        setUser(profile)
+        await loadProfile(authUser.id)
       } else {
         setSupabaseUser(null)
         setUser(null)
@@ -57,12 +60,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     refreshUser()
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event) => {
-        if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED' || event === 'USER_UPDATED') {
-          await refreshUser()
-        } else if (event === 'SIGNED_OUT') {
+      (event, session) => {
+        // IMPORTANTE: não chamar getSession/getUser (nem queries) de forma
+        // síncrona aqui — isso pode causar deadlock no lock interno do
+        // GoTrue. Usamos a `session` do próprio evento e adiamos qualquer
+        // chamada ao Supabase com setTimeout(0). (Recomendação oficial.)
+        if (event === 'SIGNED_OUT') {
           setUser(null)
           setSupabaseUser(null)
+          return
+        }
+
+        if (session?.user) {
+          setSupabaseUser(session.user)
+          const userId = session.user.id
+          setTimeout(() => {
+            loadProfile(userId).catch((error) =>
+              console.error('AuthProvider: erro ao carregar perfil:', error)
+            )
+          }, 0)
         }
       }
     )

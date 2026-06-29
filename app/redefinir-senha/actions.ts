@@ -1,7 +1,6 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
-import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase-server'
 
 export type UpdatePasswordResult = { error?: string }
@@ -26,5 +25,5 @@ export async function updatePasswordAction(password: string): Promise<UpdatePass
   }
 
   revalidatePath('/', 'layout')
-  redirect('/')
+  return {}
 }

@@ -31,7 +31,7 @@ export default function EntrarPage() {
   const handleSubmit = async (data: LoginData) => {
     setLoading(true)
     const result = await signInAction(data.email, data.password)
-    // Em sucesso, a action redireciona e o código abaixo não executa.
+
     if (result?.error) {
       if (result.error.includes('Invalid login credentials')) {
         toast.error('Email ou senha incorretos.')
@@ -39,7 +39,20 @@ export default function EntrarPage() {
         toast.error(result.error)
       }
       setLoading(false)
+      return
     }
+
+    // Navegação HARD (não router.push): a action setou os cookies de sessão no
+    // servidor, mas o AuthProvider (client) só relê os cookies quando a página
+    // recarrega de verdade. Um redirect soft deixaria a navbar/destino ainda
+    // "deslogados" — era exatamente o bug do login "recarrega e nada acontece".
+    // Só aceita caminho interno (evita open-redirect via `//host` ou URL absoluta).
+    const redirectParam = new URLSearchParams(window.location.search).get('redirect')
+    const destino =
+      redirectParam && redirectParam.startsWith('/') && !redirectParam.startsWith('//')
+        ? redirectParam
+        : '/onboarding'
+    window.location.assign(destino)
   }
 
   return (

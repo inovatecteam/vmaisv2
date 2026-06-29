@@ -34,11 +34,15 @@ export function RedefinirSenhaForm() {
   const handleSubmit = async (data: ResetPasswordData) => {
     setSubmitting(true)
     const result = await updatePasswordAction(data.password)
-    // Em sucesso a action redireciona; só cai aqui em erro.
     if (result?.error) {
       toast.error(result.error)
       setSubmitting(false)
+      return
     }
+
+    // Navegação HARD pro AuthProvider reler a sessão (mesmo motivo do login).
+    toast.success('Senha redefinida com sucesso!')
+    window.location.assign('/')
   }
 
   return (
