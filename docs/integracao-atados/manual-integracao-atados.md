@@ -12,12 +12,11 @@ Voluntária+. A base da OVP passa a ser a oficial e `voluntariamais.com.br` apon
 
 ## Passo 1 · Preparar
 
-> **Responsável:** [Atados] · **Pronto quando:** IDs de causes preenchidos e canal seguro combinado.
+> **Responsável:** [ambos] · **Pronto quando:** a Atados está com o pacote e os IDs de causes preenchidos.
 
-A única preparação antes de começar:
-
-- [Atados] confirmar os **IDs de `causes`** em `de-para-causas.csv` — já vem com a causa sugerida para cada categoria.
-- [ambos] combinar o **canal seguro** para a entrega dos dados (gerenciador de senhas / link protegido).
+- [V+] **entregar o pacote de integração** à Atados — a pasta `docs/integracao-atados/` (este manual + `de-para-ongs-ovp.csv`, `de-para-causas.csv` e os scripts). Pode ser por **acesso de leitura ao repositório** `inovatecteam/vmaisv2` ou por uma **pasta/zip compartilhada** pelo canal seguro.
+- [Atados] abrir o **`de-para-causas.csv`** desse pacote e preencher os **IDs de `causes`** da OVP (já vem com a causa sugerida para cada categoria).
+- [ambos] combinar o **canal seguro** para a entrega dos dados exportados no Passo 2.
 
 ---
 
