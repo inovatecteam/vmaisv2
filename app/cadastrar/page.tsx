@@ -52,7 +52,7 @@ export default function CadastrarPage() {
     setLoading(true)
     const { confirmPassword, password, ...userData } = data
     const result = await signUpAction(data.email, password, userData)
-    // Em sucesso, a action redireciona e o código abaixo não executa.
+
     if (result?.error) {
       if (result.error.includes('User already registered')) {
         toast.error('Este email já possui uma conta. Tente fazer login.')
@@ -60,7 +60,12 @@ export default function CadastrarPage() {
         toast.error(result.error)
       }
       setLoading(false)
+      return
     }
+
+    // Navegação HARD pro AuthProvider reler os cookies de sessão (mesmo motivo
+    // do signInAction). Conta nova entra no onboarding.
+    window.location.assign('/onboarding')
   }
 
   const tipoSelecionado = form.watch('tipo')

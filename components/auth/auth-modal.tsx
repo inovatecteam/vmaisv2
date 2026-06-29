@@ -60,7 +60,7 @@ export function AuthModal({ open, onOpenChange }: AuthModalProps) {
 
   const handleLogin = async (data: LoginData) => {
     setLoading(true)
-    const result = await signInAction(data.email, data.password, null)
+    const result = await signInAction(data.email, data.password)
 
     if (result?.error) {
       if (result.error.includes('Invalid login credentials')) {
@@ -83,7 +83,7 @@ export function AuthModal({ open, onOpenChange }: AuthModalProps) {
   const handleRegister = async (data: RegisterData) => {
     setLoading(true)
     const { confirmPassword, password, ...userData } = data
-    const result = await signUpAction(data.email, password, userData, null)
+    const result = await signUpAction(data.email, password, userData)
 
     if (result?.error) {
       if (result.error.includes('User already registered')) {

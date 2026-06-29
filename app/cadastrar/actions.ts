@@ -1,7 +1,6 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
-import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase-server'
 
 export type SignUpUserData = {
@@ -14,15 +13,14 @@ export type SignUpUserData = {
 export type SignUpResult = { error?: string }
 
 /**
- * Cadastro server-side. Mesmo padrão do signInAction: redireciona por
- * padrão (Next 15 propaga cookies em redirect response); `redirectTo: null`
- * desativa o redirect para uso em modais.
+ * Cadastro server-side. Mesmo padrão do signInAction: autentica, garante o
+ * perfil em `users` e RETORNA — sem redirecionar. A navegação é do cliente e
+ * precisa ser "hard" (window.location) pro AuthProvider reler os cookies.
  */
 export async function signUpAction(
   email: string,
   password: string,
-  userData: SignUpUserData,
-  redirectTo: string | null = '/onboarding'
+  userData: SignUpUserData
 ): Promise<SignUpResult> {
   const supabase = await createClient()
 
@@ -71,6 +69,5 @@ export async function signUpAction(
   }
 
   revalidatePath('/', 'layout')
-  if (redirectTo) redirect(redirectTo)
   return {}
 }

@@ -342,10 +342,14 @@ export default function PerfilPage() {
       }
 
       if (ongData) {
-        // Atualizar ONG existente
+        // Atualizar ONG existente. admin_approved NÃO é atualizável pelo dono
+        // (só é setado no insert / via admin) — os tipos gerados do Supabase
+        // rejeitam a coluna no update, e mantê-la aqui des-aprovaria a ONG a
+        // cada edição de perfil.
+        const { admin_approved: _omitAdminApproved, ...ongUpdateFields } = ongUpdateData
         const { error } = await supabase
           .from('ongs')
-          .update(ongUpdateData)
+          .update(ongUpdateFields)
           .eq('id', ongData.id)
 
         if (error) throw error
