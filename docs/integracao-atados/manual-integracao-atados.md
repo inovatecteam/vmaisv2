@@ -34,7 +34,7 @@ node docs/integracao-atados/export-ongs.mjs             # exporta as aprovadas
 
 Gera `ongs.json`, `ongs.csv`, `ovp-preview.json` (já no formato da OVP) e `resumo.json`.
 
-*Alternativa: em vez de entregar arquivos, conceder um acesso read-only temporário à base — revogado no Passo 8.*
+*Alternativa: em vez de entregar arquivos, conceder um acesso read-only temporário à base — revogado no Passo 6.*
 
 ---
 
@@ -58,21 +58,17 @@ Para cada ONG: baixar a logo de `thumbnail_url` (URLs públicas do bucket `ongs`
 
 ---
 
-## Passo 5 · Validar
+## Passo 5 · Validar e oficializar a base
 
-> **Responsável:** [ambos] · **Pronto quando:** contagens e amostragem batem.
+> **Ponto crítico** · **Responsável:** [ambos] · **Pronto quando:** os dados conferem, a OVP é oficial e o Supabase está em read-only.
+
+**Validar:**
 
 - **Contagem:** Organizations criadas = total do `resumo.json`.
 - **Amostra:** revisar 10–20 ONGs (nome, descrição, contato, categorias, logo, publicação).
 - **Obrigatórios da OVP:** todas têm `name`, `owner` e `type`.
 
----
-
-## Passo 6 · Oficializar a base
-
-> **Ponto crítico** · **Responsável:** [ambos] · **Pronto quando:** a OVP é oficial e o Supabase está em read-only.
-
-A partir daqui, **o catálogo vive oficialmente na OVP** — nunca duas bases concorrentes.
+**Oficializar** (após a validação) — a partir daqui o catálogo vive oficialmente na OVP, nunca duas bases concorrentes:
 
 - [V+] congelar a escrita no Supabase (**read-only**) — nenhuma edição nova entra ali.
 - [Atados] a OVP assume como base única e oficial.
@@ -80,24 +76,21 @@ A partir daqui, **o catálogo vive oficialmente na OVP** — nunca duas bases co
 
 ---
 
-## Passo 7 · Apontar o domínio
+## Passo 6 · Apontar o domínio e encerrar
 
-> **Responsável:** [ambos] · rollback: reverter o DNS · **Pronto quando:** `voluntariamais.com.br` abre o site da Atados e o e-mail autentica.
+> **Responsável:** [ambos] · rollback: reverter o DNS · **Pronto quando:** `voluntariamais.com.br` abre na Atados, o e-mail autentica e os acessos temporários foram revogados.
 
-Executar **somente após** os Passos 5–6. Mantemos o registro do domínio e **delegamos o DNS** (sem transferir o registro).
+Executar **somente após** o Passo 5. Mantemos o registro do domínio e **delegamos o DNS** (sem transferir o registro).
+
+**Domínio e e-mail:**
 
 1. [V+] reduzir o **TTL de DNS** (ex.: 300s) 24–48h antes.
 2. [V+] apontar os nameservers de `voluntariamais.com.br` para a **Cloudflare da Atados**.
 3. [Atados] configurar o DNS de `voluntariamais.com.br` e `www` para o frontend (Vercel/Cloudflare) e validar **SSL**.
 4. [Atados] configurar e-mail no **Sparkpost** (SPF/DKIM/DMARC) e testar — hoje é Resend, remetente `info@voluntariamais.com.br`.
 
----
+**Encerrar:**
 
-## Passo 8 · Encerrar
-
-> **Responsável:** [ambos] · **Pronto quando:** o catálogo está 100% na Atados e os acessos temporários foram revogados.
-
-- [Atados] o catálogo passa a ser gerido inteiramente na OVP.
 - [V+] **revogar** o acesso temporário e quaisquer credenciais de transição.
 - [V+] descomissionar o Supabase após os 90 dias de backup.
 
