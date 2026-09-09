@@ -3,8 +3,9 @@
 import React from 'react'
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
-import { Heart, Mail, Phone, MapPin, Facebook, Instagram, Twitter, Linkedin } from 'lucide-react'
+import { Mail, Phone, MapPin, Facebook, Instagram, Twitter, Linkedin } from 'lucide-react'
 import { AtadosBadge } from '@/components/partnership/atados-badge'
+import { LogoVMais } from '@/components/brand/logo-vmais'
 
 function Footer() {
   const pathname = usePathname()
@@ -28,10 +29,7 @@ function Footer() {
           {/* Brand */}
           <div className="space-y-4">
             <div className="flex items-center space-x-2">
-              <div className="p-2 bg-primary rounded-md">
-                <Heart className="h-6 w-6 text-white" />
-              </div>
-              <span className="text-xl font-bold">Voluntaria<span className="text-primary">+</span></span>
+              <LogoVMais className="h-7" />
             </div>
             <p className="text-gray-400">
               Conectando pessoas que querem ajudar com organizações que precisam de voluntários.

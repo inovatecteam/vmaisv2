@@ -9,6 +9,7 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Progress } from '@/components/ui/progress'
+import { LogoVMais } from '@/components/brand/logo-vmais'
 import { AtadosBadge } from '@/components/partnership/atados-badge'
 import { Badge } from '@/components/ui/badge'
 import { useForm } from 'react-hook-form'
@@ -859,10 +860,7 @@ export default function OnboardingPage() {
         {/* Header */}
         <div className="text-center mb-8">
           <div className="flex items-center justify-center space-x-2 mb-6">
-            <div className="p-2 bg-primary rounded-md">
-              <Heart className="h-6 w-6 text-white" />
-            </div>
-            <span className="text-xl font-bold text-gray-900">Voluntaria<span className="text-primary">+</span></span>
+            <LogoVMais className="h-7" />
           </div>
           
           <h1 className="text-3xl font-bold mb-2">
