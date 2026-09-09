@@ -1,9 +1,10 @@
 import Link from 'next/link'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { ArrowLeft, Heart } from 'lucide-react'
+import { ArrowLeft } from 'lucide-react'
 import { createClient } from '@/lib/supabase-server'
 import { RedefinirSenhaForm } from './form'
+import { LogoVMais } from '@/components/brand/logo-vmais'
 import { AtadosBadge } from '@/components/partnership/atados-badge'
 
 export const dynamic = 'force-dynamic'
@@ -30,12 +31,7 @@ function LinkInvalido() {
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex items-center space-x-2 group mb-6">
-            <div className="p-2 bg-primary rounded-md group-hover:scale-105 transition-transform">
-              <Heart className="h-6 w-6 text-white" />
-            </div>
-            <span className="text-xl font-bold text-gray-900">
-              Voluntaria<span className="text-primary">+</span>
-            </span>
+            <LogoVMais className="h-7" />
           </Link>
         </div>
         <Card className="rounded-2xl shadow-xl border-0">

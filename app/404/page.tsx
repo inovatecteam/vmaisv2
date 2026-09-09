@@ -3,7 +3,8 @@
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
-import { Home, Search, ArrowLeft, Heart } from 'lucide-react'
+import { Home, Search, ArrowLeft } from 'lucide-react'
+import { LogoVMais } from '@/components/brand/logo-vmais'
 import { AtadosBadge } from '@/components/partnership/atados-badge'
 
 export default function NotFoundPage() {
@@ -12,10 +13,7 @@ export default function NotFoundPage() {
       <div className="max-w-2xl mx-auto text-center">
         {/* Logo */}
         <Link href="/" className="inline-flex items-center space-x-2 group mb-8">
-          <div className="p-2 bg-primary rounded-md group-hover:scale-105 transition-transform">
-            <Heart className="h-6 w-6 text-white" />
-          </div>
-          <span className="text-xl font-bold text-gray-900">Voluntaria<span className="text-primary">+</span></span>
+          <LogoVMais className="h-7" />
         </Link>
 
         {/* Error Illustration */}

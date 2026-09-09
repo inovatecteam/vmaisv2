@@ -11,7 +11,8 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { signInAction } from './actions'
 import { toast } from 'sonner'
-import { Loader2, Eye, EyeOff, Heart, ArrowLeft } from 'lucide-react'
+import { Loader2, Eye, EyeOff, ArrowLeft } from 'lucide-react'
+import { LogoVMais } from '@/components/brand/logo-vmais'
 import { AtadosBadge } from '@/components/partnership/atados-badge'
 
 const loginSchema = z.object({
@@ -62,10 +63,7 @@ export default function EntrarPage() {
         {/* Header */}
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex items-center space-x-2 group mb-6">
-            <div className="p-2 bg-primary rounded-md group-hover:scale-105 transition-transform">
-              <Heart className="h-6 w-6 text-white" />
-            </div>
-            <span className="text-xl font-bold text-gray-900">Voluntaria<span className="text-primary">+</span></span>
+            <LogoVMais className="h-7" />
           </Link>
           
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Bem-vindo de volta!</h1>

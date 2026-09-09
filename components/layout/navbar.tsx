@@ -15,8 +15,9 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { Heart, User, Settings, LogOut, Menu } from 'lucide-react'
+import { User, Settings, LogOut, Menu } from 'lucide-react'
 import { getDestinoEntradaGeral } from '@/lib/atados'
+import { LogoVMais } from '@/components/brand/logo-vmais'
 
 export function Navbar() {
   const { user, signOut } = useAuth()
@@ -81,11 +82,7 @@ export function Navbar() {
       <div className="max-w-7xl mx-auto flex items-center justify-between px-2 md:px-8 py-2">
         {/* Logo */}
         <Link href="/" className="flex items-center space-x-2 group ml-2 md:ml-0">
-          <div className="p-2 bg-primary rounded-md group-hover:scale-105 transition-transform">
-            
-            <Heart className="h-6 w-6 text-white" />
-          </div>
-          <span className="text-xl font-bold text-gray-900">Voluntaria<span className="text-primary">+</span></span>
+          <LogoVMais className="h-7" />
         </Link>
 
         {/* Navigation Links */}
@@ -187,13 +184,8 @@ export function Navbar() {
               <div className="flex flex-col h-full">
                 {/* Header */}
                 <div className="p-6 border-b">
-                  <div className="flex items-center space-x-2">
-                    <div className="p-2 bg-primary rounded-md">
-                      <Heart className="h-5 w-5 text-white" />
-                    </div>
-                    <span className="text-lg font-bold text-gray-900">
-                      Voluntaria<span className="text-primary">+</span>
-                    </span>
+                  <div className="flex items-center">
+                    <LogoVMais className="h-6" />
                   </div>
                 </div>
 

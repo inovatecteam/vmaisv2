@@ -1,9 +1,10 @@
 'use client'
 
 import Link from 'next/link'
-import { Heart, ArrowRight } from 'lucide-react'
+import { ArrowRight } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { ATADOS_SITE, getDestinoCta } from '@/lib/atados'
+import { LogoVMais } from '@/components/brand/logo-vmais'
 
 /**
  * A arte da Atados é azul sobre fundo transparente, então some em fundo escuro.
@@ -19,23 +20,8 @@ function LogoAtados({ className }: { className?: string }) {
   )
 }
 
-function LogoVoluntariaMais({ escuro }: { escuro: boolean }) {
-  return (
-    <span
-      className={cn(
-        'inline-flex items-center gap-1.5 font-bold',
-        escuro ? 'text-white' : 'text-gray-900'
-      )}
-    >
-      <span className="p-1 bg-primary rounded">
-        <Heart className="h-3.5 w-3.5 text-white" />
-      </span>
-      {/* O "+" fica no mesmo span do nome: solto, o gap do flex o separaria. */}
-      <span>
-        Voluntaria<span className="text-primary">+</span>
-      </span>
-    </span>
-  )
+function LogoVoluntariaMais() {
+  return <LogoVMais className="h-5 sm:h-6" />
 }
 
 interface AtadosBadgeProps {
@@ -59,7 +45,7 @@ export function AtadosBadge({
     return (
       <div className={cn('flex flex-col items-center gap-2', className)}>
         <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-2">
-          <LogoVoluntariaMais escuro={escuro} />
+          <LogoVoluntariaMais />
           <span aria-hidden="true" className={escuro ? 'text-gray-500' : 'text-gray-400'}>
             ×
           </span>
@@ -87,7 +73,7 @@ export function AtadosBadge({
       )}
     >
       <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-3 mb-6">
-        <LogoVoluntariaMais escuro={false} />
+        <LogoVoluntariaMais />
         <span aria-hidden="true" className="text-gray-400 text-lg">
           ×
         </span>
