@@ -18,13 +18,13 @@ const COPY: Record<PerfilAtados, { titulo: string; texto: string; cta: string }>
   voluntario: {
     titulo: 'As oportunidades de voluntariado agora estão na Rede Atados',
     texto:
-      'Unimos forças com a Rede Atados, a maior plataforma de voluntariado do Brasil. Você continua no espaço do Voluntária+ — agora dentro da plataforma deles, com as ONGs que você já conhece e muitas outras.',
+      'Unimos forças com a Rede Atados, a maior plataforma de voluntariado do Brasil. Você continua no espaço do Voluntária+, agora dentro da plataforma deles, com as ONGs que você já conhece e muitas outras.',
     cta: 'Continuar para o Voluntária+ na Rede Atados',
   },
   ong: {
     titulo: 'Os cadastros de ONG agora são feitos na Rede Atados',
     texto:
-      'Unimos forças com a Rede Atados, a maior plataforma de voluntariado do Brasil. Sua organização é cadastrada no espaço do Voluntária+ dentro da plataforma deles — e passa a ser vista por voluntários de todo o país.',
+      'Unimos forças com a Rede Atados, a maior plataforma de voluntariado do Brasil. Sua organização é cadastrada no espaço do Voluntária+ dentro da plataforma deles e passa a ser vista por voluntários de todo o país.',
     cta: 'Cadastrar minha ONG na Rede Atados',
   },
 }
