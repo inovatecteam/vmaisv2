@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Home, Search, ArrowLeft, Heart } from 'lucide-react'
+import { AtadosBadge } from '@/components/partnership/atados-badge'
 
 export default function NotFoundPage() {
   return (
@@ -64,6 +65,9 @@ export default function NotFoundPage() {
             </p>
           </CardContent>
         </Card>
+
+        {/* Selo da parceria — inline porque o Footer nao renderiza nesta rota */}
+        <AtadosBadge variant="inline" className="mt-8" />
       </div>
     </div>
   )

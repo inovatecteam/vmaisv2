@@ -12,6 +12,7 @@ import { z } from 'zod'
 import { toast } from 'sonner'
 import { Loader2, Eye, EyeOff, Heart, ArrowLeft } from 'lucide-react'
 import { updatePasswordAction } from './actions'
+import { AtadosBadge } from '@/components/partnership/atados-badge'
 
 const resetPasswordSchema = z.object({
   password: z.string().min(6, 'Senha deve ter pelo menos 6 caracteres'),
@@ -135,6 +136,9 @@ export function RedefinirSenhaForm() {
             </div>
           </CardContent>
         </Card>
+
+        {/* Selo da parceria — inline porque o Footer nao renderiza nesta rota */}
+        <AtadosBadge variant="inline" className="mt-8" />
       </div>
     </div>
   )

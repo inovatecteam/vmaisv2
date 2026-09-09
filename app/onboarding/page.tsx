@@ -9,6 +9,7 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Progress } from '@/components/ui/progress'
+import { AtadosBadge } from '@/components/partnership/atados-badge'
 import { Badge } from '@/components/ui/badge'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -898,6 +899,9 @@ export default function OnboardingPage() {
             Suas informações são seguras e podem ser alteradas a qualquer momento no seu perfil.
           </p>
         </div>
+
+        {/* Selo da parceria — inline porque o Footer nao renderiza nesta rota */}
+        <AtadosBadge variant="inline" className="mt-8" />
       </div>
     </div>
   )

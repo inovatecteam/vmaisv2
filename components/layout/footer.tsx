@@ -4,6 +4,7 @@ import React from 'react'
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
 import { Heart, Mail, Phone, MapPin, Facebook, Instagram, Twitter, Linkedin } from 'lucide-react'
+import { AtadosBadge } from '@/components/partnership/atados-badge'
 
 function Footer() {
   const pathname = usePathname()
@@ -109,8 +110,9 @@ function Footer() {
           </div>
         </div>
 
-        <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
-          <p>&copy;2025 Voluntaria+ | Todos os direitos reservados.</p>
+        <div className="border-t border-gray-800 mt-8 pt-8 space-y-6">
+          <AtadosBadge variant="inline" tema="escuro" />
+          <p className="text-center text-gray-400">&copy;2025 Voluntaria+ | Todos os direitos reservados.</p>
         </div>
       </div>
     </footer>
