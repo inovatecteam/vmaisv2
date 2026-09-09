@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import Link from 'next/link'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -15,6 +15,7 @@ import { signUpAction } from './actions'
 import { toast } from 'sonner'
 import { Loader2, Eye, EyeOff, Heart, ArrowLeft, User, Building } from 'lucide-react'
 import { formatPhone } from '@/lib/utils'
+import { AtadosBadge } from '@/components/partnership/atados-badge'
 
 const registerSchema = z.object({
   nome: z.string().min(2, 'Nome deve ter pelo menos 2 caracteres'),
@@ -41,6 +42,17 @@ export default function CadastrarPage() {
       tipo: 'voluntario'
     }
   })
+
+  // Pre-seleciona o tipo de conta a partir de `?tipo=ong`, para que a Rede
+  // Atados (ou qualquer parceiro) possa apontar ONGs direto para o formulario
+  // certo. Lemos window.location.search em vez de useSearchParams porque esta
+  // pagina e client sem <Suspense> — o mesmo padrao de app/entrar/page.tsx.
+  useEffect(() => {
+    const tipoParam = new URLSearchParams(window.location.search).get('tipo')
+    if (tipoParam === 'ong' || tipoParam === 'voluntario') {
+      form.setValue('tipo', tipoParam)
+    }
+  }, [form])
 
   // Handler para mudança no campo telefone
   const handlePhoneChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
@@ -244,6 +256,9 @@ export default function CadastrarPage() {
             </div>
           </CardContent>
         </Card>
+
+        {/* Selo da parceria — inline porque o Footer nao renderiza em /cadastrar */}
+        <AtadosBadge variant="inline" className="mt-8" />
 
         {/* Back to Home */}
         <div className="text-center mt-6">

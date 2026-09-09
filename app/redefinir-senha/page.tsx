@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button'
 import { ArrowLeft, Heart } from 'lucide-react'
 import { createClient } from '@/lib/supabase-server'
 import { RedefinirSenhaForm } from './form'
+import { AtadosBadge } from '@/components/partnership/atados-badge'
 
 export const dynamic = 'force-dynamic'
 
@@ -61,6 +62,9 @@ function LinkInvalido() {
             </Link>
           </CardContent>
         </Card>
+
+        {/* Selo da parceria — inline porque o Footer nao renderiza nesta rota */}
+        <AtadosBadge variant="inline" className="mt-8" />
       </div>
     </div>
   )

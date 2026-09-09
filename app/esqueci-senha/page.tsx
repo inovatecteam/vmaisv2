@@ -13,6 +13,7 @@ import { z } from 'zod'
 import { supabase } from '@/lib/supabase'
 import { toast } from 'sonner'
 import { Loader2, Mail, ArrowLeft, Heart, CheckCircle } from 'lucide-react'
+import { AtadosBadge } from '@/components/partnership/atados-badge'
 
 const forgotPasswordSchema = z.object({
   email: z.string().email('Email inválido'),
@@ -213,6 +214,9 @@ export default function EsqueciSenhaPage() {
             </div>
           </CardContent>
         </Card>
+
+        {/* Selo da parceria — inline porque o Footer nao renderiza nesta rota */}
+        <AtadosBadge variant="inline" className="mt-8" />
 
         {/* Back to Home */}
         <div className="text-center mt-6">

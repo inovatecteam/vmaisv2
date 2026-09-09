@@ -16,6 +16,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Heart, User, Settings, LogOut, Menu } from 'lucide-react'
+import { getDestinoEntradaGeral } from '@/lib/atados'
 
 export function Navbar() {
   const { user, signOut } = useAuth()
@@ -165,7 +166,7 @@ export function Navbar() {
                   Entrar
                 </Button>
               </Link>
-              <Link href="/cadastrar">
+              <Link href={getDestinoEntradaGeral()}>
                 <Button className="bg-primary hover:bg-primary/90 font-semibold rounded-lg px-6">
                   Cadastrar
                 </Button>
@@ -294,7 +295,7 @@ export function Navbar() {
                           Entrar
                         </Button>
                       </Link>
-                      <Link href="/cadastrar" onClick={() => setMobileMenuOpen(false)}>
+                      <Link href={getDestinoEntradaGeral()} onClick={() => setMobileMenuOpen(false)}>
                         <Button className="w-full bg-primary hover:bg-primary/90 font-semibold">
                           Cadastrar
                         </Button>

@@ -12,6 +12,7 @@ import { z } from 'zod'
 import { signInAction } from './actions'
 import { toast } from 'sonner'
 import { Loader2, Eye, EyeOff, Heart, ArrowLeft } from 'lucide-react'
+import { AtadosBadge } from '@/components/partnership/atados-badge'
 
 const loginSchema = z.object({
   email: z.string().email('Email inválido'),
@@ -151,6 +152,9 @@ export default function EntrarPage() {
             </div>
           </CardContent>
         </Card>
+
+        {/* Selo da parceria — inline porque o Footer nao renderiza em /entrar */}
+        <AtadosBadge variant="inline" className="mt-8" />
 
         {/* Back to Home */}
         <div className="text-center mt-6">

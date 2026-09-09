@@ -1,7 +1,9 @@
 # Integração Técnica · Catálogo de ONGs → OVP
 
 Guia **passo a passo** para a equipe técnica da **Rede Atados** assumir o catálogo de ONGs do
-Voluntária+. A base da OVP passa a ser a oficial e `voluntariamais.com.br` aponta para a Atados.
+Voluntária+. A base da OVP passa a ser a oficial e `voluntariamais.com.br` **permanece com o
+Voluntária+**, operando como porta de entrada co-branded que encaminha voluntários e ONGs
+para a Atados.
 
 **Inclui:** catálogo de ONGs aprovadas (`ongs` + contato do dono + logos).
 **Não inclui:** voluntários, interações, doação de sangue, senhas.
@@ -76,18 +78,31 @@ Para cada ONG: baixar a logo de `thumbnail_url` (URLs públicas do bucket `ongs`
 
 ---
 
-## Passo 6 · Apontar o domínio e encerrar
+## Passo 6 · Ligar o encaminhamento e encerrar
 
-> **Responsável:** [ambos] · rollback: reverter o DNS · **Pronto quando:** `voluntariamais.com.br` abre na Atados, o e-mail autentica e os acessos temporários foram revogados.
+> **Responsável:** [ambos] · rollback: esvaziar as variáveis de ambiente · **Pronto quando:** os CTAs do `voluntariamais.com.br` levam à Atados e os acessos temporários foram revogados.
 
-Executar **somente após** o Passo 5. Mantemos o registro do domínio e **delegamos o DNS** (sem transferir o registro).
+Executar **somente após** o Passo 5. O domínio **não é transferido nem delegado**: o site do
+Voluntária+ continua no ar como porta de entrada co-branded e encaminha os dois públicos para
+a Atados.
 
-**Domínio e e-mail:**
+**Encaminhamento:**
 
-1. [V+] reduzir o **TTL de DNS** (ex.: 300s) 24–48h antes.
-2. [V+] apontar os nameservers de `voluntariamais.com.br` para a **Cloudflare da Atados**.
-3. [Atados] configurar o DNS de `voluntariamais.com.br` e `www` para o frontend (Vercel/Cloudflare) e validar **SSL**.
-4. [Atados] configurar e-mail no **Sparkpost** (SPF/DKIM/DMARC) e testar — hoje é Resend, remetente `info@voluntariamais.com.br`.
+1. [Atados] entregar as **URLs de destino** — uma para voluntários e uma para a criação de perfil de ONG — e a convenção de parâmetros de rastreio que a plataforma aceita.
+2. [V+] preencher `NEXT_PUBLIC_ATADOS_URL_VOLUNTARIO` e `NEXT_PUBLIC_ATADOS_URL_ONG` na Vercel. Vazio = fluxo interno preservado; preenchido = encaminhamento ativo. Não requer deploy de código.
+3. [ambos] validar em staging antes de ligar em produção: home → `/parceria-atados` → destino na Atados, com os parâmetros de rastreio chegando do outro lado.
+4. [Atados] exibir a marca Voluntária+ na página de criação de perfil de ONG, para dar continuidade à experiência de quem vem daqui.
+
+**Origem do tráfego (para a Atados liberar/reconhecer):**
+
+```
+https://voluntariamais.com.br/parceria-atados?perfil=voluntario
+https://voluntariamais.com.br/parceria-atados?perfil=ong
+Referrer: voluntariamais.com.br
+```
+
+**E-mail:** o remetente `info@voluntariamais.com.br` (Resend) permanece com o Voluntária+, já
+que o domínio não muda de mãos.
 
 **Encerrar:**
 

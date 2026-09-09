@@ -10,6 +10,8 @@ import { AuthModal } from '@/components/auth/auth-modal'
 import { useAuth } from '@/components/providers/auth-provider'
 import Link from 'next/link'
 import Footer from '@/components/layout/footer'
+import { AtadosBadge } from '@/components/partnership/atados-badge'
+import { getDestinoCta, getDestinoEntradaGeral } from '@/lib/atados'
 
 export default function HomePage() {
   const { user } = useAuth()
@@ -115,7 +117,7 @@ const faqs = [
                 </Button>
               </Link>
             ) : (
-              <Link href="/cadastrar">
+              <Link href={getDestinoEntradaGeral()}>
                 <Button 
                   size="lg" 
                   className="bg-primary hover:bg-primary/90 text-white font-semibold rounded-2xl px-4 sm:px-8 py-3 sm:py-4 text-sm sm:text-lg"
@@ -201,6 +203,13 @@ const faqs = [
   </div>
 </section>
 
+      {/* Parceria Rede Atados */}
+      <section className="py-12 sm:py-16 px-4">
+        <div className="max-w-4xl mx-auto">
+          <AtadosBadge variant="destaque" />
+        </div>
+      </section>
+
       {/* CTA Section */}
       <section className="py-16 sm:py-20 bg-gradient-to-r from-yellow-400 to-orange-400">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
@@ -212,13 +221,13 @@ const faqs = [
           </p>
           <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center px-4">
             <Link
-              href="/cadastrar"
+              href={getDestinoCta('voluntario')}
               className="w-full sm:w-auto bg-white text-yellow-600 hover:bg-gray-50 px-6 sm:px-8 py-3 sm:py-4 rounded-2xl font-semibold text-base sm:text-lg transition-all text-center"
             >
               Sou Voluntário
             </Link>
             <Link
-              href="/cadastrar"
+              href={getDestinoCta('ong')}
               className="w-full sm:w-auto border-2 border-white text-white hover:bg-white hover:text-yellow-600 px-6 sm:px-8 py-3 sm:py-4 rounded-2xl font-semibold text-base sm:text-lg transition-all text-center"
             >
               Sou uma ONG
