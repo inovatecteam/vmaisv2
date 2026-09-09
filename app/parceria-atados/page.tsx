@@ -1,6 +1,7 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { Suspense } from 'react'
+import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { Navbar } from '@/components/layout/navbar'
 import Footer from '@/components/layout/footer'
@@ -50,24 +51,77 @@ function EscolhaPerfil() {
   )
 }
 
-export default function ParceriaAtadosPage() {
-  // `window` só existe depois da hidratação. Enquanto `montado` é false o
-  // servidor e o cliente renderizam a mesma coisa (a tela de escolha), evitando
-  // divergência de hidratação. Usamos window.location.search em vez de
-  // useSearchParams porque esta é uma página client sem <Suspense> — o mesmo
-  // padrão de app/entrar/page.tsx.
-  const [montado, setMontado] = useState(false)
-  const [perfil, setPerfil] = useState<PerfilAtados | null>(null)
-
-  useEffect(() => {
-    const param = new URLSearchParams(window.location.search).get('perfil')
-    if (isPerfilAtados(param)) setPerfil(param)
-    setMontado(true)
-  }, [])
+/**
+ * Lê `?perfil=` de forma REATIVA. Um useEffect com deps [] lendo
+ * window.location.search não serve aqui: a tela de escolha navega de
+ * /parceria-atados para /parceria-atados?perfil=... — mesma rota, então o
+ * componente não remonta e o efeito não rodaria de novo, deixando a página
+ * presa na escolha. useSearchParams reage à mudança de query; o <Suspense> do
+ * componente pai é exigido pelo Next para páginas pré-renderizadas.
+ */
+function ConteudoParceria() {
+  const searchParams = useSearchParams()
+  const param = searchParams.get('perfil')
+  const perfil: PerfilAtados | null = isPerfilAtados(param) ? param : null
 
   const urlAtados = perfil ? getAtadosUrl(perfil) : null
   const copy = perfil ? COPY[perfil] : null
 
+  return (
+    <>
+  {!copy || !perfil ? (
+        <div className="text-center">
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-3">
+            Voluntária+ e Rede Atados, juntos
+          </h1>
+          <p className="text-gray-600 mb-8">
+            Escolha por onde você quer continuar.
+          </p>
+          <EscolhaPerfil />
+        </div>
+      ) : (
+        <div className="text-center">
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-4">
+            {copy.titulo}
+          </h1>
+          <p className="text-gray-600 leading-relaxed mb-8">{copy.texto}</p>
+
+          {urlAtados ? (
+            <a
+              href={urlAtados}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center gap-2 bg-primary hover:bg-primary/90 text-white px-8 py-4 rounded-2xl font-semibold text-lg transition-colors"
+            >
+              {copy.cta}
+              <ExternalLink className="h-5 w-5" />
+            </a>
+          ) : (
+            /* Integração ainda não configurada: mantém o cadastro interno
+               em vez de mostrar um botão que não leva a lugar nenhum. */
+            <Link
+              href={getRotaInterna(perfil)}
+              className="inline-flex items-center justify-center gap-2 bg-primary hover:bg-primary/90 text-white px-8 py-4 rounded-2xl font-semibold text-lg transition-colors"
+            >
+              {perfil === 'ong' ? 'Cadastrar minha ONG' : 'Criar minha conta'}
+              <ArrowRight className="h-5 w-5" />
+            </Link>
+          )}
+
+          <p className="text-sm text-gray-500 mt-6">
+            Ficou com dúvida?{' '}
+            <Link href="/ajuda" className="text-primary hover:underline">
+              Fale com a gente
+            </Link>
+            .
+          </p>
+        </div>
+      )}
+    </>
+  )
+}
+
+export default function ParceriaAtadosPage() {
   return (
     <div className="min-h-screen bg-white flex flex-col">
       <Navbar />
@@ -76,54 +130,21 @@ export default function ParceriaAtadosPage() {
         <div className="max-w-2xl mx-auto">
           <AtadosBadge variant="inline" className="mb-8" />
 
-          {!montado || !copy || !perfil ? (
-            <div className="text-center">
-              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-3">
-                Voluntária+ e Rede Atados, juntos
-              </h1>
-              <p className="text-gray-600 mb-8">
-                Escolha por onde você quer continuar.
-              </p>
-              <EscolhaPerfil />
-            </div>
-          ) : (
-            <div className="text-center">
-              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-4">
-                {copy.titulo}
-              </h1>
-              <p className="text-gray-600 leading-relaxed mb-8">{copy.texto}</p>
-
-              {urlAtados ? (
-                <a
-                  href={urlAtados}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center justify-center gap-2 bg-primary hover:bg-primary/90 text-white px-8 py-4 rounded-2xl font-semibold text-lg transition-colors"
-                >
-                  {copy.cta}
-                  <ExternalLink className="h-5 w-5" />
-                </a>
-              ) : (
-                /* Integração ainda não configurada: mantém o cadastro interno
-                   em vez de mostrar um botão que não leva a lugar nenhum. */
-                <Link
-                  href={getRotaInterna(perfil)}
-                  className="inline-flex items-center justify-center gap-2 bg-primary hover:bg-primary/90 text-white px-8 py-4 rounded-2xl font-semibold text-lg transition-colors"
-                >
-                  {perfil === 'ong' ? 'Cadastrar minha ONG' : 'Criar minha conta'}
-                  <ArrowRight className="h-5 w-5" />
-                </Link>
-              )}
-
-              <p className="text-sm text-gray-500 mt-6">
-                Ficou com dúvida?{' '}
-                <Link href="/ajuda" className="text-primary hover:underline">
-                  Fale com a gente
-                </Link>
-                .
-              </p>
-            </div>
-          )}
+          {/* O fallback é a própria tela de escolha: é o que aparece no HTML
+              pré-renderizado, antes de a query string ser conhecida. */}
+          <Suspense
+            fallback={
+              <div className="text-center">
+                <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-3">
+                  Voluntária+ e Rede Atados, juntos
+                </h1>
+                <p className="text-gray-600 mb-8">Escolha por onde você quer continuar.</p>
+                <EscolhaPerfil />
+              </div>
+            }
+          >
+            <ConteudoParceria />
+          </Suspense>
 
           <div className="text-center mt-10">
             <Link
