@@ -5,10 +5,13 @@
  * chegam aqui são encaminhados para a Rede Atados, que assume os cadastros.
  *
  * As URLs de destino vivem em variáveis de ambiente (Vercel > Environment
- * Variables) para poderem ser ligadas sem novo deploy de código. Enquanto
- * estiverem vazias, `getAtadosUrl` devolve `null` e o site inteiro mantém o
- * fluxo de cadastro interno que existe hoje — nenhum botão morto, nenhum link
- * quebrado.
+ * Variables) para poderem ser ligadas sem novo deploy de código.
+ *
+ * A jornada até a página-ponte está SEMPRE ativa, mesmo com as variáveis
+ * vazias — assim a mensagem da parceria aparece desde já e o caminho pode ser
+ * visualizado por inteiro. O que depende da configuração é só o último salto:
+ * com as variáveis preenchidas a ponte leva à Atados; sem elas, `getAtadosUrl`
+ * devolve `null` e a ponte cai no cadastro interno. Nunca há botão morto.
  *
  * Este é o único arquivo que lê as variáveis da integração.
  */
@@ -62,28 +65,21 @@ export function getAtadosUrl(perfil: PerfilAtados): string | null {
   }
 }
 
-/** `true` quando o encaminhamento para a Atados está configurado para o perfil. */
-export function isRedirectAtivo(perfil: PerfilAtados): boolean {
-  return getAtadosUrl(perfil) !== null
-}
-
 /**
- * Destino dos CTAs do site: a página-ponte quando o encaminhamento está ligado,
- * o cadastro interno quando não está. Concentra a decisão aqui para o JSX das
- * páginas não precisar de condicional.
+ * Destino dos CTAs do site — sempre a página-ponte, com o perfil já definido.
+ * É ela que decide o salto final (Atados ou cadastro interno).
  */
 export function getDestinoCta(perfil: PerfilAtados): string {
-  return isRedirectAtivo(perfil) ? `/parceria-atados?perfil=${perfil}` : ROTA_INTERNA[perfil]
+  return `/parceria-atados?perfil=${perfil}`
 }
 
 /**
- * Destino do CTA genérico (o "Começar Agora" do hero), onde ainda não se sabe
- * se a pessoa é voluntária ou ONG: a página-ponte pergunta antes de encaminhar.
+ * Destino do CTA genérico (o "Começar Agora" do hero e o "Cadastrar" da
+ * navbar), onde ainda não se sabe se a pessoa é voluntária ou ONG: a
+ * página-ponte pergunta o perfil antes de encaminhar.
  */
 export function getDestinoEntradaGeral(): string {
-  return isRedirectAtivo('voluntario') || isRedirectAtivo('ong')
-    ? '/parceria-atados'
-    : ROTA_INTERNA.voluntario
+  return '/parceria-atados'
 }
 
 /** Caminho de cadastro dentro do próprio Voluntária+. */
