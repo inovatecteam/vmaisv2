@@ -21,6 +21,34 @@ export function formatPhone(value: string): string {
   }
 }
 
+/**
+ * Texto de localização de uma ONG para a linha do MapPin.
+ *
+ * Existia um encadeamento de ternários repetido em 5 telas que cobria
+ * 'online' / 'ambos' / 'itinerante' e mandava TODO o resto para
+ * "Localização não disponível" — inclusive 'presencial', que é o caso da
+ * grande maioria das ONGs. O endereço estava no banco o tempo todo.
+ */
+export function formatLocalizacao(ong: {
+  localizacao_tipo?: string | null
+  endereco_fisico?: string | null
+}): string {
+  const endereco = ong.endereco_fisico?.trim()
+
+  switch (ong.localizacao_tipo) {
+    case 'online':
+      return 'Online'
+    case 'ambos':
+      return endereco ? `${endereco} (também online)` : 'Online e Presencial'
+    case 'itinerante':
+      return endereco || 'Sem local fixo'
+    case 'presencial':
+      return endereco || 'Presencial'
+    default:
+      return endereco || 'Localização não disponível'
+  }
+}
+
 // Utility function to clear browser storage and force fresh authentication
 export function clearBrowserStorage() {
   try {

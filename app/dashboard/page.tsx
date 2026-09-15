@@ -18,6 +18,7 @@ import { useAuth } from '@/components/providers/auth-provider'
 import { toast } from 'sonner'
 import Link from 'next/link'
 import Footer from '@/components/layout/footer'
+import { formatLocalizacao } from '@/lib/utils'
 
 interface DashboardStats {
   totalInteracoes: number
@@ -88,7 +89,7 @@ export default function DashboardPage() {
         .from('interacoes')
         .select(`
           *,
-          ongs!inner (nome, tipo, admin_approved)
+          ongs!inner (nome, tipo, admin_approved, localizacao_tipo, endereco_fisico)
         `)
         .eq('user_id', user.id)
         .eq('ongs.admin_approved', true)
@@ -257,7 +258,7 @@ export default function DashboardPage() {
                             <h3 className="font-medium">{interacao.ongs?.nome}</h3>
                             <div className="flex items-center text-sm text-gray-500 mt-1">
                               <MapPin className="h-3 w-3 mr-1" />
-                              <span>Localização não disponível</span>
+                              <span>{formatLocalizacao(interacao.ongs ?? {})}</span>
                               <Badge variant="secondary" className="ml-2 text-xs">
                                 {interacao.ongs?.tipo}
                               </Badge>

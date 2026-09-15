@@ -21,6 +21,7 @@ import Footer from '@/components/layout/footer'
 import { UcergsFundraisingCard } from '@/components/ucergs-fundraising-card'
 import { BloodDonationCard } from '@/components/blood-donation-card'
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination'
+import { formatLocalizacao } from '@/lib/utils'
 
 type OportunidadesClientProps = {
   initialOngs: ONG[]
@@ -316,18 +317,10 @@ export function OportunidadesClient({ initialOngs }: OportunidadesClientProps) {
                         <CardTitle className="text-xl group-hover:text-primary transition-colors">
                           {ong.nome}
                         </CardTitle>
-                        <div className="flex items-center text-gray-500 mt-2">
-                          <MapPin className="h-4 w-4 mr-1" />
-                          <span className="text-sm">
-                            {ong.localizacao_tipo === 'online' ? (
-                              'Online'
-                            ) : ong.localizacao_tipo === 'ambos' ? (
-                              'Online e Presencial'
-                            ) : ong.localizacao_tipo === 'itinerante' ? (
-                              'Sem local'
-                            ) : (
-                              `Localização não disponível`
-                            )}
+                        <div className="flex items-center text-gray-500 mt-2 min-w-0">
+                          <MapPin className="h-4 w-4 mr-1 flex-shrink-0" />
+                          <span className="text-sm truncate">
+                            {formatLocalizacao(ong)}
                           </span>
                         </div>
                       </div>
@@ -461,15 +454,7 @@ export function OportunidadesClient({ initialOngs }: OportunidadesClientProps) {
                     <div className="flex items-center text-gray-500">
                       <MapPin className="h-4 w-4 mr-2 flex-shrink-0" />
                       <span className="text-sm">
-                        {selectedOng.localizacao_tipo === 'online' ? (
-                          'Online'
-                        ) : selectedOng.localizacao_tipo === 'ambos' ? (
-                          'Online e Presencial'
-                        ) : selectedOng.localizacao_tipo === 'itinerante' ? (
-                          'Sem local'
-                        ) : (
-                          `Localização não disponível`
-                        )}
+                        {formatLocalizacao(selectedOng)}
                       </span>
                     </div>
 
