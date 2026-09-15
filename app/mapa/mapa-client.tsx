@@ -364,8 +364,8 @@ export function MapaClient({ initialOngs }: MapaClientProps) {
             </p>
           </div>
 
-          <div className="grid lg:grid-cols-3 gap-4 sm:gap-6">
-            <div className="lg:col-span-1 order-1 lg:order-1 space-y-4 flex flex-col h-auto md:h-96 lg:h-[600px]">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+            <div className="lg:col-span-1 order-1 lg:order-1 space-y-4 flex flex-col h-auto lg:h-[600px] min-w-0">
               <Card className="rounded-2xl shadow-xl shadow-gray-200/50 flex-shrink-0">
                 <CardContent className="p-4 sm:p-6">
                   <div className="space-y-3">
@@ -420,7 +420,7 @@ export function MapaClient({ initialOngs }: MapaClientProps) {
                 </CardContent>
               </Card>
 
-              <Card className="rounded-2xl shadow-xl shadow-gray-200/50 flex-1 hidden md:flex flex-col min-h-0">
+              <Card className="rounded-2xl shadow-xl shadow-gray-200/50 flex-1 hidden lg:flex flex-col min-h-0">
                 <CardHeader className="pb-3 flex-shrink-0">
                   <CardTitle className="text-lg">
                     ONGs Encontradas ({filteredOngs.length})
@@ -471,7 +471,7 @@ export function MapaClient({ initialOngs }: MapaClientProps) {
               </Card>
             </div>
 
-            <div className="lg:col-span-2 order-2 lg:order-2">
+            <div className="lg:col-span-2 order-2 lg:order-2 min-w-0">
               <Card className="h-80 sm:h-96 lg:h-[600px] rounded-2xl shadow-xl shadow-gray-200/50 overflow-hidden">
                 <CardContent className="p-0 h-full">
                   <div className="relative w-full h-full">
@@ -505,14 +505,14 @@ export function MapaClient({ initialOngs }: MapaClientProps) {
             </div>
 
             <div className="lg:hidden order-3">
-              <Card className="rounded-2xl shadow-xl shadow-gray-200/50 h-72 sm:h-80 flex flex-col">
+              <Card className="rounded-2xl shadow-xl shadow-gray-200/50 flex flex-col">
                 <CardHeader className="pb-3 flex-shrink-0">
                   <CardTitle className="text-lg">
                     ONGs Encontradas ({filteredOngs.length})
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="p-4 sm:p-6 flex-1 overflow-hidden">
-                  <div className="h-full overflow-y-auto">
+                <CardContent className="p-4 sm:p-6">
+                  <div>
                     {filteredOngs.length > 0 ? (
                       <div className="space-y-3">
                         {filteredOngs.map((ong) => (
@@ -526,10 +526,10 @@ export function MapaClient({ initialOngs }: MapaClientProps) {
                                 <Heart className="h-5 w-5 text-primary fill-current" />
                               </div>
                               <div className="flex-1 min-w-0">
-                                <h3 className="font-medium text-sm truncate">{ong.nome}</h3>
-                                <div className="flex items-center text-xs text-gray-500 mt-1">
-                                  <MapPin className="h-3 w-3 mr-1" />
-                                  <span className="text-sm truncate">
+                                <h3 className="font-medium text-sm line-clamp-2">{ong.nome}</h3>
+                                <div className="flex items-start text-xs text-gray-500 mt-1">
+                                  <MapPin className="h-3 w-3 mr-1 mt-1 flex-shrink-0" />
+                                  <span className="text-sm line-clamp-2">
                                     {formatLocalizacao(ong)}
                                   </span>
                                 </div>
