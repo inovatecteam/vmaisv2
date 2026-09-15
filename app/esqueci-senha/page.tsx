@@ -15,12 +15,14 @@ import { toast } from 'sonner'
 import { Loader2, Mail, ArrowLeft, CheckCircle } from 'lucide-react'
 import { LogoVMais } from '@/components/brand/logo-vmais'
 import { AtadosBadge } from '@/components/partnership/atados-badge'
+import { traduzErroEnvioRecuperacao } from '@/lib/auth-errors'
 
 const forgotPasswordSchema = z.object({
   email: z.string().email('Email inválido'),
 })
 
 type ForgotPasswordData = z.infer<typeof forgotPasswordSchema>
+
 
 export default function EsqueciSenhaPage() {
   const [loading, setLoading] = useState(false)
@@ -45,7 +47,7 @@ export default function EsqueciSenhaPage() {
       setEmailSent(true)
       toast.success('Email de recuperação enviado com sucesso!')
     } catch (error: any) {
-      toast.error(error.message || 'Erro ao enviar email de recuperação')
+      toast.error(traduzErroEnvioRecuperacao(error?.message))
     } finally {
       setLoading(false)
     }
@@ -97,7 +99,7 @@ export default function EsqueciSenhaPage() {
                   </div>
                   <div className="flex items-start space-x-2">
                     <span className="font-bold text-primary flex-shrink-0">2.</span>
-                    <span>Clique no link "Redefinir senha" no email</span>
+                    <span>Clique no link &ldquo;Redefinir senha&rdquo; no email</span>
                   </div>
                   <div className="flex items-start space-x-2">
                     <span className="font-bold text-primary flex-shrink-0">3.</span>
