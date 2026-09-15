@@ -18,6 +18,7 @@ import { WhatsAppConfirmModal } from '@/components/whatsapp-confirm-modal'
 import { sendContactEmail } from '@/lib/api'
 import Footer from '@/components/layout/footer'
 import { loadGoogleMaps } from '@/lib/google-maps-loader'
+import { formatLocalizacao } from '@/lib/utils'
 
 type MapaClientProps = {
   initialOngs: ONG[]
@@ -444,15 +445,7 @@ export function MapaClient({ initialOngs }: MapaClientProps) {
                                 <div className="flex items-center text-xs text-gray-500 mt-1">
                                   <MapPin className="h-3 w-3 mr-1" />
                                   <span className="text-sm truncate">
-                                    {ong.localizacao_tipo === 'online' ? (
-                                      'Online'
-                                    ) : ong.localizacao_tipo === 'ambos' ? (
-                                      'Online e Presencial'
-                                    ) : ong.localizacao_tipo === 'itinerante' ? (
-                                      'Sem local'
-                                    ) : (
-                                      'Localização não disponível'
-                                    )}
+                                    {formatLocalizacao(ong)}
                                   </span>
                                 </div>
                                 <div className="flex flex-wrap gap-1 mt-2">
@@ -537,15 +530,7 @@ export function MapaClient({ initialOngs }: MapaClientProps) {
                                 <div className="flex items-center text-xs text-gray-500 mt-1">
                                   <MapPin className="h-3 w-3 mr-1" />
                                   <span className="text-sm truncate">
-                                    {ong.localizacao_tipo === 'online' ? (
-                                      'Online'
-                                    ) : ong.localizacao_tipo === 'ambos' ? (
-                                      'Online e Presencial'
-                                    ) : ong.localizacao_tipo === 'itinerante' ? (
-                                      'Sem local'
-                                    ) : (
-                                      'Localização não disponível'
-                                    )}
+                                    {formatLocalizacao(ong)}
                                   </span>
                                 </div>
                                 <div className="flex flex-wrap gap-1 mt-2">
@@ -610,15 +595,7 @@ export function MapaClient({ initialOngs }: MapaClientProps) {
                     <div className="flex items-center text-gray-500 mt-2">
                       <MapPin className="h-4 w-4 mr-2 flex-shrink-0" />
                       <span className="text-sm sm:text-base">
-                        {selectedOng.localizacao_tipo === 'online' ? (
-                          'Online'
-                        ) : selectedOng.localizacao_tipo === 'ambos' ? (
-                          'Online e Presencial'
-                        ) : selectedOng.localizacao_tipo === 'itinerante' ? (
-                          'Sem local'
-                        ) : (
-                          'Localização não disponível'
-                        )}
+                        {formatLocalizacao(selectedOng)}
                       </span>
                     </div>
 
