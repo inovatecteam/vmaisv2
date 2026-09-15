@@ -13,8 +13,10 @@ import { z } from 'zod'
 import { signInAction } from '@/app/entrar/actions'
 import { signUpAction } from '@/app/cadastrar/actions'
 import { toast } from 'sonner'
-import { Loader2, Eye, EyeOff } from 'lucide-react'
+import { Loader2, Eye, EyeOff, ArrowLeft, CheckCircle, KeyRound, Mail } from 'lucide-react'
 import { formatPhone } from '@/lib/utils'
+import { supabase } from '@/lib/supabase'
+import { traduzErroEnvioRecuperacao } from '@/lib/auth-errors'
 
 const loginSchema = z.object({
   email: z.string().email('Email inválido'),
@@ -34,7 +36,12 @@ const registerSchema = z.object({
   path: ["confirmPassword"],
 })
 
+const recoverSchema = z.object({
+  email: z.string().email('Email inválido'),
+})
+
 type LoginData = z.infer<typeof loginSchema>
+type RecoverData = z.infer<typeof recoverSchema>
 type RegisterData = z.infer<typeof registerSchema>
 
 interface AuthModalProps {
@@ -42,10 +49,15 @@ interface AuthModalProps {
   onOpenChange: (open: boolean) => void
 }
 
+type Modo = 'login' | 'cadastro' | 'recuperar'
+
 export function AuthModal({ open, onOpenChange }: AuthModalProps) {
-  const [isLogin, setIsLogin] = useState(true)
+  const [modo, setModo] = useState<Modo>('login')
   const [loading, setLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
+  const [emailRecuperacaoEnviado, setEmailRecuperacaoEnviado] = useState('')
+
+  const isLogin = modo === 'login'
 
   const loginForm = useForm<LoginData>({
     resolver: zodResolver(loginSchema)
@@ -57,6 +69,30 @@ export function AuthModal({ open, onOpenChange }: AuthModalProps) {
       tipo: 'voluntario'
     }
   })
+
+  const recoverForm = useForm<RecoverData>({
+    resolver: zodResolver(recoverSchema)
+  })
+
+  // Recuperação acontece DENTRO do modal em vez de mandar pra /esqueci-senha:
+  // sair da página descartaria o contexto salvo pelo caller (ex.: o id da ONG
+  // que o oportunidades-client guarda pra reabrir os detalhes depois do login).
+  const handleRecover = async (data: RecoverData) => {
+    setLoading(true)
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(data.email, {
+        redirectTo: `${window.location.origin}/auth/callback?next=/redefinir-senha`,
+      })
+      if (error) throw error
+
+      setEmailRecuperacaoEnviado(data.email)
+      toast.success('Email de recuperação enviado!')
+    } catch (error: any) {
+      toast.error(traduzErroEnvioRecuperacao(error?.message))
+    } finally {
+      setLoading(false)
+    }
+  }
 
   const handleLogin = async (data: LoginData) => {
     setLoading(true)
@@ -99,23 +135,108 @@ export function AuthModal({ open, onOpenChange }: AuthModalProps) {
     window.location.reload()
   }
 
-  const toggleMode = () => {
-    setIsLogin(!isLogin)
+  const irParaModo = (proximo: Modo) => {
+    setModo(proximo)
     loginForm.reset()
     registerForm.reset()
+    recoverForm.reset()
     setShowPassword(false)
+    setEmailRecuperacaoEnviado('')
   }
+
+  const toggleMode = () => irParaModo(isLogin ? 'cadastro' : 'login')
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md rounded-2xl">
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold text-center">
-            {isLogin ? 'Entrar na Plataforma' : 'Criar Conta'}
+            {modo === 'recuperar'
+              ? 'Recuperar senha'
+              : isLogin
+                ? 'Entrar na Plataforma'
+                : 'Criar Conta'}
           </DialogTitle>
         </DialogHeader>
 
-        {isLogin ? (
+        {modo === 'recuperar' ? (
+          emailRecuperacaoEnviado ? (
+            <div className="space-y-4 text-center">
+              <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-green-100">
+                <CheckCircle className="h-8 w-8 text-green-600" />
+              </div>
+              <div className="rounded-xl bg-green-50 p-4 text-left">
+                <div className="flex items-start space-x-3">
+                  <Mail className="mt-0.5 h-5 w-5 flex-shrink-0 text-green-600" />
+                  <div className="min-w-0">
+                    <p className="font-medium text-green-800">Email de recuperação enviado</p>
+                    <p className="text-sm text-green-700">Enviamos um link de redefinição para:</p>
+                    <p className="mt-1 break-words text-sm font-medium text-green-800">
+                      {emailRecuperacaoEnviado}
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <p className="text-sm text-gray-600">
+                Abra o link <strong>neste mesmo navegador</strong>. Ele vale por 1 hora — confira
+                também a caixa de spam.
+              </p>
+              <Button
+                type="button"
+                onClick={() => irParaModo('login')}
+                className="w-full rounded-xl bg-primary font-semibold hover:bg-primary/90"
+              >
+                Voltar ao login
+              </Button>
+            </div>
+          ) : (
+            <form onSubmit={recoverForm.handleSubmit(handleRecover)} className="space-y-4">
+              <p className="text-sm text-gray-600">
+                Digite o email da sua conta e enviaremos um link para criar uma nova senha.
+              </p>
+
+              <div className="space-y-2">
+                <Label htmlFor="email-recover">Email</Label>
+                <Input
+                  id="email-recover"
+                  type="email"
+                  placeholder="seu@email.com"
+                  className="rounded-xl"
+                  {...recoverForm.register('email')}
+                />
+                {recoverForm.formState.errors.email && (
+                  <p className="text-sm text-red-500">
+                    {recoverForm.formState.errors.email.message}
+                  </p>
+                )}
+              </div>
+
+              <Button
+                type="submit"
+                className="w-full rounded-xl bg-primary font-semibold hover:bg-primary/90"
+                disabled={loading}
+              >
+                {loading ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : (
+                  <Mail className="mr-2 h-4 w-4" />
+                )}
+                Enviar link de recuperação
+              </Button>
+
+              <div className="text-center">
+                <button
+                  type="button"
+                  onClick={() => irParaModo('login')}
+                  className="inline-flex items-center text-sm text-gray-600 transition-colors hover:text-primary"
+                >
+                  <ArrowLeft className="mr-2 h-4 w-4" />
+                  Voltar ao login
+                </button>
+              </div>
+            </form>
+          )
+        ) : isLogin ? (
           <form onSubmit={loginForm.handleSubmit(handleLogin)} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
@@ -152,6 +273,17 @@ export function AuthModal({ open, onOpenChange }: AuthModalProps) {
               {loginForm.formState.errors.password && (
                 <p className="text-sm text-red-500">{loginForm.formState.errors.password.message}</p>
               )}
+            </div>
+
+            <div className="flex justify-end">
+              <button
+                type="button"
+                onClick={() => irParaModo('recuperar')}
+                className="inline-flex items-center text-sm font-medium text-primary hover:underline"
+              >
+                <KeyRound className="mr-1.5 h-4 w-4" />
+                Esqueci minha senha
+              </button>
             </div>
 
             <Button 
