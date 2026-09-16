@@ -178,7 +178,7 @@ export function AuthModal({ open, onOpenChange }: AuthModalProps) {
                 </div>
               </div>
               <p className="text-sm text-gray-600">
-                Abra o link <strong>neste mesmo navegador</strong>. Ele vale por 1 hora — confira
+                Abra o link <strong>neste mesmo navegador</strong>. Ele vale por 1 hora. Confira
                 também a caixa de spam.
               </p>
               <Button
