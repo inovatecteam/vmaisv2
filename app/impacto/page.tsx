@@ -5,17 +5,7 @@ import { Navbar } from '@/components/layout/navbar'
 import Footer from '@/components/layout/footer'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import {
-  ArrowLeft,
-  Heart,
-  Target,
-  Lightbulb,
-  Shield,
-  Globe,
-  Users,
-  Mail,
-  MapPin,
-} from 'lucide-react'
+import { ArrowLeft, Heart, Target, Lightbulb } from 'lucide-react'
 import { NaMidia } from '@/components/impacto/na-midia'
 import { EscolaTioTrampoCard } from '@/components/impacto/escola-tio-trampo-card'
 import { BloodDonationCard } from '@/components/blood-donation-card'
@@ -31,21 +21,6 @@ import { UcergsFundraisingCard } from '@/components/ucergs-fundraising-card'
  * vir do acervo do Afrolaboratório com autorização de uso.
  */
 export default function ImpactoPage() {
-  const valores = [
-    { icon: Heart, title: 'Solidariedade', description: 'A união e a ajuda mútua transformam comunidades.' },
-    { icon: Shield, title: 'Transparência', description: 'Clareza nos processos e na conexão entre voluntários e ONGs.' },
-    { icon: Globe, title: 'Impacto social', description: 'Mudanças positivas e duradouras na sociedade.' },
-    { icon: Users, title: 'Inclusão', description: 'Ambiente acolhedor para todos, independente de origem ou condição.' },
-  ]
-
-  const marcos = [
-    { year: '2024', title: 'Fundação do Voluntaria+', description: 'Início do projeto para conectar voluntários e ONGs no Rio Grande do Sul.' },
-    { year: '2024', title: 'Primeira versão da plataforma', description: 'Lançamento da versão beta com cadastro e busca.' },
-    { year: '2025', title: 'Expansão de funcionalidades', description: 'Mapa interativo e contato direto via WhatsApp.' },
-    { year: '2025', title: 'Repercussão na imprensa', description: 'A plataforma apareceu no RBS Notícias, no SBT RS e no portal do Colégio Farroupilha.' },
-    { year: '2026', title: 'Escola de Graffiti e Artes Visuais Tio Trampo', description: 'Primeira entrega de 2026 por meio da plataforma: a reforma do espaço no Morro da Cruz, inaugurado pelo Instituto Socioeducativo Afrolaboratório.' },
-  ]
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-white via-yellow-50/30 to-orange-50/30">
       <Navbar />
@@ -134,7 +109,7 @@ export default function ImpactoPage() {
             </div>
 
             {/* Missão e visão */}
-            <div className="mb-10 grid gap-4 sm:gap-6 md:grid-cols-2">
+            <div className="grid gap-4 sm:gap-6 md:grid-cols-2">
               <Card className="rounded-2xl border-0 bg-gradient-to-br from-blue-50 to-blue-100 shadow-lg">
                 <CardHeader className="pb-3">
                   <CardTitle className="flex items-center text-lg">
@@ -169,73 +144,6 @@ export default function ImpactoPage() {
                 </CardContent>
               </Card>
             </div>
-
-            {/* Valores */}
-            <div className="mb-10 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
-              {valores.map((valor) => (
-                <Card key={valor.title} className="rounded-2xl text-center shadow-lg">
-                  <CardContent className="p-4 sm:p-5">
-                    <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10">
-                      <valor.icon className="h-6 w-6 text-primary" aria-hidden="true" />
-                    </div>
-                    <h3 className="mb-1.5 font-semibold">{valor.title}</h3>
-                    <p className="text-sm leading-relaxed text-gray-600">{valor.description}</p>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-
-            {/* Linha do tempo */}
-            <div className="mb-10">
-              <h3 className="mb-6 text-center text-xl font-bold text-gray-900">Nossa jornada</h3>
-              <div className="mx-auto max-w-4xl space-y-3">
-                {marcos.map((marco) => (
-                  <Card key={marco.title} className="rounded-2xl shadow-lg">
-                    <CardContent className="p-4 sm:p-5">
-                      <div className="flex items-start space-x-4">
-                        <Badge className="flex-shrink-0 bg-primary px-3 py-1 font-semibold text-black">
-                          {marco.year}
-                        </Badge>
-                        <div className="min-w-0 flex-1">
-                          <h4 className="mb-1 font-semibold">{marco.title}</h4>
-                          <p className="text-sm leading-relaxed text-gray-600">
-                            {marco.description}
-                          </p>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            </div>
-
-            {/* Contato */}
-            <Card className="mx-auto max-w-4xl rounded-2xl shadow-lg">
-              <CardContent className="p-6 sm:p-8">
-                <div className="space-y-4 text-center">
-                  <h3 className="flex items-center justify-center text-xl font-semibold">
-                    <Mail className="mr-2 h-5 w-5 text-primary" aria-hidden="true" />
-                    Entre em contato
-                  </h3>
-                  <p className="text-gray-700">
-                    Tem dúvida, sugestão ou quer saber mais sobre o projeto? Escreva para a gente.
-                  </p>
-                  <div className="space-y-2 rounded-xl bg-gray-50 p-5">
-                    <div className="flex items-center justify-center space-x-2">
-                      <Mail className="h-4 w-4 text-primary" aria-hidden="true" />
-                      <span className="font-medium">voluntariamaisrs@gmail.com</span>
-                    </div>
-                    <div className="flex items-center justify-center space-x-2">
-                      <MapPin className="h-4 w-4 text-primary" aria-hidden="true" />
-                      <span>Porto Alegre, RS</span>
-                    </div>
-                  </div>
-                  <p className="text-sm text-gray-600">
-                    Respondemos todas as mensagens em até 48 horas úteis.
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
           </div>
 
           {/* Voltar */}
