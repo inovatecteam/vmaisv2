@@ -3,6 +3,13 @@ const nextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
+  async redirects() {
+    return [
+      // /sobre foi absorvida por /impacto. Mantido permanente para não quebrar
+      // links antigos (reportagens, buscadores, material impresso).
+      { source: '/sobre', destination: '/impacto', permanent: true },
+    ]
+  },
   webpack: (config, { isServer }) => {
     if (!isServer) {
       config.resolve.fallback = {
