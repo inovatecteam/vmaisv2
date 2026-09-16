@@ -13,7 +13,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { signUpAction } from './actions'
 import { toast } from 'sonner'
-import { Loader2, Eye, EyeOff, ArrowLeft, User, Building } from 'lucide-react'
+import { Loader2, Eye, EyeOff, ArrowLeft, User, Building, Users, Shield } from 'lucide-react'
 import { formatPhone } from '@/lib/utils'
 import { LogoVMais } from '@/components/brand/logo-vmais'
 import { AtadosBadge } from '@/components/partnership/atados-badge'
@@ -32,6 +32,29 @@ const registerSchema = z.object({
 })
 
 type RegisterData = z.infer<typeof registerSchema>
+
+const BENEFICIOS = {
+  voluntario: {
+    titulo: 'Para voluntários',
+    icone: Users,
+    itens: [
+      'Encontrar causas que fazem sentido',
+      'Conectar com organizações sérias',
+      'Desenvolver novas habilidades',
+      'Fazer networking social',
+    ],
+  },
+  ong: {
+    titulo: 'Para ONGs',
+    icone: Shield,
+    itens: [
+      'Alcançar mais voluntários',
+      'Divulgar suas causas',
+      'Receber ajuda qualificada',
+      'Fortalecer impacto social',
+    ],
+  },
+} as const
 
 export default function CadastrarPage() {
   const [loading, setLoading] = useState(false)
@@ -82,6 +105,8 @@ export default function CadastrarPage() {
   }
 
   const tipoSelecionado = form.watch('tipo')
+  const beneficios = BENEFICIOS[tipoSelecionado]
+  const IconeBeneficio = beneficios.icone
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-white via-yellow-50/30 to-orange-50/30 flex items-center justify-center px-4 py-8">
@@ -252,6 +277,26 @@ export default function CadastrarPage() {
                 </Link>
               </p>
             </div>
+          </CardContent>
+        </Card>
+
+        {/* Benefícios do perfil escolhido */}
+        <Card className="rounded-2xl border-0 shadow-lg mt-6 overflow-hidden">
+          <CardHeader className="bg-gradient-to-r from-primary/5 to-primary/10 py-4">
+            <CardTitle className="text-lg flex items-center">
+              <IconeBeneficio className="h-5 w-5 text-primary mr-3" aria-hidden="true" />
+              {beneficios.titulo}
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="pt-4">
+            <ul className="space-y-2.5">
+              {beneficios.itens.map((item) => (
+                <li key={item} className="flex items-center">
+                  <div className="w-2 h-2 bg-primary rounded-full mr-3 flex-shrink-0" />
+                  <span className="text-sm text-gray-700">{item}</span>
+                </li>
+              ))}
+            </ul>
           </CardContent>
         </Card>
 

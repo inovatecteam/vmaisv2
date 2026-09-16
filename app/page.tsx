@@ -5,7 +5,7 @@ import { Navbar } from '@/components/layout/navbar'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
-import { Heart, Users, MapPin, Search, HandHeart, Target, Shield, ArrowRight, Palette, Handshake } from 'lucide-react'
+import { Heart, MapPin, Search, HandHeart, Target, ArrowRight, Palette, Handshake } from 'lucide-react'
 import { AuthModal } from '@/components/auth/auth-modal'
 import { useAuth } from '@/components/providers/auth-provider'
 import Link from 'next/link'
@@ -65,27 +65,6 @@ const faqs = [
     }
   ];
   
-  const benefits = [
-    {
-      title: 'Para Voluntários',
-      items: [
-        'Encontrar causas que fazem sentido',
-        'Conectar com organizações sérias',
-        'Desenvolver novas habilidades',
-        'Fazer networking social',
-      ],
-    },
-    {
-      title: 'Para ONGs',
-      items: [
-        'Alcançar mais voluntários',
-        'Divulgar suas causas',
-        'Receber ajuda qualificada',
-        'Fortalecer impacto social',
-      ],
-    },
-  ]
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-white via-yellow-50/30 to-orange-50/30 overflow-x-hidden">
       <Navbar />
@@ -165,43 +144,6 @@ const faqs = [
           </div>
         </div>
       </section>
-      {/* Benefícios Secton */}
-      <section className="py-12 sm:py-16 px-4">
-  <div className="max-w-7xl mx-auto">
-    <div className="text-center mb-12 sm:mb-16">
-      <h2 className="text-3xl sm:text-4xl font-bold mb-4 px-4">Por que usar o Voluntaria+?</h2>
-      <p className="text-lg sm:text-xl text-gray-600 px-4">Benefícios para toda a comunidade</p>
-    </div>
-    
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 sm:gap-12">
-      {benefits.map((benefit, index) => (
-        <Card key={index} className="border-none shadow-lg rounded-2xl overflow-hidden">
-          <CardHeader className="bg-gradient-to-r from-primary/5 to-primary/10">
-            <CardTitle className="text-xl sm:text-2xl flex items-center px-2">
-              {benefit.title === 'Para Voluntários' ? (
-                <Users className="h-5 w-5 sm:h-6 sm:w-6 text-primary mr-3" />
-              ) : (
-                <Shield className="h-5 w-5 sm:h-6 sm:w-6 text-primary mr-3" />
-              )}
-              {benefit.title}
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="pt-4 sm:pt-6">
-            <ul className="space-y-3">
-              {benefit.items.map((item, itemIndex) => (
-                <li key={itemIndex} className="flex items-center">
-                  <div className="w-2 h-2 bg-primary rounded-full mr-3 flex-shrink-0" />
-                  <span className="text-sm sm:text-base text-gray-700">{item}</span>
-                </li>
-              ))}
-            </ul>
-          </CardContent>
-        </Card>
-      ))}
-    </div>
-  </div>
-</section>
-
       {/* Preview da aba Impacto */}
       <section className="py-12 sm:py-16 px-4">
         <div className="max-w-4xl mx-auto">
