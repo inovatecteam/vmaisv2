@@ -4,7 +4,7 @@ import { ExternalLink } from 'lucide-react'
 import { APARICOES_NA_MIDIA } from '@/lib/midia'
 
 /**
- * Grid das coberturas que nomeiam a Voluntaria+.
+ * Grid das coberturas que nomeiam o Voluntaria+.
  *
  * Mostra veículo, programa e data, que são verificáveis. Estimativas internas
  * de alcance não entram: não vêm de dado público das emissoras.

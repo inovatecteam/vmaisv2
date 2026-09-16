@@ -44,7 +44,7 @@ export default function SobrePage() {
   const milestones = [
     {
       year: "2024",
-      title: "Fundação da Voluntaria+",
+      title: "Fundação do Voluntaria+",
       description: "Início do projeto com o objetivo de conectar voluntários e ONGs no Rio Grande do Sul."
     },
     {
