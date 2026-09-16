@@ -93,7 +93,7 @@ export function AtadosBadge({
       <p className="text-gray-600 text-center max-w-2xl mx-auto mb-6 leading-relaxed">
         A Rede Atados é a maior plataforma de voluntariado do Brasil. O Voluntária+ agora
         tem um espaço dentro dela: as ONGs do Rio Grande do Sul ganham alcance nacional e
-        você encontra ainda mais formas de ajudar — sem perder o que construímos aqui.
+        você encontra ainda mais formas de ajudar, sem perder o que construímos aqui.
       </p>
 
       <div className="flex flex-col sm:flex-row gap-3 justify-center">

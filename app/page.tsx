@@ -5,12 +5,11 @@ import { Navbar } from '@/components/layout/navbar'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
-import { Heart, Users, MapPin, Search, HandHeart, Target, Shield, ArrowRight } from 'lucide-react'
+import { Heart, Users, MapPin, Search, HandHeart, Target, Shield, ArrowRight, Palette, Handshake } from 'lucide-react'
 import { AuthModal } from '@/components/auth/auth-modal'
 import { useAuth } from '@/components/providers/auth-provider'
 import Link from 'next/link'
 import Footer from '@/components/layout/footer'
-import { AtadosBadge } from '@/components/partnership/atados-badge'
 import { getDestinoCta, getDestinoEntradaGeral } from '@/lib/atados'
 
 export default function HomePage() {
@@ -203,42 +202,62 @@ const faqs = [
   </div>
 </section>
 
-      {/* Escola Tio Trampo */}
+      {/* Preview da aba Impacto */}
       <section className="py-12 sm:py-16 px-4">
         <div className="max-w-4xl mx-auto">
-          <Card className="rounded-2xl shadow-lg">
-            <CardContent className="p-6 sm:p-8">
-              <div className="inline-flex items-center bg-primary/10 rounded-full px-3 py-1.5 mb-4">
-                <span className="text-sm font-medium text-primary">Primeira entrega de 2026</span>
-              </div>
+          <div className="text-center mb-8">
+            <div className="inline-flex items-center bg-primary/10 rounded-full px-3 py-1.5 mb-4">
+              <span className="text-sm font-medium text-primary">O que já saiu do papel</span>
+            </div>
+            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-3">Impacto</h2>
+            <p className="text-gray-600 max-w-2xl mx-auto">
+              O Voluntaria+ já virou obra entregue e ganhou alcance nacional.
+            </p>
+          </div>
 
-              <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-3">
-                A escola no Morro da Cruz
-              </h2>
+          <div className="grid gap-4 sm:gap-6 md:grid-cols-2">
+            <Card className="rounded-2xl shadow-lg h-full">
+              <CardContent className="p-6 flex flex-col h-full">
+                <div className="p-3 bg-yellow-100 rounded-xl w-fit mb-4">
+                  <Palette className="h-6 w-6 text-primary" aria-hidden="true" />
+                </div>
+                <h3 className="text-lg font-bold text-gray-900 mb-2">
+                  A escola no Morro da Cruz
+                </h3>
+                <p className="text-gray-600 text-sm leading-relaxed">
+                  O Instituto Socioeducativo Afrolaboratório inaugurou a Escola de Graffiti e Artes
+                  Visuais Tio Trampo em julho de 2026. A reforma teve parte dos recursos obtidos por
+                  meio do Voluntaria+: parede, piso novo e janelas onde não havia.
+                </p>
+              </CardContent>
+            </Card>
 
-              <p className="text-gray-700 leading-relaxed">
-                Em julho de 2026, o Instituto Socioeducativo Afrolaboratório inaugurou a Escola de
-                Graffiti e Artes Visuais Tio Trampo, na antiga sede do Galpão Cultural. A reforma
-                teve parte dos recursos obtidos por meio do Voluntaria+: parede, piso novo e
-                janelas onde não havia. O espaço abriga a primeira galeria de arte da região.
-              </p>
+            <Card className="rounded-2xl shadow-lg h-full">
+              <CardContent className="p-6 flex flex-col h-full">
+                <div className="p-3 bg-yellow-100 rounded-xl w-fit mb-4">
+                  <Handshake className="h-6 w-6 text-primary" aria-hidden="true" />
+                </div>
+                <h3 className="text-lg font-bold text-gray-900 mb-2">
+                  Parceria com a Rede Atados
+                </h3>
+                <p className="text-gray-600 text-sm leading-relaxed">
+                  O Voluntaria+ tem um espaço dentro da maior plataforma de voluntariado do Brasil.
+                  As ONGs do Rio Grande do Sul ganham alcance nacional e você encontra ainda mais
+                  formas de ajudar.
+                </p>
+              </CardContent>
+            </Card>
+          </div>
 
-              <Link
-                href="/impacto"
-                className="inline-flex items-center mt-5 font-medium text-primary hover:underline"
-              >
-                Ver a história completa
-                <ArrowRight className="ml-1.5 h-4 w-4" aria-hidden="true" />
-              </Link>
-            </CardContent>
-          </Card>
-        </div>
-      </section>
-
-      {/* Parceria Rede Atados */}
-      <section className="py-12 sm:py-16 px-4">
-        <div className="max-w-4xl mx-auto">
-          <AtadosBadge variant="destaque" />
+          <div className="text-center mt-8">
+            <Link
+              href="/impacto"
+              className="inline-flex items-center justify-center gap-2 bg-primary hover:bg-primary/90 text-white px-6 py-3 rounded-2xl font-semibold transition-colors"
+            >
+              Ver a aba Impacto
+              <ArrowRight className="h-4 w-4" aria-hidden="true" />
+            </Link>
+          </div>
         </div>
       </section>
 

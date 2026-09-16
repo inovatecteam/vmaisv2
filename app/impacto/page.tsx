@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { ArrowLeft, Heart, Target, Lightbulb } from 'lucide-react'
 import { NaMidia } from '@/components/impacto/na-midia'
+import { AtadosBadge } from '@/components/partnership/atados-badge'
 import { EscolaTioTrampoCard } from '@/components/impacto/escola-tio-trampo-card'
 import { BloodDonationCard } from '@/components/blood-donation-card'
 import { UcergsFundraisingCard } from '@/components/ucergs-fundraising-card'
@@ -48,6 +49,22 @@ export default function ImpactoPage() {
             <EscolaTioTrampoCard />
             <BloodDonationCard />
             <UcergsFundraisingCard />
+          </div>
+
+          {/* Parceria Rede Atados */}
+          <div id="parceria" className="mb-20 scroll-mt-28">
+            <div className="mb-8 text-center">
+              <Badge className="mb-4 bg-primary font-semibold text-black">Parceria</Badge>
+              <h2 className="mb-4 text-2xl font-bold text-gray-900 sm:text-3xl">
+                Alcance nacional para as ONGs do Rio Grande do Sul
+              </h2>
+              <p className="mx-auto max-w-2xl text-gray-600">
+                A parceria com a Rede Atados abriu um espaço do Voluntaria+ dentro da maior
+                plataforma de voluntariado do Brasil.
+              </p>
+            </div>
+
+            <AtadosBadge variant="destaque" />
           </div>
 
           {/* Na mídia */}
