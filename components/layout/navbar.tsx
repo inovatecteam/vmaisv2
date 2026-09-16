@@ -108,6 +108,13 @@ export function Navbar() {
             Sobre Nós
             <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all group-hover:w-full" />
           </Link>
+          <Link
+            href="/impacto"
+            className="text-gray-700 hover:text-primary font-medium transition-colors relative group"
+          >
+            Impacto
+            <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all group-hover:w-full" />
+          </Link>
           {user && (
             <Link
               href="/dashboard"
@@ -212,6 +219,13 @@ export function Navbar() {
                       onClick={() => setMobileMenuOpen(false)}
                     >
                       Sobre Nós
+                    </Link>
+                    <Link
+                      href="/impacto"
+                      className="block text-lg font-medium text-gray-700 hover:text-primary transition-colors py-2"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      Impacto
                     </Link>
                     {user && (
                       <Link

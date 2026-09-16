@@ -59,8 +59,13 @@ export default function SobrePage() {
     },
     {
       year: "2025",
-      title: "Crescimento da Comunidade",
-      description: "Meta de conectar mais de 1.000 voluntários com ONGs em todo o Brasil."
+      title: "Repercussão na imprensa",
+      description: "A plataforma apareceu no RBS Notícias, no SBT RS e no portal do Colégio Farroupilha."
+    },
+    {
+      year: "2026",
+      title: "Escola de Graffiti e Artes Visuais Tio Trampo",
+      description: "Primeira entrega de 2026 por meio da plataforma: a reforma do espaço no Morro da Cruz, inaugurado pelo Instituto Socioeducativo Afrolaboratório."
     }
   ]
 

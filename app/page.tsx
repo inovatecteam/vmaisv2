@@ -5,7 +5,7 @@ import { Navbar } from '@/components/layout/navbar'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
-import { Heart, Users, MapPin, Search, HandHeart, Target, Shield } from 'lucide-react'
+import { Heart, Users, MapPin, Search, HandHeart, Target, Shield, ArrowRight } from 'lucide-react'
 import { AuthModal } from '@/components/auth/auth-modal'
 import { useAuth } from '@/components/providers/auth-provider'
 import Link from 'next/link'
@@ -202,6 +202,38 @@ const faqs = [
     </div>
   </div>
 </section>
+
+      {/* Escola Tio Trampo */}
+      <section className="py-12 sm:py-16 px-4">
+        <div className="max-w-4xl mx-auto">
+          <Card className="rounded-2xl shadow-lg">
+            <CardContent className="p-6 sm:p-8">
+              <div className="inline-flex items-center bg-primary/10 rounded-full px-3 py-1.5 mb-4">
+                <span className="text-sm font-medium text-primary">Primeira entrega de 2026</span>
+              </div>
+
+              <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-3">
+                A escola no Morro da Cruz
+              </h2>
+
+              <p className="text-gray-700 leading-relaxed">
+                Em julho de 2026, o Instituto Socioeducativo Afrolaboratório inaugurou a Escola de
+                Graffiti e Artes Visuais Tio Trampo, na antiga sede do Galpão Cultural. A reforma
+                teve parte dos recursos obtidos por meio da Voluntaria+: parede, piso novo e
+                janelas onde não havia. O espaço abriga a primeira galeria de arte da região.
+              </p>
+
+              <Link
+                href="/impacto"
+                className="inline-flex items-center mt-5 font-medium text-primary hover:underline"
+              >
+                Ver a história completa
+                <ArrowRight className="ml-1.5 h-4 w-4" aria-hidden="true" />
+              </Link>
+            </CardContent>
+          </Card>
+        </div>
+      </section>
 
       {/* Parceria Rede Atados */}
       <section className="py-12 sm:py-16 px-4">
