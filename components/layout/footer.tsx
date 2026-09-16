@@ -56,6 +56,11 @@ function Footer() {
                   Sobre Nós
                 </Link>
               </li>
+              <li>
+                <Link href="/impacto" className="text-gray-400 hover:text-yellow-500 transition-colors">
+                  Impacto
+                </Link>
+              </li>
             </ul>
           </div>
 
