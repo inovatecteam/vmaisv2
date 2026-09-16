@@ -1,8 +1,8 @@
 /**
- * Coberturas de imprensa que nomeiam a Voluntaria+.
+ * Coberturas de imprensa que nomeiam o Voluntaria+.
  *
  * Só entram aqui matérias que citam a plataforma. As reportagens sobre a
- * inauguração da Escola Tio Trampo que não mencionam a Voluntaria+ servem de
+ * inauguração da Escola Tio Trampo que não mencionam o Voluntaria+ servem de
  * contexto e fonte, mas ficam de fora: um card aqui sugeriria um crédito que a
  * matéria não dá.
  *
@@ -23,7 +23,7 @@ export const APARICOES_NA_MIDIA: AparicaoNaMidia[] = [
     veiculo: 'RBS TV',
     programa: 'Bom Dia Rio Grande, reportagem de Mary Silva',
     assunto:
-      'A escola no Morro da Cruz, mostrando a Voluntaria+ como o que viabilizou parte da reforma.',
+      'A escola no Morro da Cruz, mostrando o Voluntaria+ como o que viabilizou parte da reforma.',
     data: '10 de julho de 2026',
     ordem: 20260710,
     link: 'https://www.facebook.com/rbstv/videos/1007908015562388',
@@ -48,7 +48,7 @@ export const APARICOES_NA_MIDIA: AparicaoNaMidia[] = [
   },
   {
     veiculo: 'SBT RS',
-    programa: 'Reportagem sobre o InovaTec e a Voluntaria+',
+    programa: 'Reportagem sobre o InovaTec e o Voluntaria+',
     assunto:
       'A plataforma, com 15 ONGs cadastradas na época, e a campanha da UCERGS.',
     data: 'Outubro de 2025',
@@ -59,7 +59,7 @@ export const APARICOES_NA_MIDIA: AparicaoNaMidia[] = [
     veiculo: 'RBS TV',
     programa: 'RBS Notícias',
     assunto:
-      'Reportagem do Dia Nacional do Voluntariado, com a Voluntaria+ entre as iniciativas.',
+      'Reportagem do Dia Nacional do Voluntariado, com o Voluntaria+ entre as iniciativas.',
     data: '28 de agosto de 2025',
     ordem: 20250828,
     link: 'https://www.facebook.com/SouFarroupilha/videos/1470912627490790',

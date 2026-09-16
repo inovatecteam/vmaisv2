@@ -18,8 +18,6 @@ import { AuthModal } from '@/components/auth/auth-modal'
 import { WhatsAppConfirmModal } from '@/components/whatsapp-confirm-modal'
 import { sendContactEmail } from '@/lib/api'
 import Footer from '@/components/layout/footer'
-import { UcergsFundraisingCard } from '@/components/ucergs-fundraising-card'
-import { BloodDonationCard } from '@/components/blood-donation-card'
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination'
 import { formatLocalizacao } from '@/lib/utils'
 
@@ -214,12 +212,6 @@ export function OportunidadesClient({ initialOngs }: OportunidadesClientProps) {
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
               Descubra oportunidades incríveis de voluntariado na sua região e conecte-se com causas que fazem sentido para você.
             </p>
-          </div>
-
-          {/* Campanhas Especiais */}
-          <div className="mb-8 grid grid-cols-1 md:grid-cols-2 gap-4">
-            <BloodDonationCard />
-            <UcergsFundraisingCard />
           </div>
 
           {/* Filtros */}

@@ -170,7 +170,7 @@ const faqs = [
       <section className="py-12 sm:py-16 px-4">
   <div className="max-w-7xl mx-auto">
     <div className="text-center mb-12 sm:mb-16">
-      <h2 className="text-3xl sm:text-4xl font-bold mb-4 px-4">Por que usar a Voluntaria+?</h2>
+      <h2 className="text-3xl sm:text-4xl font-bold mb-4 px-4">Por que usar o Voluntaria+?</h2>
       <p className="text-lg sm:text-xl text-gray-600 px-4">Benefícios para toda a comunidade</p>
     </div>
     
@@ -219,7 +219,7 @@ const faqs = [
               <p className="text-gray-700 leading-relaxed">
                 Em julho de 2026, o Instituto Socioeducativo Afrolaboratório inaugurou a Escola de
                 Graffiti e Artes Visuais Tio Trampo, na antiga sede do Galpão Cultural. A reforma
-                teve parte dos recursos obtidos por meio da Voluntaria+: parede, piso novo e
+                teve parte dos recursos obtidos por meio do Voluntaria+: parede, piso novo e
                 janelas onde não havia. O espaço abriga a primeira galeria de arte da região.
               </p>
 

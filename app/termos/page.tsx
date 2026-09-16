@@ -23,7 +23,7 @@ export default function TermosPage() {
       icon: FileText,
       title: "Descrição dos Serviços",
       content: [
-        "A Voluntaria+ é uma plataforma que conecta voluntários com organizações não governamentais",
+        "O Voluntaria+ é uma plataforma que conecta voluntários com organizações não governamentais",
         "Facilitamos o encontro entre pessoas interessadas em voluntariado e ONGs que precisam de ajuda",
         "Oferecemos ferramentas de busca, mapa interativo e sistema de contato direto",
         "Não somos responsáveis pela qualidade ou execução das atividades de voluntariado",
@@ -136,7 +136,7 @@ export default function TermosPage() {
             <CardContent>
               <div className="space-y-4 text-gray-700">
                 <p>
-                  A Voluntaria+ atua exclusivamente como intermediária na conexão entre voluntários e ONGs. 
+                  O Voluntaria+ atua exclusivamente como intermediário na conexão entre voluntários e ONGs. 
                   Não nos responsabilizamos por:
                 </p>
                 <ul className="space-y-2 ml-4">
@@ -169,7 +169,7 @@ export default function TermosPage() {
                 <p>
                   Todo o conteúdo da plataforma Voluntaria+, incluindo mas não limitado a textos, 
                   gráficos, logotipos, ícones, imagens, clipes de áudio, downloads digitais e 
-                  compilações de dados, é propriedade da Voluntaria+ ou de seus fornecedores de conteúdo.
+                  compilações de dados, é propriedade do Voluntaria+ ou de seus fornecedores de conteúdo.
                 </p>
                 <p>
                   É proibida a reprodução, distribuição, modificação ou uso comercial de qualquer 
