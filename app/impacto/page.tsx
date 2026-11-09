@@ -11,6 +11,7 @@ import { AtadosBadge } from '@/components/partnership/atados-badge'
 import { EscolaTioTrampoCard } from '@/components/impacto/escola-tio-trampo-card'
 import { BloodDonationCard } from '@/components/blood-donation-card'
 import { UcergsFundraisingCard } from '@/components/ucergs-fundraising-card'
+import { NatalRestingaCard } from '@/components/natal-restinga-card'
 
 /**
  * Página única de Impacto. Absorveu a antiga /sobre (que agora redireciona
@@ -46,6 +47,7 @@ export default function ImpactoPage() {
 
           {/* Entregas e campanhas */}
           <div className="mb-16 grid grid-cols-1 gap-4 sm:gap-6 md:grid-cols-2">
+            <NatalRestingaCard />
             <EscolaTioTrampoCard />
             <BloodDonationCard />
             <UcergsFundraisingCard />
