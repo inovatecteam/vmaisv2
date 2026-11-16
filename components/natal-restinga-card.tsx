@@ -10,7 +10,7 @@ import { toast } from 'sonner'
 // Mesmo layout do card da UCERGS (components/ucergs-fundraising-card.tsx).
 // Para atualizar o valor arrecadado, altere só ARRECADADO: a barra e a
 // porcentagem se recalculam sozinhas.
-const ARRECADADO = 0
+const ARRECADADO = 100
 const META = 4000
 const CNPJ = '92.858.000/0034-03'
 
